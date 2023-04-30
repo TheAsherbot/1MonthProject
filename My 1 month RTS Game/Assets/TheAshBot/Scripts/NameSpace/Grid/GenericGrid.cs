@@ -55,7 +55,7 @@ namespace TheAshBot.Grid
                 }
             }
 
-                    if (showDebug)
+            if (showDebug)
             {
                 TextMesh[,] debugTextArray = new TextMesh[width, height];
 

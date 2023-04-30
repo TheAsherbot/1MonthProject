@@ -1,17 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
-
-using TheAshBot.Grid;
-
-using UnityEngine;
 
 public class PathNode
 {
 
 
-    public int gCost;
-    public int hCost;
-    public int fCost;
+    public float gCost;
+    public float hCost;
+    public float fCost;
 
     public int x;
     public int y;
@@ -20,10 +15,11 @@ public class PathNode
     public PathNode cameFromNode;
 
 
-    private GenericGrid<PathNode> grid;
+    private Pathfinding grid;
 
+    public List<PathNode> neighbourNodeList;
      
-    public PathNode(GenericGrid<PathNode> grid, int x, int y)
+    public PathNode(Pathfinding grid, int x, int y)
     {
         this.grid = grid;
         this.x = x;
@@ -34,7 +30,7 @@ public class PathNode
     public void SetIsWalkable(bool isWalkable)
     {
         this.isWalkable = isWalkable;
-        grid.TriggerGridObjectChanged(x, y);
+        grid.TriggerPathNodeChanged(x, y);
     }
 
     public void CalculateFCost()
