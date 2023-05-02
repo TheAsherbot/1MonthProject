@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using UnityEngine;
 
@@ -20,6 +21,8 @@ public class Pathfinding
         public int y;
     }
 
+
+    private TextMesh[,] debugTextArray;
 
     private int width;
     private int height;
@@ -76,19 +79,15 @@ public class Pathfinding
 
         if (showDebug)
         {
-            TextMesh[,] debugTextArray = new TextMesh[width, height];
+            debugTextArray = new TextMesh[width, height];
 
             for (int x = 0; x < gridArray.GetLength(0); x++)
             {
                 for (int y = 0; y < gridArray.GetLength(1); y++)
                 {
                     debugTextArray[x, y] = CreateWorldText(parent, gridArray[x, y].ToString(), GetWorldPosition(x, y) + new Vector2(cellSize, cellSize) * .5f, 5 * (int)cellSize, Color.white, TextAnchor.MiddleCenter);
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
                 }
             }
-            Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
-            Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
 
             OnGridValueChanged += (object sender, OnGridValueChangedEventArgs eventArgs) =>
             {
@@ -96,7 +95,6 @@ public class Pathfinding
             };
         }
     }
-    
     public Pathfinding(int width, int height, float cellSize, Vector2 originPosition)
     {
         this.width = width;
@@ -371,6 +369,20 @@ public class Pathfinding
             x = x,
             y = y
         });
+    }
+
+    public void DestorySelf()
+    {
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int y = 0; y < gridArray.GetLength(1); y++)
+            {
+                if (debugTextArray[x, y].gameObject != null)
+                {
+                    GameObject.DestroyImmediate(debugTextArray[x, y].gameObject);
+                }
+            }
+        }
     }
 
     private List<PathNode> GetNeighbourList(PathNode currentNode)

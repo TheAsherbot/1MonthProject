@@ -1,66 +1,88 @@
-using System.Collections;
-using System.Collections.Generic;
-
 using TheAshBot.Grid;
 using TheAshBot.TwoDimentional;
 
-using Unity.VisualScripting;
-
-using UnityEditor;
-
 using UnityEngine;
+
+using UnityEngineInternal;
+
 
 public class Testing : MonoBehaviour
 {
-    
-    
-    [SerializeField] private Transform hexPrefab;
 
-    private int x;
-    private int y;
-    private Pathfinding pathfinding;
+
+    [SerializeField] private TileMapVisual tilemapVisual;
+
+
+    private TileMap tileMap;
+    private TileMap.TileMapObject.TilemapSprite tilemapSprite;
 
 
     private void Start()
     {
-        int width = 15;
-        int height = 15;
-        float cellSize = 10f;
-        pathfinding = new Pathfinding(width, height, cellSize, Vector2.zero, true, null);
+        tileMap = new TileMap(20, 10, 10, transform.position);
 
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                // Instantiate(hexPrefab, grid.GetWorldPosition(x, y), Quaternion.identity);
-            }
-        }
-
+        tileMap.SetTilemapVisual(tilemapVisual);
     }
 
-    
+
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
-            Vector3 mouseWorldPosition = Mouse2D.GetMousePosition2D();
-            List<Vector2> path = pathfinding.FindPathAsVector2s(Vector2.zero, mouseWorldPosition);
-            Debug.Log(Time.deltaTime);
-            if (path != null)
-            {
-                for (int i = 0; i < path.Count - 1; i++)
-                {
-                    Debug.DrawLine(path[i], path[i + 1], Color.green, 5f);
-                }
-            }
+            Vector2 mouseWorldPosition = Mouse2D.GetMousePosition2D();
+            tileMap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
         }
-        if (Input.GetMouseButtonDown(1))
+
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            Vector3 mouseWorldPosition = Mouse2D.GetMousePosition2D();
-            pathfinding.GetXY(mouseWorldPosition, out int x, out int y);
-            pathfinding.GetPathNode(x, y).SetIsWalkable(!pathfinding.GetPathNode(x, y).isWalkable);
+            tilemapSprite = TileMap.TileMapObject.TilemapSprite.None;
+        }
+        else if (Input.GetKeyDown(KeyCode.Y))
+        {
+            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Dirt;
+        }
+        else if (Input.GetKeyDown(KeyCode.U))
+        {
+            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Grass;
+        }
+        else if (Input.GetKeyDown(KeyCode.I))
+        {
+            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Sky;
+        }
+        else if (Input.GetKeyDown(KeyCode.O))
+        {
+            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Stone;
+        }
+        else if (Input.GetKeyDown(KeyCode.O))
+        {
+            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Stone;
+        }
+        else if (Input.GetKeyDown(KeyCode.B))
+        {
+            tileMap.Save();
+        }
+        else if (Input.GetKeyDown(KeyCode.N))
+        {
+            tileMap.Load();
         }
     }
+
+
     
+
+    /*
+    private void DrawPathfingLines()
+    {
+        Vector3 mouseWorldPosition = Mouse2D.GetMousePosition2D();
+        List<Vector2> path = pathfinding.FindPathAsVector2s(Vector2.zero, mouseWorldPosition);
+        if (path != null)
+        {
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                Debug.DrawLine(path[i], path[i + 1], Color.green, 5f);
+            }
+        }
+    }
+    */
 
 }
