@@ -13,6 +13,16 @@ public class GridManager : MonoBehaviour
 {
 
 
+    public static GridManager Instance;
+
+
+    public Grid Grid
+    {
+        get;
+        private set;
+    }
+
+
     [Header("Grid")]
     [SerializeField] private int xSize = 20;
     [SerializeField] private int ySize = 10;
@@ -22,28 +32,37 @@ public class GridManager : MonoBehaviour
     [SerializeField] private TextAsset gridSavedData;
 
 
-    private Grid grid;
     private GridObject.TilemapSprite gridSprite;
 
 
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Debug.LogError("There is more than one GridManager Instance in this scene");
+        }
+        else
+        {
+            Instance = this;
+        }
 
+        Grid = new Grid(xSize, ySize, cellSize, transform.position, true, null);
+    }
 
     private void Start()
     {
-        grid = new Grid(xSize, ySize, cellSize, transform.position, true, null);
-
-        gridVisual.SetGrid(grid);
+        gridVisual.SetGrid(Grid);
     }
 
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl))
         {
             Vector2 mouseWorldPosition = Mouse2D.GetMousePosition2D();
-            grid.SetTilemapSprite(mouseWorldPosition, gridSprite);
+            Grid.SetTilemapSprite(mouseWorldPosition, gridSprite);
         }
-
+        
         if (Input.GetKeyDown(KeyCode.T))
         {
             gridSprite = GridObject.TilemapSprite.None;
@@ -68,30 +87,13 @@ public class GridManager : MonoBehaviour
         // Saving
         if (Input.GetKeyDown(KeyCode.B))
         {
-            grid.Save();
+            Grid.Save();
         }
         else if (Input.GetKeyDown(KeyCode.N))
         {
-            grid.Load(gridSavedData.text);
+            Grid.Load(gridSavedData.text);
         }
     }
 
-
-
-
-    /*
-    private void DrawPathfingLines()
-    {
-        Vector3 mouseWorldPosition = Mouse2D.GetMousePosition2D();
-        List<Vector2> path = pathfinding.FindPathAsVector2s(Vector2.zero, mouseWorldPosition);
-        if (path != null)
-        {
-            for (int i = 0; i < path.Count - 1; i++)
-            {
-                Debug.DrawLine(path[i], path[i + 1], Color.green, 5f);
-            }
-        }
-    }
-    */
 
 }

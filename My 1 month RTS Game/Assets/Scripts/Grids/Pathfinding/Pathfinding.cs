@@ -69,9 +69,7 @@ public class Pathfinding
         {
             for (int y = 0; y < gridArray.GetLength(1); y++)
             {
-                PathNode currentPathNode = GetPathNode(y, x);
-                currentPathNode.neighbourNodeList = GetNeighbourList(currentPathNode);
-                SetPathNode(y, x, currentPathNode);
+                GetPathNode(x, y).neighbourNodeList = GetNeighbourList(GetPathNode(x, y));
             }
         }
 
@@ -111,13 +109,11 @@ public class Pathfinding
         }
 
         // Doing it agian becouse now all fo the path nodes have been made.
-        for (int x = 0; x < gridArray.GetLength(0); x++)
+        for (int x = 0; x < GetWidth(); x++)
         {
-            for (int y = 0; y < gridArray.GetLength(1); y++)
+            for (int y = 0; y < GetHeight(); y++)
             {
-                PathNode currentPathNode = GetPathNode(y, x);
-                currentPathNode.neighbourNodeList = GetNeighbourList(currentPathNode);
-                SetPathNode(y, x, currentPathNode);
+                GetPathNode(x, y).neighbourNodeList = GetNeighbourList(GetPathNode(x, y));
             }
         }
     }
@@ -142,7 +138,7 @@ public class Pathfinding
             List<Vector2> vectorPath = new List<Vector2>();
             foreach (PathNode pathNode in path)
             {
-                vectorPath.Add(new Vector2(pathNode.x, pathNode.y) * GetCellSize() + Vector2.one * GetCellSize() * 0.5f);
+                vectorPath.Add(new Vector2(pathNode.x, pathNode.y) * GetCellSize() + Vector2.one * GetCellSize() * 0.5f + originPosition);
             }
             return vectorPath;
         }
@@ -234,7 +230,7 @@ public class Pathfinding
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
-            foreach (PathNode neighbourNode in currentNode.neighbourNodeList)
+            foreach (PathNode neighbourNode in GetNeighbourList(currentNode))
             {
                 if (closedList.Contains(neighbourNode)) continue;
 

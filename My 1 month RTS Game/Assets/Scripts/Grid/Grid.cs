@@ -70,6 +70,14 @@ public class Grid
             for (int y = 0; y < gridArray.GetLength(1); y++)
             {
                 gridArray[x, y] = new GridObject(this, x, y);
+            }
+        }
+
+        // Doing it agian becouse now all fo the path nodes have been made.
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int y = 0; y < gridArray.GetLength(1); y++)
+            {
                 gridArray[x, y].neighbourNodeList = GetNeighbourList(gridArray[x, y]);
             }
         }
@@ -94,25 +102,8 @@ public class Grid
             {
                 debugTextArray[eventArgs.x, eventArgs.y].text = gridArray[eventArgs.x, eventArgs.y].ToString();
             };
-            OnLoaded += (object sender, EventArgs eventArgs) =>
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        Debug.Log(x + " " + y);
-                        debugTextArray[x, y].text = GetGridObject(x, y).ToString();
-                    }
-                }
-            };
         }
     }
-
-    private void Grid_OnLoaded(object sender, EventArgs e)
-    {
-        throw new NotImplementedException();
-    }
-
     public Grid(int width, int height, int cellSize, Vector2 originPosition)
     {
         this.width = width;
@@ -127,6 +118,14 @@ public class Grid
             for (int y = 0; y < gridArray.GetLength(1); y++)
             {
                 gridArray[x, y] = new GridObject(this, x, y);
+            }
+        }
+
+        // Doing it agian becouse now all fo the path nodes have been made.
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int y = 0; y < gridArray.GetLength(1); y++)
+            {
                 gridArray[x, y].neighbourNodeList = GetNeighbourList(gridArray[x, y]);
             }
         }
@@ -170,7 +169,7 @@ public class Grid
             List<Vector2> vectorPath = new List<Vector2>();
             foreach (GridObject gridObject in path)
             {
-                vectorPath.Add(new Vector2(gridObject.x, gridObject.y) * GetCellSize() + Vector2.one * GetCellSize() * 0.5f);
+                vectorPath.Add(new Vector2(gridObject.x, gridObject.y) * GetCellSize() + Vector2.one * GetCellSize() * 0.5f + originPosition);
             }
             return vectorPath;
         }
