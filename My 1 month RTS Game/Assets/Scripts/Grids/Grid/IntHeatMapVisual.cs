@@ -6,7 +6,7 @@ using TheAshBot.Grid;
 
 using UnityEngine;
 
-public class HeatMapVisual : MonoBehaviour
+public class IntHeatMapVisual : MonoBehaviour
 {
 
 

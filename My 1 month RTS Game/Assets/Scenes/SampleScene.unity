@@ -239,7 +239,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619394800
 GameObject:
@@ -350,7 +350,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &849772885
 GameObject:
@@ -364,8 +364,9 @@ GameObject:
   - component: {fileID: 849772889}
   - component: {fileID: 849772888}
   - component: {fileID: 849772890}
+  - component: {fileID: 849772891}
   m_Layer: 0
-  m_Name: TilemapVisual
+  m_Name: GridVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -384,7 +385,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &849772888
 MeshRenderer:
@@ -437,6 +438,31 @@ MeshFilter:
   m_GameObject: {fileID: 849772885}
   m_Mesh: {fileID: 0}
 --- !u!114 &849772890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849772885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ddcdbd9fc54d814d9c08e0e1a497318, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilemapSpriteUVArray:
+  - tilemapSprite: 2
+    uv00Pixels: {x: 0, y: 0}
+    uv11Pixels: {x: 2, y: 2}
+  - tilemapSprite: 3
+    uv00Pixels: {x: 2, y: 0}
+    uv11Pixels: {x: 4, y: 4}
+  - tilemapSprite: 4
+    uv00Pixels: {x: 4, y: 0}
+    uv11Pixels: {x: 6, y: 6}
+  - tilemapSprite: 1
+    uv00Pixels: {x: 6, y: 0}
+    uv11Pixels: {x: 8, y: 8}
+--- !u!114 &849772891
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -543,7 +569,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1658862730
 GameObject:
@@ -591,7 +617,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1843744620
 GameObject:
@@ -604,7 +630,7 @@ GameObject:
   - component: {fileID: 1843744621}
   - component: {fileID: 1843744622}
   m_Layer: 0
-  m_Name: Testing
+  m_Name: Grid Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -623,7 +649,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1843744622
 MonoBehaviour:
@@ -637,4 +663,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a874f68e565bde94bb005f7238af4d3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilemapVisual: {fileID: 849772890}
+  gridVisual: {fileID: 849772890}
+  gridSavedData: {fileID: 0}

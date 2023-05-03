@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+
 using TheAshBot.Grid;
 using TheAshBot.TwoDimentional;
 
@@ -6,22 +9,27 @@ using UnityEngine;
 using UnityEngineInternal;
 
 
-public class Testing : MonoBehaviour
+public class GridManager : MonoBehaviour
 {
 
 
-    [SerializeField] private TileMapVisual tilemapVisual;
+    [SerializeField] private GridVisual gridVisual;
+    [SerializeField] private TextAsset gridSavedData;
 
 
-    private TileMap tileMap;
-    private TileMap.TileMapObject.TilemapSprite tilemapSprite;
+    private Grid grid;
+    private GridObject.TilemapSprite gridSprite;
+
+
 
 
     private void Start()
     {
-        tileMap = new TileMap(20, 10, 10, transform.position);
+        grid = new Grid(20, 10, 10, transform.position);
 
-        tileMap.SetTilemapVisual(tilemapVisual);
+        gridVisual.SetGrid(grid);
+
+        //grid.Load(gridSavedData.text);
     }
 
 
@@ -30,45 +38,43 @@ public class Testing : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             Vector2 mouseWorldPosition = Mouse2D.GetMousePosition2D();
-            tileMap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
+            grid.SetTilemapSprite(mouseWorldPosition, gridSprite);
         }
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            tilemapSprite = TileMap.TileMapObject.TilemapSprite.None;
+            gridSprite = GridObject.TilemapSprite.None;
         }
         else if (Input.GetKeyDown(KeyCode.Y))
         {
-            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Dirt;
+            gridSprite = GridObject.TilemapSprite.Dirt;
         }
         else if (Input.GetKeyDown(KeyCode.U))
         {
-            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Grass;
+            gridSprite = GridObject.TilemapSprite.Grass;
         }
         else if (Input.GetKeyDown(KeyCode.I))
         {
-            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Sky;
+            gridSprite = GridObject.TilemapSprite.Sky;
         }
         else if (Input.GetKeyDown(KeyCode.O))
         {
-            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Stone;
+            gridSprite = GridObject.TilemapSprite.Stone;
         }
-        else if (Input.GetKeyDown(KeyCode.O))
+
+        // Saving
+        if (Input.GetKeyDown(KeyCode.B))
         {
-            tilemapSprite = TileMap.TileMapObject.TilemapSprite.Stone;
-        }
-        else if (Input.GetKeyDown(KeyCode.B))
-        {
-            tileMap.Save();
+            grid.Save();
         }
         else if (Input.GetKeyDown(KeyCode.N))
         {
-            tileMap.Load();
+            grid.Load(gridSavedData.text);
         }
     }
 
 
-    
+
 
     /*
     private void DrawPathfingLines()

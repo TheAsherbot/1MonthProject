@@ -77,9 +77,9 @@ public class TileMap
         SaveSystem.SaveJson(saveObject, SaveSystem.RootSavePath.DataPath, "Tile Map", "tilemap", true);
     }
 
-    public void Load()
+    public void Load(string saveObjectJsonData)
     {
-        SaveObject saveObject = SaveSystem.LoadJson<SaveObject>(SaveSystem.RootSavePath.DataPath, "Tile Map", "tilemap");
+        SaveObject saveObject = JsonUtility.FromJson<SaveObject>(saveObjectJsonData);
         foreach (TileMapObject.SaveObject tilemapObjectSaveObject in saveObject.tilemapObjectSaveObjectArray)
         {
             TileMapObject tilemapObject = Grid.GetGridObject(tilemapObjectSaveObject.x, tilemapObjectSaveObject.y);
