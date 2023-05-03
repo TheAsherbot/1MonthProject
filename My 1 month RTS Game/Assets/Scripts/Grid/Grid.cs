@@ -94,8 +94,25 @@ public class Grid
             {
                 debugTextArray[eventArgs.x, eventArgs.y].text = gridArray[eventArgs.x, eventArgs.y].ToString();
             };
+            OnLoaded += (object sender, EventArgs eventArgs) =>
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        Debug.Log(x + " " + y);
+                        debugTextArray[x, y].text = GetGridObject(x, y).ToString();
+                    }
+                }
+            };
         }
     }
+
+    private void Grid_OnLoaded(object sender, EventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
     public Grid(int width, int height, int cellSize, Vector2 originPosition)
     {
         this.width = width;
@@ -517,6 +534,7 @@ public class Grid
         foreach (GridObject.SaveObject gridObjectSaveObject in saveObject.gridObjectSaveObjectArray)
         {
             GridObject gridObject = GetGridObject(gridObjectSaveObject.x, gridObjectSaveObject.y);
+            
             gridObject.Load(gridObjectSaveObject);
         }
         OnLoaded?.Invoke(this, EventArgs.Empty);

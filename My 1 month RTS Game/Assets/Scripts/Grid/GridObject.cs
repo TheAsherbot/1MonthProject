@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using UnityEditor;
+
 public class GridObject
 {
 
@@ -65,13 +67,17 @@ public class GridObject
     public void SetTilemapSprite(TilemapSprite tilemapSprite)
     {
         this.tilemapSprite = tilemapSprite;
+        if (tilemapSprite != TilemapSprite.None && tilemapSprite != TilemapSprite.Sky)
+        {
+            isWalkable = false;
+        }
         grid.TriggerGridObjectChanged(x, y);
     }
 
 
     public override string ToString()
     {
-        return tilemapSprite.ToString();
+        return isWalkable ? "T" : "F";
     }
 
 
@@ -80,6 +86,8 @@ public class GridObject
     [Serializable]
     public class SaveObject
     {
+        public bool isWalkable;
+
         public TilemapSprite tilemapSprite;
         public int x;
         public int y;
@@ -89,6 +97,8 @@ public class GridObject
     {
         return new SaveObject
         {
+            isWalkable = isWalkable,
+
             tilemapSprite = tilemapSprite,
             x = x,
             y = y,

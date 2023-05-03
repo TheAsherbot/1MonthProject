@@ -13,6 +13,11 @@ public class GridManager : MonoBehaviour
 {
 
 
+    [Header("Grid")]
+    [SerializeField] private int xSize = 20;
+    [SerializeField] private int ySize = 10;
+    [SerializeField] private int cellSize = 10;
+
     [SerializeField] private GridVisual gridVisual;
     [SerializeField] private TextAsset gridSavedData;
 
@@ -25,11 +30,9 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
-        grid = new Grid(20, 10, 10, transform.position);
+        grid = new Grid(xSize, ySize, cellSize, transform.position, true, null);
 
         gridVisual.SetGrid(grid);
-
-        //grid.Load(gridSavedData.text);
     }
 
 
