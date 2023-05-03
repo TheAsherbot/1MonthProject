@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-using TheAshBot.Grid;
-using UnityEngine;
-
-using static TileMap;
-
 public class GridObject
 {
+
 
     public enum TilemapSprite
     {
@@ -19,16 +15,26 @@ public class GridObject
     }
 
 
-    public TilemapSprite tilemapSprite
-    {
-        get;
-        private set;
-    }
+    #region Veriables
+
+    public TilemapSprite tilemapSprite;
 
 
     private Grid grid;
-    private int x;
-    private int y;
+    public int x;
+    public int y;
+
+
+    public float gCost;
+    public float hCost;
+    public float fCost;
+
+    public bool isWalkable;
+    public GridObject cameFromNode;
+
+    public List<GridObject> neighbourNodeList;
+
+    #endregion
 
 
     public GridObject(Grid grid, int x, int y)
@@ -36,7 +42,24 @@ public class GridObject
         this.grid = grid;
         this.x = x;
         this.y = y;
+        isWalkable = true;
     }
+
+
+    #region Pathfinding
+
+    public void SetIsWalkable(bool isWalkable)
+    {
+        this.isWalkable = isWalkable;
+        grid.TriggerGridObjectChanged(x, y);
+    }
+
+    public void CalculateFCost()
+    {
+        fCost = gCost + hCost;
+    }
+
+    #endregion
 
 
     public void SetTilemapSprite(TilemapSprite tilemapSprite)
@@ -45,17 +68,14 @@ public class GridObject
         grid.TriggerGridObjectChanged(x, y);
     }
 
+
     public override string ToString()
     {
         return tilemapSprite.ToString();
     }
 
 
-
-
-    /*
-     * Save - Load
-     */
+    #region Saving, and Loading
 
     [Serializable]
     public class SaveObject
@@ -84,5 +104,6 @@ public class GridObject
         tilemapSprite = saveObject.tilemapSprite;
     }
 
+    #endregion
 
 }

@@ -22,8 +22,6 @@ public class Pathfinding
     }
 
 
-    private TextMesh[,] debugTextArray;
-
     private int width;
     private int height;
     private float cellSize;
@@ -79,7 +77,7 @@ public class Pathfinding
 
         if (showDebug)
         {
-            debugTextArray = new TextMesh[width, height];
+            TextMesh[,] debugTextArray = new TextMesh[width, height];
 
             for (int x = 0; x < gridArray.GetLength(0); x++)
             {
@@ -124,7 +122,14 @@ public class Pathfinding
         }
     }
 
-
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startX">This is the X poisition on the grid of the start node</param>
+    /// <param name="startY">This is the Y poisition on the grid of the start node</param>
+    /// <param name="endX">This is the X position on the grid of the end node</param>
+    /// <param name="endY">This is the Y position on the grid of the end node</param>
+    /// <returns>Returns the path as a list of Vector2s, starting at the start node; ending at the end node</returns>
     public List<Vector2> FindPathAsVector2s(int startX, int startY, int endX, int endY)
     {
         List<PathNode> path = FindPathAsPathNodes(startX, startY, endX, endY);
@@ -142,24 +147,52 @@ public class Pathfinding
             return vectorPath;
         }
     }
-    public List<Vector2> FindPathAsVector2s(int startX, int startY, Vector2 endWorldPosition)
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startWorldPosition">This is the world poisition on the grid of the start node</param>
+    /// <param name="endX">This is the X position on the grid of the end node</param>
+    /// <param name="endY">This is the Y position on the grid of the end node</param>
+    /// <returns>Returns the path as a list of Vector2s, starting at the start node; ending at the end node</returns>
+    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, int endX, int endY)
     {
-        GetXY(endWorldPosition, out int endX, out int endY);
+        GetXY(startWorldPosition, out int startX, out int startY);
         return FindPathAsVector2s(startX, startY, endX, endY);
     }
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startWorldPosition">This is the world poisition on the grid of the start node</param>
+    /// <param name="endWorldPosition">This is the world poisition on the grid of the emd node</param>
+    /// <returns>Returns the path as a list of Vector2s, starting at the start node; ending at the end node</returns>
     public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, Vector2 endWorldPosition)
     {
         GetXY(startWorldPosition, out int startX, out int startY);
         GetXY(endWorldPosition, out int endX, out int endY);
         return FindPathAsVector2s(startX, startY, endX, endY);
     }
-    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, int endX, int endY)
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startX">This is the X poisition on the grid of the start node</param>
+    /// <param name="startY">This is the Y poisition on the grid of the start node</param>
+    /// <param name="endWorldPosition">This is the world poisition on the grid of the emd node</param>
+    /// <returns>Returns the path as a list of Vector2s, starting at the start node; ending at the end node</returns>
+    public List<Vector2> FindPathAsVector2s(int startX, int startY, Vector2 endWorldPosition)
     {
-        GetXY(startWorldPosition, out int startX, out int startY);
+        GetXY(endWorldPosition, out int endX, out int endY);
         return FindPathAsVector2s(startX, startY, endX, endY);
     }
 
 
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startX">This is the X poisition on the grid of the start node</param>
+    /// <param name="startY">This is the Y poisition on the grid of the start node</param>
+    /// <param name="endX">This is the X position on the grid of the end node</param>
+    /// <param name="endY">This is the Y position on the grid of the end node</param>
+    /// <returns>Returns the path as a list of Path Nodes, starting at the start node; ending at the end node</returns>
     public List<PathNode> FindPathAsPathNodes(int startX, int startY, int endX, int endY)
     {
         PathNode startNode = GetPathNode(startX, startY);
@@ -231,17 +264,37 @@ public class Pathfinding
         // Out of nodes on the open lsit
         return null;
     }
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startWorldPosition">This is the world poisition on the grid of the start node</param>
+    /// <param name="endX">This is the X position on the grid of the end node</param>
+    /// <param name="endY">This is the Y position on the grid of the end node</param>
+    /// <returns>Returns the path as a list of Path Nodes, starting at the start node; ending at the end node</returns>
     public List<PathNode> FindPathAsPathNodes(Vector2 startWorldPosition, int endX, int endY)
     {
         GetXY(startWorldPosition, out int startX, out int startY);
         return FindPathAsPathNodes(startX, startY, endX, endY);
     }
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startWorldPosition">This is the world poisition on the grid of the start node</param>
+    /// <param name="endWorldPosition">This is the world poisition on the grid of the emd node</param>
+    /// <returns>Returns the path as a list of Path Nodes, starting at the start node; ending at the end node</returns>
     public List<PathNode> FindPathAsPathNodes(Vector2 startWorldPosition, Vector2 endWorldPosition)
     {
         GetXY(startWorldPosition, out int startX, out int startY);
         GetXY(endWorldPosition, out int endX, out int endY);
         return FindPathAsPathNodes(startX, startY, endX, endY);
     }
+    /// <summary>
+    /// This will find the path from point A on the grid to point B on the grid
+    /// </summary>
+    /// <param name="startX">This is the X poisition on the grid of the start node</param>
+    /// <param name="startY">This is the Y poisition on the grid of the start node</param>
+    /// <param name="endWorldPosition">This is the world poisition on the grid of the emd node</param>
+    /// <returns>Returns the path as a list of Path Nodes, starting at the start node; ending at the end node</returns>
     public List<PathNode> FindPathAsPathNodes(int startX, int startY, Vector2 endWorldPosition)
     {
         GetXY(endWorldPosition, out int endX, out int endY);
@@ -371,20 +424,11 @@ public class Pathfinding
         });
     }
 
-    public void DestorySelf()
-    {
-        for (int x = 0; x < gridArray.GetLength(0); x++)
-        {
-            for (int y = 0; y < gridArray.GetLength(1); y++)
-            {
-                if (debugTextArray[x, y].gameObject != null)
-                {
-                    GameObject.DestroyImmediate(debugTextArray[x, y].gameObject);
-                }
-            }
-        }
-    }
-
+    /// <summary>
+    /// This will get all the neighbours of a spicifec node NOTE: in this code I cash them when the grid is created so please use pathNode.neighbourNodeList
+    /// </summary>
+    /// <param name="currentNode">This is the node that you are getting hte neighbours of</param>
+    /// <returns>the list of neighbours</returns>
     private List<PathNode> GetNeighbourList(PathNode currentNode)
     {
         List<PathNode> neighbourList = new List<PathNode>();
@@ -433,6 +477,11 @@ public class Pathfinding
         return neighbourList;
     }
 
+    /// <summary>
+    /// This get the path from the end using the "cameFromNode" variable
+    /// </summary>
+    /// <param name="endNode">this is the end of the path</param>
+    /// <returns>a list of pathnodes srating at the start point; ending at the end point</returns>
     private List<PathNode> CalculatePath(PathNode endNode)
     {
         List <PathNode> path = new List<PathNode>();
@@ -448,6 +497,12 @@ public class Pathfinding
         return path;
     }
 
+    /// <summary>
+    /// This calculates the absolute value of the distance betwwen two nodes.
+    /// </summary>
+    /// <param name="a">This is the first node</param>
+    /// <param name="b">This is the last node</param>
+    /// <returns>the distance between the nodes as a floast</returns>
     private float CalculateDistance(PathNode a, PathNode b)
     {
         int xDistance = Mathf.Abs(a.x - b.x);
@@ -457,6 +512,11 @@ public class Pathfinding
         return moveDiagonalCost * Mathf.Min(xDistance, yDistance) + moveStraightCost * remaining;
     }
 
+    /// <summary>
+    /// This calculates the lowest F cost from a lists of PathNodes
+    /// </summary>
+    /// <param name="pathNodeList">This is the path nodes that it searches (Mosty used with the Open List)</param>
+    /// <returns>the Path Node with the lowest F Cost</returns>
     private PathNode GetLowestFCostNode(List<PathNode> pathNodeList) 
     {
         PathNode lowestFCostNode = pathNodeList[0];
