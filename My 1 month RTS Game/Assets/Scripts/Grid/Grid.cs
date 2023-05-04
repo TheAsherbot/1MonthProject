@@ -30,6 +30,7 @@ public class Grid
     private int width;
     private int height;
     private float cellSize;
+    private bool canWalkDiagonally;
     private Vector2 originPosition;
     private GridObject[,] gridArray;
 
@@ -56,12 +57,13 @@ public class Grid
     #endregion
 
 
-    public Grid(int width, int height, int cellSize, Vector2 originPosition, bool showDebug, Transform parent)
+    public Grid(int width, int height, float cellSize, Vector2 originPosition, bool canWalkDiagonally, bool showDebug, Transform parent)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
         this.originPosition = originPosition;
+        this.canWalkDiagonally = canWalkDiagonally;
 
         gridArray = new GridObject[width, height];
 
@@ -104,12 +106,13 @@ public class Grid
             };
         }
     }
-    public Grid(int width, int height, int cellSize, Vector2 originPosition)
+    public Grid(int width, int height, float cellSize, Vector2 originPosition, bool canWalkDiagonally)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
         this.originPosition = originPosition;
+        this.canWalkDiagonally = canWalkDiagonally;
 
         gridArray = new GridObject[width, height];
 
@@ -132,34 +135,11 @@ public class Grid
     }
 
 
-    public void SetTilemapSprite(Vector2 worldPosition, GridObject.TilemapSprite tilemapSprite)
-    {
-        GridObject gridObject = GetGridObject(worldPosition);
-        if (gridObject != null)
-        {
-            gridObject.SetTilemapSprite(tilemapSprite);
-        }
-    }
-    public void SetTilemapSprite(int x, int y, GridObject.TilemapSprite tilemapSprite)
-    {
-        GridObject gridObject = GetGridObject(x, y);
-        if (gridObject != null)
-        {
-            gridObject.SetTilemapSprite(tilemapSprite);
-        }
-    }
-
-    public void SetGridVisual(GridVisual gridVisual)
-    {
-        gridVisual.SetGrid(this);
-    }
-
-
     #region Find Path
 
-    public List<Vector2> FindPathAsVector2s(int startX, int startY, int endX, int endY)
+    public List<Vector2> FindPathAsVector2s(int startX, int startY, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
     {
-        List<GridObject> path = FindPathAsGridObjects(startX, startY, endX, endY);
+        List<GridObject> path = FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
         if (path == null)
         {
             return null;
@@ -169,30 +149,30 @@ public class Grid
             List<Vector2> vectorPath = new List<Vector2>();
             foreach (GridObject gridObject in path)
             {
-                vectorPath.Add(new Vector2(gridObject.x, gridObject.y) * GetCellSize() + Vector2.one * GetCellSize() * 0.5f + originPosition);
+                vectorPath.Add(new Vector2(gridObject.X, gridObject.Y) * GetCellSize() + Vector2.one * GetCellSize() * 0.5f + originPosition);
             }
             return vectorPath;
         }
     }
-    public List<Vector2> FindPathAsVector2s(int startX, int startY, Vector2 endWorldPosition)
+    public List<Vector2> FindPathAsVector2s(int startX, int startY, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
     {
         GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsVector2s(startX, startY, endX, endY);
+        return FindPathAsVector2s(startX, startY, endX, endY, unwalkableStates);
     }
-    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, Vector2 endWorldPosition)
+    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
     {
         GetXY(startWorldPosition, out int startX, out int startY);
         GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsVector2s(startX, startY, endX, endY);
+        return FindPathAsVector2s(startX, startY, endX, endY, unwalkableStates);
     }
-    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, int endX, int endY)
+    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
     {
         GetXY(startWorldPosition, out int startX, out int startY);
-        return FindPathAsVector2s(startX, startY, endX, endY);
+        return FindPathAsVector2s(startX, startY, endX, endY, unwalkableStates);
     }
 
 
-    public List<GridObject> FindPathAsGridObjects(int startX, int startY, int endX, int endY)
+    public List<GridObject> FindPathAsGridObjects(int startX, int startY, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
     {
         GridObject startNode = GetGridObject(startX, startY);
         GridObject endNode = GetGridObject(endX, endY);
@@ -237,11 +217,11 @@ public class Grid
             {
                 if (closedList.Contains(neighbourNode)) continue;
 
-                if (!neighbourNode.isWalkable)
-                {
-                    closedList.Add(neighbourNode);
-                    continue;
-                }
+                    if (unwalkableStates.Contains(neighbourNode.State))
+                    {
+                        closedList.Add(neighbourNode);
+                        continue;
+                    }
 
                 float tentativeGCost = currentNode.gCost + CalculateDistance(currentNode, neighbourNode);
 
@@ -263,22 +243,23 @@ public class Grid
         // Out of nodes on the open lsit
         return null;
     }
-    public List<GridObject> FindPathAsGridObjects(Vector2 startWorldPosition, int endX, int endY)
+    public List<GridObject> FindPathAsGridObjects(Vector2 startWorldPosition, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
     {
         GetXY(startWorldPosition, out int startX, out int startY);
-        return FindPathAsGridObjects(startX, startY, endX, endY);
+        return FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
     }
-    public List<GridObject> FindPathAsGridObjects(Vector2 startWorldPosition, Vector2 endWorldPosition)
+    public List<GridObject> FindPathAsGridObjects(Vector2 startWorldPosition, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
     {
         GetXY(startWorldPosition, out int startX, out int startY);
         GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsGridObjects(startX, startY, endX, endY);
+        return FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
     }
-    public List<GridObject> FindPathAsGridObjects(int startX, int startY, Vector2 endWorldPosition)
+    public List<GridObject> FindPathAsGridObjects(int startX, int startY, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
     {
         GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsGridObjects(startX, startY, endX, endY);
+        return FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
     }
+
 
     #endregion
 
@@ -289,45 +270,51 @@ public class Grid
     {
         List<GridObject> neighbourList = new List<GridObject>();
 
-        if (currentNode.x - 1 >= 0)
+        if (currentNode.X - 1 >= 0)
         {
             // Left
-            neighbourList.Add(GetGridObject(currentNode.x - 1, currentNode.y));
-            // Left Down
-            if (currentNode.y - 1 >= 0)
+            neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y));
+            if (canWalkDiagonally)
             {
-                neighbourList.Add(GetGridObject(currentNode.x - 1, currentNode.y - 1));
-            }
-            // Left Up
-            if (currentNode.y + 1 < GetHeight())
-            {
-                neighbourList.Add(GetGridObject(currentNode.x - 1, currentNode.y + 1));
+                // Left Down
+                if (currentNode.Y - 1 >= 0)
+                {
+                    neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y - 1));
+                }
+                // Left Up
+                if (currentNode.Y + 1 < GetHeight())
+                {
+                    neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y + 1));
+                }
             }
         }
-        if (currentNode.x + 1 < GetWidth())
+        if (currentNode.X + 1 < GetWidth())
         {
             // Right
-            neighbourList.Add(GetGridObject(currentNode.x + 1, currentNode.y));
-            // Right Down
-            if (currentNode.y - 1 >= 0)
+            neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y));
+            if (canWalkDiagonally)
             {
-                neighbourList.Add(GetGridObject(currentNode.x + 1, currentNode.y - 1));
-            }
-            // Right Up
-            if (currentNode.y + 1 < GetHeight())
-            {
-                neighbourList.Add(GetGridObject(currentNode.x + 1, currentNode.y + 1));
+                // Right Down
+                if (currentNode.Y - 1 >= 0)
+                {
+                    neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y - 1));
+                }
+                // Right Up
+                if (currentNode.Y + 1 < GetHeight())
+                {
+                    neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y + 1));
+                }
             }
         }
         // Bottom
-        if (currentNode.y - 1 >= 0)
+        if (currentNode.Y - 1 >= 0)
         {
-            neighbourList.Add(GetGridObject(currentNode.x, currentNode.y - 1));
+            neighbourList.Add(GetGridObject(currentNode.X, currentNode.Y - 1));
         }
         // Top
-        if (currentNode.y + 1 < GetHeight())
+        if (currentNode.Y + 1 < GetHeight())
         {
-            neighbourList.Add(GetGridObject(currentNode.x, currentNode.y + 1));
+            neighbourList.Add(GetGridObject(currentNode.X, currentNode.Y + 1));
         }
 
         return neighbourList;
@@ -350,8 +337,8 @@ public class Grid
 
     private float CalculateDistance(GridObject a, GridObject b)
     {
-        int xDistance = Mathf.Abs(a.x - b.x);
-        int yDistance = Mathf.Abs(a.y - b.y);
+        int xDistance = Mathf.Abs(a.X - b.X);
+        int yDistance = Mathf.Abs(a.Y - b.Y);
         int remaining = Mathf.Abs(xDistance - yDistance);
 
         return moveDiagonalCost * Mathf.Min(xDistance, yDistance) + moveStraightCost * remaining;
@@ -422,9 +409,8 @@ public class Grid
     /// <returns>Returns the world position snaped to the grid</returns>
     public Vector2 SnapPositionToGrid(Vector2 worldPosition)
     {
-        int x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
-        int y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
-        return new Vector2(x, y);
+        GetXY(worldPosition, out int x, out int y);
+        return GetWorldPosition(x, y);
     }
 
     /// <summary>
@@ -502,6 +488,56 @@ public class Grid
     #endregion
 
 
+    #region TileMap
+
+    public void SetTilemapSprite(int x, int y, GridObject.TilemapSprite tilemapSprite)
+    {
+        GridObject gridObject = GetGridObject(x, y);
+        if (gridObject != null)
+        {
+            gridObject.SetTilemapSprite(tilemapSprite);
+        }
+    }
+    public void SetTilemapSprite(Vector2 worldPosition, GridObject.TilemapSprite tilemapSprite)
+    {
+        GridObject gridObject = GetGridObject(worldPosition);
+        if (gridObject != null)
+        {
+            gridObject.SetTilemapSprite(tilemapSprite);
+        }
+    }
+
+    public bool TryMakeBuilding(int startX, int startY, List<int> buildingWidthListFromButtomToTop)
+    {
+        for (int y = 0; y < buildingWidthListFromButtomToTop.Count; y++)
+        {
+            for (int x = 0; x < buildingWidthListFromButtomToTop[y]; x++)
+            {
+                if (GetGridObject(startX + x, startY + y).State != GridObject.OccupationState.Empty)
+                {
+                    return false;
+                }
+            }
+        }
+
+        for (int y = 0; y < buildingWidthListFromButtomToTop.Count; y++)
+        {
+            for (int x = 0; x < buildingWidthListFromButtomToTop[y]; x++)
+            {
+                GetGridObject(startX + x, startY + y).SetOccupationState(GridObject.OccupationState.NotWalkable);
+            }
+        }
+        return true;
+    }
+    public bool TryMakeBuilding(Vector2 worldPosition, List<int> buildingWidthListFromTopToBottom)
+    {
+        GetXY(worldPosition, out int startX, out int startY);
+        return TryMakeBuilding(startX, startY, buildingWidthListFromTopToBottom);
+    }
+
+    #endregion
+
+
     #region Saveing, and Loading
 
     public void Save()
@@ -521,26 +557,41 @@ public class Grid
 
         SaveObject saveObject = new SaveObject
         {
+            width = width,
+            height = height,
+            cellSize = cellSize,
+            originPosition = originPosition,
+            canWalkDiagonally = canWalkDiagonally,
             gridObjectSaveObjectArray = gridObjectSaveObjectList.ToArray(),
         };
 
         SaveSystem.SaveJson(saveObject, SaveSystem.RootSavePath.DataPath, "Tile Map", "tilemap", true);
     }
 
-    public void Load(string saveObjectJsonData)
+    public static Grid Load(string saveObjectJsonData)
     {
         SaveObject saveObject = JsonUtility.FromJson<SaveObject>(saveObjectJsonData);
+        
+        Grid grid = new Grid(saveObject.width, saveObject.height, saveObject.cellSize, saveObject.originPosition, saveObject.canWalkDiagonally);
+
         foreach (GridObject.SaveObject gridObjectSaveObject in saveObject.gridObjectSaveObjectArray)
         {
-            GridObject gridObject = GetGridObject(gridObjectSaveObject.x, gridObjectSaveObject.y);
+            GridObject gridObject = grid.GetGridObject(gridObjectSaveObject.x, gridObjectSaveObject.y);
             
             gridObject.Load(gridObjectSaveObject);
         }
-        OnLoaded?.Invoke(this, EventArgs.Empty);
+        grid.OnLoaded?.Invoke(grid, EventArgs.Empty);
+
+        return grid;
     }
 
     public class SaveObject
     {
+        public int width;
+        public int height;
+        public float cellSize;
+        public Vector2 originPosition;
+        public bool canWalkDiagonally;
         public GridObject.SaveObject[] gridObjectSaveObjectArray;
     }
 

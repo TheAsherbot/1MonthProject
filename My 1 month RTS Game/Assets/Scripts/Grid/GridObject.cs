@@ -7,6 +7,7 @@ public class GridObject
 {
 
 
+    [Serializable]
     public enum TilemapSprite
     {
         None,
@@ -14,27 +15,50 @@ public class GridObject
         Grass,
         Sky,
         Stone,
+        Building,
+    }
+
+    [Serializable]
+    public enum OccupationState
+    {
+        Empty,
+        NotWalkable,
     }
 
 
     #region Veriables
 
+
     public TilemapSprite tilemapSprite;
 
 
     private Grid grid;
-    public int x;
-    public int y;
+    public int X
+    {
+        get;
+        private set;
+    }
+    public int Y
+    {
+        get;
+        private set;
+    }
 
 
     public float gCost;
     public float hCost;
     public float fCost;
 
-    public bool isWalkable;
+
+    public OccupationState State
+    {
+        get;
+        private set;
+    }
     public GridObject cameFromNode;
 
     public List<GridObject> neighbourNodeList;
+
 
     #endregion
 
@@ -42,18 +66,18 @@ public class GridObject
     public GridObject(Grid grid, int x, int y)
     {
         this.grid = grid;
-        this.x = x;
-        this.y = y;
-        isWalkable = true;
+        X = x;
+        Y = y;
+        State = OccupationState.Empty;
     }
 
 
     #region Pathfinding
 
-    public void SetIsWalkable(bool isWalkable)
+    public void SetOccupationState(OccupationState state)
     {
-        this.isWalkable = isWalkable;
-        grid.TriggerGridObjectChanged(x, y);
+        State = state;
+        grid.TriggerGridObjectChanged(X, Y);
     }
 
     public void CalculateFCost()
@@ -69,15 +93,19 @@ public class GridObject
         this.tilemapSprite = tilemapSprite;
         if (tilemapSprite != TilemapSprite.None && tilemapSprite != TilemapSprite.Sky)
         {
-            isWalkable = false;
+            State = OccupationState.NotWalkable;
         }
-        grid.TriggerGridObjectChanged(x, y);
+        else
+        {
+            State = OccupationState.Empty;
+        }
+        grid.TriggerGridObjectChanged(X, Y);
     }
 
 
     public override string ToString()
     {
-        return isWalkable ? "T" : "F";
+        return State == OccupationState.NotWalkable ? "T" : "F";
     }
 
 
@@ -86,7 +114,7 @@ public class GridObject
     [Serializable]
     public class SaveObject
     {
-        public bool isWalkable;
+        public OccupationState State;
 
         public TilemapSprite tilemapSprite;
         public int x;
@@ -97,11 +125,11 @@ public class GridObject
     {
         return new SaveObject
         {
-            isWalkable = isWalkable,
+            State = State,
 
             tilemapSprite = tilemapSprite,
-            x = x,
-            y = y,
+            x = X,
+            y = Y,
         };
     }
 

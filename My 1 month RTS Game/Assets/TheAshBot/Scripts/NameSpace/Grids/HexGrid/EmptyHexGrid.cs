@@ -107,40 +107,14 @@ namespace TheAshBot.Grid
         }
 
         /// <summary>
-        /// This snaps a position to the grid 
+        /// This snaps a position to the grid
         /// </summary>
         /// <param name="worldPosition">This is the world position of the grid object</param>
         /// <returns>Returns the world position snaped to the grid</returns>
         public Vector2 SnapPositionToGrid(Vector2 worldPosition)
         {
-            bool isOddRow = worldPosition.y % 2 == 1;
-
-            Vector2Int worldPositionAsVector2Int = new Vector2Int(Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.y));
-
-            List<Vector2Int> neighbourXYList = new List<Vector2Int>
-            {
-                worldPositionAsVector2Int + new Vector2Int(-1, 0),
-                worldPositionAsVector2Int + new Vector2Int(+1, 0),
-
-                worldPositionAsVector2Int + new Vector2Int(isOddRow ? + 1: - 1, +1),
-                worldPositionAsVector2Int + new Vector2Int(+0, +1),
-
-                worldPositionAsVector2Int + new Vector2Int(isOddRow ? + 1: - 1 , -1),
-                worldPositionAsVector2Int + new Vector2Int(+0, -1),
-            };
-
-            Vector2Int closestXY = worldPositionAsVector2Int;
-
-            foreach (Vector2Int neighbourXY in neighbourXYList)
-            {
-                if (Vector2.Distance(worldPosition, GetWorldPosition(neighbourXY.x, neighbourXY.y)) < Vector2.Distance(worldPosition, GetWorldPosition(closestXY.x, closestXY.y)))
-                {
-                    // neighbourXY is closer then closestXY
-                    closestXY = neighbourXY;
-                }
-            }
-
-            return new Vector2(closestXY.x, closestXY.y);
+            GetXY(worldPosition, out int x, out int y);
+            return GetWorldPosition(x, y);
         }
 
     }

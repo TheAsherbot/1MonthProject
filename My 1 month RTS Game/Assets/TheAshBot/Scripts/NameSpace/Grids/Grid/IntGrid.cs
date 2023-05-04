@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-
 using UnityEngine;
 
 namespace TheAshBot.Grid
 {
-    public class IntHexGrid
+    public class IntGrid
     {
-
-
-        private const float HEX_VERTICAL_OFFSET_MULTIPLIER = 0.75f;
 
 
         /// <summary>
@@ -25,15 +20,63 @@ namespace TheAshBot.Grid
             public int x;
             public int y;
         }
-
+        
 
         private int width;
         private int height;
         private float cellSize;
         private Vector2 originPosition;
+        private int minValue = int.MinValue;
+        private int maxValue = int.MaxValue;
+
         private int[,] gridArray;
 
 
+        /// <summary>
+        /// This makes a grid that each cell holds a boolean value
+        /// </summary>
+        /// <param name="width">This is the width of the grid</param>
+        /// <param name="height">This is the hight of the grid</param>
+        /// <param name="cellSize">This is how big the grid objects are</param>
+        /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin)</param>
+        /// <param name="minValue">This is the minimum value that a cell can have</param>
+        /// <param name="maxValue">This is the maximum value that a cell can have</param>
+        /// <param name="showDebug">If this is true the it will show the lines of the grid</param>
+        /// <param name="parent">This si the parent object of the text(This is only needed if show debug is true)</param>
+        public IntGrid(int width, int height, float cellSize, Vector2 originPosition, int minValue, int maxValue, bool showDebug, Transform parent)
+        {
+            this.width = width;
+            this.height = height;
+            this.cellSize = cellSize;
+            this.originPosition = originPosition;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+
+            gridArray = new int[width, height];
+
+            if (showDebug)
+            {
+                TextMesh[,] debugTextArray = new TextMesh[width, height];
+
+                for (int x = 0; x < gridArray.GetLength(0); x++)
+                {
+                    for (int y = 0; y < gridArray.GetLength(1); y++)
+                    {
+                        debugTextArray[x, y] = CreateWorldText(parent, gridArray[x, y].ToString(), GetWorldPosition(x, y) + new Vector2(cellSize, cellSize) * .5f, 5 * (int)cellSize, Color.white, TextAnchor.MiddleCenter);
+                        Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
+                        Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
+                    }
+                }
+                Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
+                Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
+
+                OnGridValueChanged += (object sender, OnGridValueChangedEventArgs eventArgs) =>
+                {
+                    debugTextArray[eventArgs.x, eventArgs.y].text = gridArray[eventArgs.x, eventArgs.y].ToString();
+                };
+            }
+        }
+        
         /// <summary>
         /// This makes a grid that each cell holds a boolean value
         /// </summary>
@@ -43,7 +86,7 @@ namespace TheAshBot.Grid
         /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin</param>
         /// <param name="showDebug">If this is true the it will show the lines of the grid</param>
         /// <param name="parent">This si the parent object of the text(This is only needed if show debug is true)</param>
-        public IntHexGrid(int width, int height, float cellSize, Vector2 originPosition, bool showDebug, Transform parent)
+        public IntGrid(int width, int height, float cellSize, Vector2 originPosition, bool showDebug, Transform parent)
         {
             this.width = width;
             this.height = height;
@@ -60,9 +103,13 @@ namespace TheAshBot.Grid
                 {
                     for (int y = 0; y < gridArray.GetLength(1); y++)
                     {
-                        debugTextArray[x, y] = CreateWorldText(parent, gridArray[x, y].ToString(), GetWorldPosition(x, y), 5 * (int)cellSize, Color.white, TextAnchor.MiddleCenter);
+                        debugTextArray[x, y] = CreateWorldText(parent, gridArray[x, y].ToString(), GetWorldPosition(x, y) + new Vector2(cellSize, cellSize) * .5f, 5 * (int)cellSize, Color.white, TextAnchor.MiddleCenter);
+                        Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
+                        Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
                     }
                 }
+                Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
+                Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
 
                 OnGridValueChanged += (object sender, OnGridValueChangedEventArgs eventArgs) =>
                 {
@@ -78,7 +125,28 @@ namespace TheAshBot.Grid
         /// <param name="height">THis is the hight of the grid</param>
         /// <param name="cellSize">This is how big the grid objects are</param>
         /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin</param>
-        public IntHexGrid(int width, int height, float cellSize, Vector2 originPosition)
+        /// <param name="minValue">This is the minimum value that a cell can have</param>
+        /// <param name="maxValue">This is the maximum value that a cell can have</param>
+        public IntGrid(int width, int height, float cellSize, Vector2 originPosition, int minValue, int maxValue)
+        {
+            this.width = width;
+            this.height = height;
+            this.cellSize = cellSize;
+            this.originPosition = originPosition;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+
+            gridArray = new int[width, height];
+        }
+        
+        /// <summary>
+        /// This makes a grid that each cell holds a boolean value
+        /// </summary>
+        /// <param name="width">This is the width of the grid</param>
+        /// <param name="height">THis is the hight of the grid</param>
+        /// <param name="cellSize">This is how big the grid objects are</param>
+        /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin</param>
+        public IntGrid(int width, int height, float cellSize, Vector2 originPosition)
         {
             this.width = width;
             this.height = height;
@@ -112,11 +180,7 @@ namespace TheAshBot.Grid
         /// <returns>The world position</returns>
         public Vector2 GetWorldPosition(int x, int y)
         {
-            return 
-                new Vector2(x, 0) * cellSize + 
-                new Vector2(0, y) * cellSize * HEX_VERTICAL_OFFSET_MULTIPLIER + 
-                ((y % 2) == 1 ? new Vector2(1, 0) * cellSize * 0.5f : Vector2.zero) + 
-                originPosition;
+            return new Vector2(x, y) * cellSize + originPosition;
         }
 
         /// <summary>
@@ -127,75 +191,19 @@ namespace TheAshBot.Grid
         /// <param name="y">This is the number of grid objects above the start grid object</param>
         public void GetXY(Vector2 worldPosition, out int x, out int y)
         {
-            int roughX = Mathf.RoundToInt((worldPosition - originPosition).x / cellSize);
-            int roughY = Mathf.RoundToInt((worldPosition - originPosition).y / cellSize * HEX_VERTICAL_OFFSET_MULTIPLIER);
-
-            Vector2Int roughXY = new Vector2Int(roughX, roughY);
-
-            bool isOddRow = roughY % 2 == 1;
-
-            List<Vector2Int> neighbourXYList = new List<Vector2Int>
-            {
-                roughXY + new Vector2Int(-1, 0),
-                roughXY + new Vector2Int(+1, 0),
-                 
-                roughXY + new Vector2Int(isOddRow ? + 1: - 1, +1),
-                roughXY + new Vector2Int(+0, +1),
-
-                roughXY + new Vector2Int(isOddRow ? + 1: - 1 , -1),
-                roughXY + new Vector2Int(+0, -1),
-            };
-
-            Vector2Int closestXY = roughXY;
-
-            foreach (Vector2Int neighbourXY in neighbourXYList)
-            { 
-                if (Vector2.Distance(worldPosition, GetWorldPosition(neighbourXY.x, neighbourXY.y)) < Vector2.Distance(worldPosition, GetWorldPosition(closestXY.x, closestXY.y)))
-                {
-                    // neighbourXY is closer then closestXY
-                    closestXY = neighbourXY;
-                }
-            }
-
-            x = closestXY.x;
-            y = closestXY.y;
+            x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
+            y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
         }
 
         /// <summary>
-        /// This snaps a position to the grid 
+        /// This snaps a position to the grid
         /// </summary>
         /// <param name="worldPosition">This is the world position of the grid object</param>
         /// <returns>Returns the world position snaped to the grid</returns>
         public Vector2 SnapPositionToGrid(Vector2 worldPosition)
         {
-            bool isOddRow = worldPosition.y % 2 == 1;
-
-            Vector2Int worldPositionAsVector2Int = new Vector2Int(Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.y));
-
-            List<Vector2Int> neighbourXYList = new List<Vector2Int>
-            {
-                worldPositionAsVector2Int + new Vector2Int(-1, 0),
-                worldPositionAsVector2Int + new Vector2Int(+1, 0),
-
-                worldPositionAsVector2Int + new Vector2Int(isOddRow ? + 1: - 1, +1),
-                worldPositionAsVector2Int + new Vector2Int(+0, +1),
-
-                worldPositionAsVector2Int + new Vector2Int(isOddRow ? + 1: - 1 , -1),
-                worldPositionAsVector2Int + new Vector2Int(+0, -1),
-            };
-
-            Vector2Int closestXY = worldPositionAsVector2Int;
-
-            foreach (Vector2Int neighbourXY in neighbourXYList)
-            {
-                if (Vector2.Distance(worldPosition, GetWorldPosition(neighbourXY.x, neighbourXY.y)) < Vector2.Distance(worldPosition, GetWorldPosition(closestXY.x, closestXY.y)))
-                {
-                    // neighbourXY is closer then closestXY
-                    closestXY = neighbourXY;
-                }
-            }
-
-            return new Vector2(closestXY.x, closestXY.y);
+            GetXY(worldPosition, out int x, out int y);
+            return GetWorldPosition(x, y);
         }
 
         /// <summary>
@@ -208,12 +216,8 @@ namespace TheAshBot.Grid
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
             {
-
-                gridArray[x, y] = value;
-                if (OnGridValueChanged != null)
-                {
-                    OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, y = y });
-                }
+                gridArray[x, y] = Mathf.Clamp(value, minValue, maxValue);
+                OnGridValueChanged?.Invoke(this, new OnGridValueChangedEventArgs { x = x, y = y });
             }
         }
 
@@ -243,6 +247,7 @@ namespace TheAshBot.Grid
             }
             else
             {
+                Debug.Log("DID NOT HIT");
                 return 0;
             }
         }
@@ -280,6 +285,67 @@ namespace TheAshBot.Grid
             SetValue(worldPosition, GetValue(worldPosition) + value);
         }
 
+        /// <summary>
+        /// This adds the to the value of multipule cell
+        /// </summary>
+        /// <param name="worldPosition">This is the grid objects world position</param>
+        /// <param name="value">This is the value being adding to the previus value</param>
+        /// <param name="fullValueRadius">This is the raduis of the cells that are set to the max value</param>
+        /// <param name="radius">This is the raduis of the dimand</param>
+        public void AddValueInDimand(Vector2 worldPosition, int value, int fullValueRadius, int radius)
+        {
+            int lowerValueAmount = Mathf.RoundToInt((float)value / (radius - fullValueRadius));
+
+            GetXY(worldPosition, out int originX, out int originY);
+
+            if (!(originX >= 0 && originY >= 0 && originX < width && originY < height))
+            {
+                Debug.Log("originX >= 0 &&...");
+                return;
+            }
+
+            for (int x = 0; x < radius; x++)
+            {
+                for (int y = 0; y < radius - x; y++)
+                {
+                    int _radius = x + y;
+                    int addValueAmount = value;
+                    if (_radius >= fullValueRadius)
+                    {
+                        addValueAmount -= lowerValueAmount * (_radius - fullValueRadius);
+                    }
+
+                    AddValue(originX + x, originY + y, addValueAmount);
+
+                    if (x != 0)
+                    {
+                        AddValue(originX - x, originY + y, addValueAmount);
+                    }
+                    if (y != 0)
+                    {
+                        AddValue(originX + x, originY - y, addValueAmount);
+                        if (x != 0)
+                        {
+                            AddValue(originX - x, originY - y, addValueAmount);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This adds the to the value of multipule cell
+        /// </summary>
+        /// <param name="x">This is the number of grid objects to the right of the start grid object</param>
+        /// <param name="y">This is the number of grid objects above the start grid object</param>
+        /// <param name="value">This is the value being adding to the previus value</param>
+        /// <param name="fullValueRadius">This is the raduis of the cells that are set to the max value</param>
+        /// <param name="radius">This is the raduis of the dimand</param>
+        public void AddValueInDimand(int x, int y, int value, int fullValueRadius, int radius)
+        {
+            AddValueInDimand(GetWorldPosition(x, y), value, fullValueRadius, radius);
+        }
+
         #region Helpers
 
         public static TextMesh CreateWorldText(Transform parent, string text, Vector2 localPosition, int fontSize, Color color, TextAnchor textAnchor)
@@ -297,6 +363,5 @@ namespace TheAshBot.Grid
         }
         
         #endregion
-
     }
 }

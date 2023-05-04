@@ -9,6 +9,17 @@ namespace TheAshBot.TwoDimentional
 
         #region Mouse Position Vector2
 
+        #region GetObjectAtMousePosition
+        
+        public static Vector3 GetMousePosition2D(Camera camera, float zPos)
+        {
+            mouseWorldPosition = camera.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPosition.z = zPos;
+            return mouseWorldPosition;
+        }
+
+        #endregion
+
         #region GetMousePosition
         /// <summary>
         /// This gets the mouse position in 2D

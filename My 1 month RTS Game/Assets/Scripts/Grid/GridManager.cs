@@ -32,7 +32,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private TextAsset gridSavedData;
 
 
-    private GridObject.TilemapSprite gridSprite;
+    private GridObject.TilemapSprite gridSprite = GridObject.TilemapSprite.Dirt;
 
 
     private void Awake()
@@ -46,7 +46,7 @@ public class GridManager : MonoBehaviour
             Instance = this;
         }
 
-        Grid = new Grid(xSize, ySize, cellSize, transform.position, true, null);
+        Grid = new Grid(xSize, ySize, cellSize, transform.position, false, true, null);
     }
 
     private void Start()
@@ -54,15 +54,21 @@ public class GridManager : MonoBehaviour
         gridVisual.SetGrid(Grid);
     }
 
-
     private void Update()
+    {
+
+    }
+
+
+
+    private void TileMap()
     {
         if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl))
         {
             Vector2 mouseWorldPosition = Mouse2D.GetMousePosition2D();
             Grid.SetTilemapSprite(mouseWorldPosition, gridSprite);
         }
-        
+
         if (Input.GetKeyDown(KeyCode.T))
         {
             gridSprite = GridObject.TilemapSprite.None;
@@ -83,8 +89,10 @@ public class GridManager : MonoBehaviour
         {
             gridSprite = GridObject.TilemapSprite.Stone;
         }
+    }
 
-        // Saving
+    private void SaveLoad()
+    {
         if (Input.GetKeyDown(KeyCode.B))
         {
             Grid.Save();

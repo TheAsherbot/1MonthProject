@@ -343,9 +343,8 @@ public class Pathfinding
     /// <returns>Returns the world position snaped to the grid</returns>
     public Vector2 SnapPositionToGrid(Vector2 worldPosition)
     {
-        int x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
-        int y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
-        return new Vector2(x, y);
+        GetXY(worldPosition, out int x, out int y);
+        return GetWorldPosition(x, y);
     }
 
     /// <summary>

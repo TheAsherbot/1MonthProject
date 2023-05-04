@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace TheAshBot.Grid
 {
-    public class GenericHexGrid<TGridObject>
+    public class BoolHexGrid
     {
 
 
@@ -15,11 +15,12 @@ namespace TheAshBot.Grid
         /// <summary>
         /// This holds all the functions that are called when the grid changes
         /// </summary>
-        public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
+        public event EventHandler<OnGridValueChangedEventArgs> OnGridValueChanged;
+        
         /// <summary>
         /// This triggers the grid changing
         /// </summary>
-        public class OnGridObjectChangedEventArgs : EventArgs
+        public class OnGridValueChangedEventArgs : EventArgs
         {
             public int x;
             public int y;
@@ -30,77 +31,61 @@ namespace TheAshBot.Grid
         private int height;
         private float cellSize;
         private Vector2 originPosition;
-        private TGridObject defaultGridObject;
-        private TGridObject[,] gridArray;
+        private bool[,] gridArray;
 
         /// <summary>
-        /// This makes a grid that each cell holds a generic value
+        /// This makes a grid that each cell holds a boolean value
         /// </summary>
         /// <param name="width">This is the width of the grid</param>
-        /// <param name="height">This is the hight of the grid</param>
+        /// <param name="height">THis is the hight of the grid</param>
         /// <param name="cellSize">This is how big the grid objects are</param>
-        /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin)</param>
-        /// <param name="defaultGridObject">This is the the value that all the gid object will default to</param>
+        /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin</param>
         /// <param name="showDebug">If this is true the it will show the lines of the grid</param>
-        /// <param name="parent">This is the parent object of the text(This is only needed if show debug is true)</param>
-        public GenericHexGrid(int width, int height, float cellSize, Vector2 originPosition, TGridObject defaultGridObject, bool showDebug, Transform parent)
+        /// <param name="parent">This si the parent object of the text(This is only needed if show debug is true)</param>
+        public BoolHexGrid(int width, int height, float cellSize, Vector2 originPosition, bool showDebug, Transform parent)
         {
             this.width = width;
             this.height = height;
             this.cellSize = cellSize;
             this.originPosition = originPosition;
-            this.defaultGridObject = defaultGridObject;
 
-            gridArray = new TGridObject[width, height];
-
-            TextMesh[,] debugTextArray = new TextMesh[width, height];
+            gridArray = new bool[width, height];
 
             if (showDebug)
             {
-                OnGridObjectChanged += (object sender, OnGridObjectChangedEventArgs eventArgs) =>
-                {
-                    debugTextArray[eventArgs.x, eventArgs.y].text = gridArray[eventArgs.x, eventArgs.y].ToString();
-                };
-            }
+                TextMesh[,] debugTextArray = new TextMesh[width, height];
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
+                for (int x = 0; x < gridArray.GetLength(0); x++)
                 {
-                    gridArray[x, y] = defaultGridObject;
-                    if (showDebug == true)
+                    for (int y = 0; y < gridArray.GetLength(1); y++)
                     {
                         debugTextArray[x, y] = CreateWorldText(parent, gridArray[x, y].ToString(), GetWorldPosition(x, y), 5 * (int)cellSize, Color.white, TextAnchor.MiddleCenter);
                     }
                 }
+
+                OnGridValueChanged += (object sender, OnGridValueChangedEventArgs eventArgs) =>
+                {
+                    debugTextArray[eventArgs.x, eventArgs.y].text = gridArray[eventArgs.x, eventArgs.y].ToString();
+                };
             }
         }
 
+
         /// <summary>
-        /// This makes a grid that each cell holds a generic value
+        /// This makes a grid that each cell holds a boolean value
         /// </summary>
         /// <param name="width">This is the width of the grid</param>
-        /// <param name="height">This is the hight of the grid</param>
+        /// <param name="height">THis is the hight of the grid</param>
         /// <param name="cellSize">This is how big the grid objects are</param>
-        /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin)</param>
-        /// <param name="defaultGridObject">This is the the value that all the gid object will default to</param>
-        public GenericHexGrid(int width, int height, float cellSize, Vector2 originPosition, TGridObject defaultGridObject)
+        /// <param name="originPosition">This is the position of the bottum left grid object(AKA the origin</param>
+        public BoolHexGrid(int width, int height, float cellSize, Vector2 originPosition)
         {
             this.width = width;
             this.height = height;
             this.cellSize = cellSize;
             this.originPosition = originPosition;
-            this.defaultGridObject = defaultGridObject;
 
-            gridArray = new TGridObject[width, height];
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    gridArray[x, y] = defaultGridObject;
-                }
-            }
+            gridArray = new bool[width, height];
         }
 
 
@@ -140,7 +125,7 @@ namespace TheAshBot.Grid
         /// <param name="worldPosition">This is the world position of the grid object</param>
         /// <param name="x">This is the number of grid objects to the right of the start grid object</param>
         /// <param name="y">This is the number of grid objects above the start grid object</param>
-        private void GetXY(Vector2 worldPosition, out int x, out int y)
+        public void GetXY(Vector2 worldPosition, out int x, out int y)
         {
             int roughX = Mathf.RoundToInt((worldPosition - originPosition).x / cellSize);
             int roughY = Mathf.RoundToInt((worldPosition - originPosition).y / cellSize * HEX_VERTICAL_OFFSET_MULTIPLIER);
@@ -177,40 +162,14 @@ namespace TheAshBot.Grid
         }
 
         /// <summary>
-        /// This snaps a position to the grid 
+        /// This snaps a position to the grid
         /// </summary>
         /// <param name="worldPosition">This is the world position of the grid object</param>
         /// <returns>Returns the world position snaped to the grid</returns>
         public Vector2 SnapPositionToGrid(Vector2 worldPosition)
         {
-            bool isOddRow = worldPosition.y % 2 == 1;
-
-            Vector2Int worldPositionAsVector2Int = new Vector2Int(Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.y));
-
-            List<Vector2Int> neighbourXYList = new List<Vector2Int>
-            {
-                worldPositionAsVector2Int + new Vector2Int(-1, 0),
-                worldPositionAsVector2Int + new Vector2Int(+1, 0),
-
-                worldPositionAsVector2Int + new Vector2Int(isOddRow ? + 1: - 1, +1),
-                worldPositionAsVector2Int + new Vector2Int(+0, +1),
-
-                worldPositionAsVector2Int + new Vector2Int(isOddRow ? + 1: - 1 , -1),
-                worldPositionAsVector2Int + new Vector2Int(+0, -1),
-            };
-
-            Vector2Int closestXY = worldPositionAsVector2Int;
-
-            foreach (Vector2Int neighbourXY in neighbourXYList)
-            {
-                if (Vector2.Distance(worldPosition, GetWorldPosition(neighbourXY.x, neighbourXY.y)) < Vector2.Distance(worldPosition, GetWorldPosition(closestXY.x, closestXY.y)))
-                {
-                    // neighbourXY is closer then closestXY
-                    closestXY = neighbourXY;
-                }
-            }
-
-            return new Vector2(closestXY.x, closestXY.y);
+            GetXY(worldPosition, out int x, out int y);
+            return GetWorldPosition(x, y);
         }
 
         /// <summary>
@@ -219,22 +178,16 @@ namespace TheAshBot.Grid
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="value"></param>
-        public void SetGridObject(int x, int y, TGridObject value)
+        public void SetValue(int x, int y, bool value)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
             {
-                if (value == null)
-                {
-                    value = defaultGridObject;
-                }
-                
+
                 gridArray[x, y] = value;
-                
-                OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs
+                if (OnGridValueChanged != null)
                 {
-                    x = x,
-                    y = y
-                });
+                    OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, y = y });
+                }
             }
         }
 
@@ -243,11 +196,34 @@ namespace TheAshBot.Grid
         /// </summary>
         /// <param name="worldPosition">This is the grid objects world position<</param>
         /// <param name="value">This is the value it is being set to</param>
-        public void SetGridObject(Vector2 worldPosition, TGridObject value)
+        public void SetValue(Vector2 worldPosition, bool value)
         {
             int x, y;
             GetXY(worldPosition, out x, out y);
-            SetGridObject(x, y, value);
+            SetValue(x, y, value);
+        }
+
+        /// <summary>
+        /// This sets the value of a call to the oposite value using it's position on the grid
+        /// </summary>
+        /// <param name="x">This is the number of grid objects to the right of the start grid object</param>
+        /// <param name="y">This is the number of grid objects above the start grid object</param>
+        public void SetOppositeValue(int x, int y)
+        {
+            bool value = !GetValue(x, y);
+            SetValue(x, y, value);
+        }
+
+        /// <summary>
+        /// This sets the value of a call to the oposite value using it's world position
+        /// </summary>
+        /// <param name="worldPosition">This is the grid objects world position</param>
+        public void SetOppositeValue(Vector2 worldPosition)
+        {
+            int x;
+            int y;
+            GetXY(worldPosition, out x, out y);
+            SetOppositeValue(x, y);
         }
 
         /// <summary>
@@ -256,7 +232,7 @@ namespace TheAshBot.Grid
         /// <param name="x">This is the number of grid objects to the right of the start grid object</param>
         /// <param name="y">This is the number of grid objects above the start grid object</param>
         /// <returns>Returns the grid object</returns>
-        public TGridObject GetGridObject(int x, int y)
+        public bool GetValue(int x, int y)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
             {
@@ -264,7 +240,7 @@ namespace TheAshBot.Grid
             }
             else
             {
-                return defaultGridObject;
+                return false;
             }
         }
 
@@ -273,11 +249,11 @@ namespace TheAshBot.Grid
         /// </summary>
         /// <param name="worldPosition">This is the grid objects world position</param>
         /// <returns>This ruterns the grid object</returns>
-        public TGridObject GetGridObject(Vector2 worldPosition)
+        public bool GetValue(Vector2 worldPosition)
         {
             int x, y;
             GetXY(worldPosition, out x, out y);
-            return GetGridObject(x, y);
+            return GetValue(x, y);
         }
 
         #region Helpers

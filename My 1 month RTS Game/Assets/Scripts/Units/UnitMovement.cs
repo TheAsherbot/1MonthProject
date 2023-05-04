@@ -2,28 +2,24 @@ using System.Collections.Generic;
 
 using TheAshBot.TwoDimentional;
 
+using Unity.VisualScripting;
+
 using UnityEngine;
 
 public class UnitMovement : MonoBehaviour
 {
 
 
-    [SerializeField] private float reachedWayPointDistance = 0.05f;
-
-    
-    private bool isMoving;
-    
-    private List<Vector2> movementPath;
-    private Grid grid;
-
-
     [Header("Movement")]
+    [SerializeField] private float reachedWayPointDistance = 0.05f;
     [SerializeField] private float timeToMove = 2;
     [SerializeField] private AnimationCurve movement_Curve;
 
     private float movement_ElapsedTime;
-    private Vector3 movement_StartPosition;
+    private Vector2 movement_StartPosition;
     private Vector2 movement_EndPosition;
+
+    private Vector2 lastMouseUpPosition;
 
 
     [Header("Rotation")]
@@ -31,10 +27,15 @@ public class UnitMovement : MonoBehaviour
     [SerializeField] private AnimationCurve rotation_Curve;
 
     private float rotation_ElapsedTime;
-    private Vector3 rotation_StartPosition;
+    private Vector2 rotation_StartPosition;
     private Vector2 rotation_EndPosition;
 
+
+    private Grid grid;
+    private List<Vector2> movementPath;
+
     
+
     private void Awake()
     {
         movementPath = new List<Vector2>();
@@ -43,7 +44,6 @@ public class UnitMovement : MonoBehaviour
     private void Start()
     {
         grid = GridManager.Instance.Grid;
-        grid.OnGridValueChanged += Grid_OnGridValueChanged;
     }
 
     private void Update()
@@ -58,24 +58,42 @@ public class UnitMovement : MonoBehaviour
 
     private void TestInput()
     {
-        if (Input.GetMouseButtonUp(0) && !Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetMouseButtonUp(1) && !Input.GetKey(KeyCode.LeftControl))
         {
-            MovementInputPresed();
+            lastMouseUpPosition = Mouse2D.GetMousePosition2D();
+            FindPath();
         }
     }
 
-    private void MovementInputPresed()
+    private void FindPath()
     {
-        if (isMoving)
+        Vector2 endPosition = lastMouseUpPosition;
+        List <Vector2> lastMovementPath;
+
+
+        FindPath();
+
+        while (movementPath == null)
         {
-            movementPath = grid.FindPathAsVector2s(movement_EndPosition, Mouse2D.GetMousePosition2D());
+            movementPath = lastMovementPath;
+            movementPath.RemoveAt(movementPath.Count - 1);
+            endPosition = movementPath[movementPath.Count - 1];
+            FindPath();
         }
-        else
-        {
-            movementPath = grid.FindPathAsVector2s(transform.position, Mouse2D.GetMousePosition2D());
-        }
-        isMoving = true;
         DrawPathfingLines();
+
+        void FindPath()
+        {
+            lastMovementPath = movementPath;
+            movementPath = grid.FindPathAsVector2s(transform.position, endPosition, new List<GridObject.OccupationState>
+            {
+                GridObject.OccupationState.NotWalkable,
+            });
+            movementPath = grid.FindPathAsVector2s(transform.position, endPosition, new List<GridObject.OccupationState>
+            {
+                GridObject.OccupationState.NotWalkable,
+            });
+        }
     }
 
     private void Rotate()
@@ -88,6 +106,10 @@ public class UnitMovement : MonoBehaviour
 
     private void Move()
     {
+        if (movementPath == null || movementPath.Count == 0) return;
+
+        if (movementPath[0] == null) return;
+
         movement_ElapsedTime += Time.deltaTime;
         float percentageComplate = movement_ElapsedTime / timeToMove;
 
@@ -96,27 +118,25 @@ public class UnitMovement : MonoBehaviour
         if (Mathf.Abs(Vector2.Distance(movement_EndPosition, transform.position)) <= reachedWayPointDistance)
         {
             movement_ElapsedTime = 0;
-            if (movementPath != null)
-            {
-                if (movementPath.Count > 1)
-                {
-                    SubpathReached();
-                }
-                else
-                {
-                    PathReached();
-                }
-            }
+            SubpathReached();
         }
     }
 
     private void SubpathReached()
     {
-        movementPath.RemoveAt(0);
-        movement_EndPosition = movementPath[0];
+        if (movementPath.Count == 2)
+        {
+            // Has reached Destination
+            PathReached();
+            return;
+        }
+
+        FindPath();
 
         movement_StartPosition = transform.position;
-        
+        movement_EndPosition = movementPath[1];
+
+
         rotation_ElapsedTime = 0;
         rotation_StartPosition = transform.up;
         rotation_EndPosition = movement_EndPosition - (Vector2)transform.position;
@@ -127,25 +147,6 @@ public class UnitMovement : MonoBehaviour
         movementPath.Clear();
         movement_EndPosition = transform.position;
         movement_StartPosition = transform.position;
-
-        isMoving = false;
-    }
-
-    private void Grid_OnGridValueChanged(object sender, Grid.OnGridValueChangedEventArgs e)
-    {
-        foreach (Vector2 node in movementPath)
-        {
-            grid.GetXY(node, out int x, out int y);
-            if (x == e.x && y == e.y)
-            {
-                if (node == movementPath[movementPath.Count - 1])
-                {
-                    movementPath.Remove(node);
-                    return;
-                }
-                movementPath = grid.FindPathAsVector2s(movement_EndPosition, movementPath[movementPath.Count - 1]);
-            }
-        }
     }
 
     private void DrawPathfingLines()

@@ -9,7 +9,7 @@ public struct MeshHelper
     public static void CreateEmptyMeshArray(int quadCount, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles)
     {
         vertices = new Vector3[4 * quadCount];
-        uvs = new Vector2[4 * quadCount];
+        uvs = new Vector2[vertices.Length];
         triangles = new int[6 * quadCount];
     }
     

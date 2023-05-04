@@ -139,7 +139,7 @@ public class GridVisual : MonoBehaviour
                 }
             }
 
-            if (vertices.Length > 0 && uvs.Length > 0)
+            if (vertices.Length > 3 && uvs.Length > 3)
             {
                 mesh.vertices = vertices;
                 mesh.uv = uvs;
@@ -150,7 +150,8 @@ public class GridVisual : MonoBehaviour
         }
         else
         {
-            meshFilter.mesh = null;
+            mesh = new Mesh();
+            meshFilter.mesh = new Mesh();
         }
     }
 
