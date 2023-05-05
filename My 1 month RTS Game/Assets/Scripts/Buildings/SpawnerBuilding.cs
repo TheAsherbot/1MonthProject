@@ -13,12 +13,35 @@ public class SpawnerBuilding : _BaseBuilding, ISelectable
     }
 
 
+    [SerializeField] private List<UnitSO> spawnAbleUnits;
     [SerializeField] private Transform spawnPosition;
 
 
-    public void Spawn(Unit spawnedUnit)
+    private void Update()
     {
-        spawnedUnit = Instantiate(spawnedUnit, spawnPosition.position, Quaternion.identity);
+        if (IsSelected)
+        {
+            HandelInput();
+        }
+    }
+
+
+    private void HandelInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            Spawn(spawnAbleUnits[0]);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            //Spawn(spawnAbleUnits[1].prefab);
+        }
+    }
+
+    private void Spawn(UnitSO unitSO)
+    {
+        _BaseUnit spawnedUnit = Instantiate(unitSO.prefab, spawnPosition.position, Quaternion.identity);
+        spawnedUnit.name = unitSO.name;
     }
 
     public void Select()

@@ -4,10 +4,19 @@ using TheAshBot.TwoDimentional;
 
 using Unity.VisualScripting;
 
+using UnityEditor.Rendering;
+
 using UnityEngine;
 
+[RequireComponent(typeof(_BaseUnit))]
 public class UnitMovement : MonoBehaviour
 {
+
+    #region Variables
+
+    [Header("References")]
+    private Grid grid;
+    private _BaseUnit unit;
 
 
     [Header("Movement")]
@@ -18,6 +27,7 @@ public class UnitMovement : MonoBehaviour
     private float movement_ElapsedTime;
     private Vector2 movement_StartPosition;
     private Vector2 movement_EndPosition;
+    private List<Vector2> movementPath;
 
     private Vector2 lastMouseUpPosition;
 
@@ -30,65 +40,66 @@ public class UnitMovement : MonoBehaviour
     private Vector2 rotation_StartPosition;
     private Vector2 rotation_EndPosition;
 
+    #endregion
 
-    private Grid grid;
-    private List<Vector2> movementPath;
 
-    
+    #region MonoBehaviour Functions
 
     private void Awake()
     {
+        Debug.Log("Awake");
         movementPath = new List<Vector2>();
+
+        unit = GetComponent<Unit>();
+        unit.OnMoveInputPressed += Unit_OnMoveInputPressed;
     }
 
     private void Start()
     {
         grid = GridManager.Instance.Grid;
+        movement_StartPosition = transform.position;
     }
 
     private void Update()
     {
-        TestInput();
-
         Rotate();
 
         Move();
     }
 
+    #endregion
 
-    private void TestInput()
+
+    #region Private Functions
+
+    private void Unit_OnMoveInputPressed(object sender, _BaseUnit.OnMoveInputPressedEventArgs e)
     {
-        if (Input.GetMouseButtonUp(1) && !Input.GetKey(KeyCode.LeftControl))
-        {
-            lastMouseUpPosition = Mouse2D.GetMousePosition2D();
-            FindPath();
-        }
+        lastMouseUpPosition = e.mousePosition;
+        StartPath();
     }
 
     private void FindPath()
     {
         Vector2 endPosition = lastMouseUpPosition;
-        List <Vector2> lastMovementPath;
-
+        List<Vector2> lastMovementPath;
 
         FindPath();
 
         while (movementPath == null)
         {
             movementPath = lastMovementPath;
-            movementPath.RemoveAt(movementPath.Count - 1);
-            endPosition = movementPath[movementPath.Count - 1];
-            FindPath();
+            if (movementPath.Count > 1)
+            {
+                movementPath.RemoveAt(movementPath.Count - 1);
+                endPosition = movementPath[movementPath.Count - 1];
+                FindPath();
+            }
         }
         DrawPathfingLines();
 
         void FindPath()
         {
             lastMovementPath = movementPath;
-            movementPath = grid.FindPathAsVector2s(transform.position, endPosition, new List<GridObject.OccupationState>
-            {
-                GridObject.OccupationState.NotWalkable,
-            });
             movementPath = grid.FindPathAsVector2s(transform.position, endPosition, new List<GridObject.OccupationState>
             {
                 GridObject.OccupationState.NotWalkable,
@@ -113,7 +124,14 @@ public class UnitMovement : MonoBehaviour
         movement_ElapsedTime += Time.deltaTime;
         float percentageComplate = movement_ElapsedTime / timeToMove;
 
+
         transform.position = Vector3.Lerp(movement_StartPosition, movement_EndPosition, movement_Curve.Evaluate(percentageComplate));
+        if (transform.position == Vector3.zero)
+        {
+            Debug.Log("movement_StartPosition: " + movement_StartPosition);
+            Debug.Log("movement_EndPosition: " + movement_EndPosition);
+            Debug.Log("Movement");
+        }
 
         if (Mathf.Abs(Vector2.Distance(movement_EndPosition, transform.position)) <= reachedWayPointDistance)
         {
@@ -122,9 +140,28 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
+    private void StartPath()
+    {
+        FindPath();
+
+        movement_StartPosition = transform.position;
+        if (movementPath.Count > 1)
+        {
+            movement_EndPosition = movementPath[1];
+        }
+        else
+        {
+            movement_EndPosition = movementPath[0];
+        }
+
+        rotation_ElapsedTime = 0;
+        rotation_StartPosition = transform.up;
+        rotation_EndPosition = movement_EndPosition - (Vector2)transform.position;
+    }
+
     private void SubpathReached()
     {
-        if (movementPath.Count == 2)
+        if (movementPath.Count == 1)
         {
             // Has reached Destination
             PathReached();
@@ -134,8 +171,14 @@ public class UnitMovement : MonoBehaviour
         FindPath();
 
         movement_StartPosition = transform.position;
-        movement_EndPosition = movementPath[1];
-
+        if (movementPath.Count > 1)
+        {
+            movement_EndPosition = movementPath[1];
+        }
+        else
+        {
+            movement_EndPosition = movementPath[0];
+        }
 
         rotation_ElapsedTime = 0;
         rotation_StartPosition = transform.up;
@@ -160,5 +203,6 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
+    #endregion
 
 }

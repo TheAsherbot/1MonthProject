@@ -7,7 +7,7 @@ public class BuildingSO : ScriptableObject
 {
     
     
-    public GameObject prefab;
+    public _BaseBuilding prefab;
     public List<int> buildingWidthListFromTopToBottom;
     public new string name;
 

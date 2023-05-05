@@ -9,11 +9,42 @@ public class Mouse : MonoBehaviour
 {
 
 
+    private ISelectable selected;
+
+
     private void Update()
+    {
+        HandelInput();
+    }
+
+    private void LateUpdate()
+    {
+        Mouse2D.FallowMousePosition2D(gameObject);
+    }
+
+
+    private void HandelInput()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Mouse2D.
+            Select();
+        }
+    }
+
+    private void Select()
+    {
+        if (selected != null)
+        {
+            selected.Unselect();
+            selected = null;
+        }
+
+        if (Mouse2D.TryGetObjectAtMousePosition(out GameObject hit))
+        {
+            if (hit.TryGetComponent(out selected))
+            {
+                selected.Select();
+            }
         }
     }
 

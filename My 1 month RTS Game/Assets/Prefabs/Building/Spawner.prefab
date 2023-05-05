@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 1281293388}
   - component: {fileID: 1281293389}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -105,7 +105,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.4509804, g: 0.36862746, b: 0.25882354, a: 1}
+  m_Color: {r: 0.6792453, g: 0.6311855, b: 0.5671057, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -125,6 +125,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4907278784268882458}
   - component: {fileID: 1529501886}
+  - component: {fileID: 681601876455187821}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -162,4 +163,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingSO: {fileID: 11400000, guid: caceb879f1e98da4ebad114fab7f1c0d, type: 2}
+  spawnAbleUnits:
+  - {fileID: 11400000, guid: 5a479a90d31042e4db371f5ebfa335cb, type: 2}
   spawnPosition: {fileID: 587531657}
+--- !u!61 &681601876455187821
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4907278784268882460}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 1.5, y: 1}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 3, y: 2}
+  m_EdgeRadius: 0

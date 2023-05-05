@@ -22,11 +22,11 @@ public class BuildingManager : MonoBehaviour
 
     private void Update()
     {
-        TestInput();
+        HandelInput();
     }
 
 
-    private void TestInput()
+    private void HandelInput()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -46,8 +46,8 @@ public class BuildingManager : MonoBehaviour
         {
             if (grid.TryMakeBuilding(mouseWorldPosition, selectedBuilding.buildingWidthListFromTopToBottom))
             {
-                GameObject newGameObject = Instantiate(buildingSOList[0].prefab, grid.SnapPositionToGrid(mouseWorldPosition), Quaternion.identity);
-                newGameObject.name = selectedBuilding.name;
+                _BaseBuilding newBuilding = Instantiate(buildingSOList[0].prefab, grid.SnapPositionToGrid(mouseWorldPosition), Quaternion.identity);
+                newBuilding.gameObject.name = selectedBuilding.name;
             }
         }
     }

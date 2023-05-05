@@ -1,21 +1,32 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace TheAshBot.TwoDimentional
 {
     public class Mouse2D
     {
-        static private Vector3 mouseWorldPosition;
-        static private Vector3Int mousePositionInt;
 
         #region Mouse Position Vector2
 
         #region GetObjectAtMousePosition
         
-        public static Vector3 GetMousePosition2D(Camera camera, float zPos)
+        public static bool TryGetObjectAtMousePosition(Camera camera, out GameObject hit)
         {
-            mouseWorldPosition = camera.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorldPosition.z = zPos;
-            return mouseWorldPosition;
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D raycastHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (raycastHit.transform != null)
+            {
+                hit = raycastHit.transform.gameObject;
+                return true;
+            }
+            hit = null;
+            return false;
+        }
+        
+        public static bool TryGetObjectAtMousePosition(out GameObject hit)
+        {
+            return TryGetObjectAtMousePosition(Camera.main, out hit);
         }
 
         #endregion
@@ -25,12 +36,12 @@ namespace TheAshBot.TwoDimentional
         /// This gets the mouse position in 2D
         /// </summary>
         /// <param name="camera">This is the camera that the it gets the position from</param>
-        /// <param name="zPos">This is the z position</param>
+        /// <param name="zPosition">This is the z position</param>
         /// <returns>This return the mouse posintion</returns>
-        public static Vector3 GetMousePosition2D(Camera camera, float zPos)
+        public static Vector2 GetMousePosition2D(Camera camera, float zPosition)
         {
-            mouseWorldPosition = camera.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorldPosition.z = zPos;
+            Vector3 mouseWorldPosition = camera.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPosition.z = zPosition;
             return mouseWorldPosition;
         }
 
@@ -39,34 +50,28 @@ namespace TheAshBot.TwoDimentional
         /// </summary>
         /// <param name="camera">This is the camera that the it gets the position from</param>
         /// <returns>This return the mouse posintion</returns>
-        public static Vector3 GetMousePosition2D(Camera camera)
+        public static Vector2 GetMousePosition2D(Camera camera)
         {
-            mouseWorldPosition = camera.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorldPosition.z = 0;
-            return mouseWorldPosition;
+            return GetMousePosition2D(camera, 0);
         }
 
         /// <summary>
         /// This gets the mouse position in 2D
         /// </summary>
-        /// <param name="zPos">This is the z position</param>
+        /// <param name="zPosition">This is the z position</param>
         /// <returns>This return the mouse posintion</returns>
-        public static Vector3 GetMousePosition2D(float zPos)
+        public static Vector2 GetMousePosition2D(float zPosition)
         {
-            mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorldPosition.z = zPos;
-            return mouseWorldPosition;
+            return GetMousePosition2D(Camera.main, zPosition);
         }
 
         /// <summary>
         /// This gets the mouse position in 2D
         /// </summary>
         /// <returns>This return the mouse posintion</returns>
-        public static Vector3 GetMousePosition2D()
+        public static Vector2 GetMousePosition2D()
         {
-            mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorldPosition.z = 0;
-            return mouseWorldPosition;
+            return GetMousePosition2D(Camera.main, 0);
         }
         #endregion
 
@@ -76,10 +81,10 @@ namespace TheAshBot.TwoDimentional
         /// </summary>
         /// <param name="obj">This is the object that fallows the mouse</param>
         /// <param name="camera">This is the camera that the it gets the position from</param>
-        /// <param name="zPos">This is the z position</param>
-        public static void FallowMousePosition2D(GameObject obj, Camera camera, float zPos)
+        /// <param name="zPosition">This is the z position</param>
+        public static void FallowMousePosition2D(GameObject obj, Camera camera, float zPosition)
         {
-            obj.transform.position = GetMousePosition2D(camera, zPos);
+            obj.transform.position = GetMousePosition2D(camera, zPosition);
         }
 
         /// <summary>
@@ -96,10 +101,10 @@ namespace TheAshBot.TwoDimentional
         /// This makes an object faloow the mouse position in 2D
         /// </summary>
         /// <param name="obj">This is the object that fallows the mouse</param>
-        /// <param name="zPos">This is the z position</param>
-        public static void FallowMousePosition2D(GameObject obj, float zPos)
+        /// <param name="zPosition">This is the z position</param>
+        public static void FallowMousePosition2D(GameObject obj, float zPosition)
         {
-            obj.transform.position = GetMousePosition2D(zPos);
+            obj.transform.position = GetMousePosition2D(zPosition);
         }
 
         /// <summary>
@@ -117,10 +122,10 @@ namespace TheAshBot.TwoDimentional
         /// This logs the mouse position in 2D
         /// </summary>
         /// <param name="camera">This is the camera that the it gets the position from</param>
-        /// <param name="zPos">This is the z position</param>
-        public static void DebugLogMousePositionFloat2D(Camera camera, float zPos)
+        /// <param name="zPosition">This is the z position</param>
+        public static void DebugLogMousePositionFloat2D(Camera camera, float zPosition)
         {
-            Vector3 mousePos = GetMousePosition2D(camera, zPos);
+            Vector3 mousePos = GetMousePosition2D(camera, zPosition);
             Debug.Log("Mouse Position Float 2D = " + mousePos);
         }
 
@@ -137,10 +142,10 @@ namespace TheAshBot.TwoDimentional
         /// <summary>
         /// This logs the mouse position in 2D
         /// </summary>
-        /// <param name="zPos">This is the z position</param>
-        public static void DebugLogMousePositionFloat2D(float zPos)
+        /// <param name="zPosition">This is the z position</param>
+        public static void DebugLogMousePositionFloat2D(float zPosition)
         {
-            Vector3 mousePos = GetMousePosition2D(zPos);
+            Vector3 mousePos = GetMousePosition2D(zPosition);
             Debug.Log("Mouse Position Float 2D = " + mousePos);
         }
 
@@ -163,13 +168,11 @@ namespace TheAshBot.TwoDimentional
         /// This gets the mouse position in 2D rounded to an Int
         /// </summary>
         /// <param name="camera">This is the camera that the it gets the position from</param>
-        /// <param name="zPos">This is the z position</param>
+        /// <param name="zPosition">This is the z position</param>
         /// <returns>This return the mouse posintion rounded to an Int</returns>
-        public static Vector3Int GetMousePositionInt2D(Camera camera, int zPos)
+        public static Vector2Int GetMousePositionInt2D(Camera camera, int zPosition)
         {
-            GetMousePosition2D(camera, zPos);
-            mousePositionInt = Vector3Int.RoundToInt(mouseWorldPosition);
-            return mousePositionInt;
+            return Vector2Int.RoundToInt(GetMousePosition2D(camera, zPosition));
         }
 
         /// <summary>
@@ -177,34 +180,28 @@ namespace TheAshBot.TwoDimentional
         /// </summary>
         /// <param name="camera">This is the camera that the it gets the position from</param>
         /// <returns>This return the mouse posintion rounded to an Int</returns>
-        public static Vector3Int GetMousePositionInt2D(Camera camera)
+        public static Vector2Int GetMousePositionInt2D(Camera camera)
         {
-            GetMousePosition2D(camera);
-            mousePositionInt = Vector3Int.RoundToInt(mouseWorldPosition);
-            return mousePositionInt;
+            return GetMousePositionInt2D(camera, 0);
         }
 
         /// <summary>
         /// This gets the mouse position in 2D rounded to an Int
         /// </summary>
-        /// <param name="zPos">This is the z position</param>
+        /// <param name="zPosition">This is the z position</param>
         /// <returns>This return the mouse posintion rounded to an Int</returns>
-        public static Vector3Int GetMousePositionInt2D(int zPos)
+        public static Vector2Int GetMousePositionInt2D(int zPosition)
         {
-            GetMousePosition2D(zPos);
-            mousePositionInt = Vector3Int.RoundToInt(mouseWorldPosition);
-            return mousePositionInt;
+            return GetMousePositionInt2D(Camera.main, zPosition);
         }
 
         /// <summary>
         /// This gets the mouse position in 2D rounded to an Int
         /// </summary>
         /// <returns>This return the mouse posintion rounded to an Int</returns>
-        public static Vector3Int GetMousePositionInt2D()
+        public static Vector2Int GetMousePositionInt2D()
         {
-            GetMousePosition2D();
-            mousePositionInt = Vector3Int.RoundToInt(mouseWorldPosition);
-            return mousePositionInt;
+            return GetMousePositionInt2D(Camera.main, 0);
         }
         #endregion
 
@@ -214,10 +211,11 @@ namespace TheAshBot.TwoDimentional
         /// </summary>
         /// <param name="obj">This is that object that fallows the mouse</param>
         /// <param name="camera">This is the camera that the it gets the position from</param>
-        /// <param name="zPos">This is the z position<</param>
-        public static void FallowMousePositionInt2D(GameObject obj, Camera camera, int zPos)
+        /// <param name="zPosition">This is the z position<</param>
+        public static void FallowMousePositionInt2D(GameObject obj, Camera camera, int zPosition)
         {
-            obj.transform.position = GetMousePositionInt2D(camera, zPos);
+            Vector2Int mousePosition = GetMousePositionInt2D(camera, zPosition);
+            obj.transform.position = new Vector3(mousePosition.x, mousePosition.y);
         }
 
         /// <summary>
@@ -227,17 +225,17 @@ namespace TheAshBot.TwoDimentional
         /// <param name="camera">This is the camera that the it gets the position from</param>
         public static void FallowMousePositionInt2D(GameObject obj, Camera camera)
         {
-            obj.transform.position = GetMousePositionInt2D(camera);
+            FallowMousePositionInt2D(obj, camera, 0);
         }
 
         /// <summary>
         /// This makes an object faloow the mouse position in 2D rounded to an Int
         /// </summary>
         /// <param name="obj">This is that object that fallows the mouse</param>
-        /// <param name="zPos">This is the z position<</param>
-        public static void FallowMousePositionInt2D(GameObject obj, int zPos)
+        /// <param name="zPosition">This is the z position<</param>
+        public static void FallowMousePositionInt2D(GameObject obj, int zPosition)
         {
-            obj.transform.position = GetMousePositionInt2D(zPos);
+            FallowMousePositionInt2D(obj, Camera.main, zPosition);
         }
 
         /// <summary>
@@ -246,7 +244,7 @@ namespace TheAshBot.TwoDimentional
         /// <param name="obj">This is that object that fallows the mouse</param>
         public static void FallowMousePositionInt2D(GameObject obj)
         {
-            obj.transform.position = GetMousePositionInt2D();
+            FallowMousePositionInt2D(obj, Camera.main, 0);
         }
         #endregion
 
@@ -255,10 +253,10 @@ namespace TheAshBot.TwoDimentional
         /// THis logs the mouse position in 2D rouned to an Int
         /// </summary>
         /// <param name="camera">This is the camera that the it gets the position from</param>
-        /// <param name="zPos">This is the z position<</param>
-        public static void DebugLogMousePositionInt2D(Camera camera, int zPos)
+        /// <param name="zPosition">This is the z position<</param>
+        public static void DebugLogMousePositionInt2D(Camera camera, int zPosition)
         {
-            Vector3Int mousePos = GetMousePositionInt2D(camera, zPos);
+            Vector2Int mousePos = GetMousePositionInt2D(camera, zPosition);
             Debug.Log("Mouse Position Int 2D = " + mousePos);
         }
 
@@ -268,18 +266,16 @@ namespace TheAshBot.TwoDimentional
         /// <param name="camera">This is the camera that the it gets the position from</param>
         public static void DebugLogMousePositionInt2D(Camera camera)
         {
-            Vector3Int mousePos = GetMousePositionInt2D(camera);
-            Debug.Log("Mouse Position Int 2D = " + mousePos);
+            DebugLogMousePositionInt2D(camera, 0);
         }
 
         /// <summary>
         /// THis logs the mouse position in 2D rouned to an Int
         /// </summary>
-        /// <param name="zPos">This is the z position<</param>
-        public static void DebugLogMousePositionInt2D(int zPos)
+        /// <param name="zPosition">This is the z position<</param>
+        public static void DebugLogMousePositionInt2D(int zPosition)
         {
-            Vector3Int mousePos = GetMousePositionInt2D(zPos);
-            Debug.Log("Mouse Position Int 2D = " + mousePos);
+            DebugLogMousePositionInt2D(Camera.main, zPosition);
         }
 
         /// <summary>
@@ -287,8 +283,7 @@ namespace TheAshBot.TwoDimentional
         /// </summary>
         public static void DebugLogMousePositionInt2D()
         {
-            Vector3Int mousePos = GetMousePositionInt2D();
-            Debug.Log("Mouse Position Int 2D = " + mousePos);
+            DebugLogMousePositionInt2D(Camera.main, 0);
         }
         #endregion
 
