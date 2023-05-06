@@ -14,7 +14,7 @@ public class Mouse : MonoBehaviour
 
     private void Update()
     {
-        HandelInput();
+        TestInput();
     }
 
     private void LateUpdate()
@@ -23,7 +23,7 @@ public class Mouse : MonoBehaviour
     }
 
 
-    private void HandelInput()
+    private void TestInput()
     {
         if (Input.GetMouseButtonDown(0))
         {

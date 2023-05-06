@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,10 +6,10 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class BuildingSO : ScriptableObject
 {
-    
-    
+
+
     public _BaseBuilding prefab;
-    public List<int> buildingWidthListFromTopToBottom;
+    public List<Grid.BuildingLayer> buildingLeyerListFromBottomToTop;
     public new string name;
 
 

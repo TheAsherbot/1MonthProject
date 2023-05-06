@@ -10,8 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5371c4c9ff4d5f46a8baace8af6954d, type: 3}
-  m_Name: Spawner
+  m_Name: TownHall
   m_EditorClassIdentifier: 
   prefab: {fileID: 1529501886, guid: 8d09d94431171b345a87bd5d59a4c1cb, type: 3}
-  buildingWidthListFromTopToBottom: 0300000004000000
-  name: Spawner
+  buildingLeyerListFromBottomToTop:
+  - width: 4
+    occupationState: ffffffffffffffffffffffffffffffff
+  - width: 4
+    occupationState: ffffffffffffffffffffffff02000000
+  name: TownHall

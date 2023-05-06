@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 587531657}
   m_Layer: 0
-  m_Name: SpawnPosition
+  m_Name: unloadPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -115,6 +115,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2610642204391458572
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6531373101666348716}
+  m_Layer: 0
+  m_Name: loadPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6531373101666348716
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2610642204391458572}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.5, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4907278784268882458}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4907278784268882460
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +158,7 @@ GameObject:
   - component: {fileID: 1529501886}
   - component: {fileID: 681601876455187821}
   m_Layer: 0
-  m_Name: Spawner
+  m_Name: TownHall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147,6 +178,7 @@ Transform:
   m_Children:
   - {fileID: 1281293388}
   - {fileID: 587531657}
+  - {fileID: 6531373101666348716}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -165,7 +197,8 @@ MonoBehaviour:
   buildingSO: {fileID: 11400000, guid: caceb879f1e98da4ebad114fab7f1c0d, type: 2}
   spawnAbleUnits:
   - {fileID: 11400000, guid: 5a479a90d31042e4db371f5ebfa335cb, type: 2}
-  spawnPosition: {fileID: 587531657}
+  unloadTransform: {fileID: 587531657}
+  loadTransform: {fileID: 6531373101666348716}
 --- !u!61 &681601876455187821
 BoxCollider2D:
   m_ObjectHideFlags: 0

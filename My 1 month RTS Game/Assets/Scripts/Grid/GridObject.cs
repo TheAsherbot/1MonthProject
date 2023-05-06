@@ -12,17 +12,16 @@ public class GridObject
     {
         None,
         Dirt,
-        Grass,
-        Sky,
-        Stone,
         Building,
+        Minerials,
     }
 
-    [Serializable]
+    [Serializable, Flags]
     public enum OccupationState
     {
         Empty,
         NotWalkable,
+        NotPlaceable,
     }
 
 
@@ -91,9 +90,10 @@ public class GridObject
     public void SetTilemapSprite(TilemapSprite tilemapSprite)
     {
         this.tilemapSprite = tilemapSprite;
-        if (tilemapSprite != TilemapSprite.None && tilemapSprite != TilemapSprite.Sky)
+        if (tilemapSprite != TilemapSprite.None)
         {
-            State = OccupationState.NotWalkable;
+            State = OccupationState.NotWalkable & OccupationState.NotPlaceable;
+
         }
         else
         {
@@ -137,9 +137,9 @@ public class GridObject
     {
         if (saveObject.tilemapSprite == default)
         {
-            tilemapSprite = TilemapSprite.None;
+            saveObject.tilemapSprite = TilemapSprite.None;
         }
-        tilemapSprite = saveObject.tilemapSprite;
+        SetTilemapSprite(saveObject.tilemapSprite);
     }
 
     #endregion

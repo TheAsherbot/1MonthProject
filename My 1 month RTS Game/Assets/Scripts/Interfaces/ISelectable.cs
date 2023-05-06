@@ -10,6 +10,12 @@ public interface ISelectable
         set;
     }
 
-    public void Select();
-    public void Unselect();
+    public void Select()
+    {
+        IsSelected = true;
+    }
+    public void Unselect()
+    {
+        IsSelected = false;
+    }
 }

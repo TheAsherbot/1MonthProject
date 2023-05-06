@@ -2,9 +2,18 @@ using System.Collections.Generic;
 using System;
 using TheAshBot.Grid;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public class Grid
 {
+
+    [Serializable]
+    public struct BuildingLayer
+    {
+        public int width;
+        public List<GridObject.OccupationState> occupationState;
+    }
+
 
     #region Events
 
@@ -177,7 +186,7 @@ public class Grid
         GridObject startNode = GetGridObject(startX, startY);
         GridObject endNode = GetGridObject(endX, endY);
 
-        if (endNode == null)
+        if (endNode == null || endNode.State == GridObject.OccupationState.NotWalkable)
         {
             // End node is not on the grid
             return default;
@@ -507,32 +516,32 @@ public class Grid
         }
     }
 
-    public bool TryMakeBuilding(int startX, int startY, List<int> buildingWidthListFromButtomToTop)
+    public bool TryMakeBuilding(int startX, int startY, List<BuildingLayer> buildingLayerListFromTopToBottum)
     {
-        for (int y = 0; y < buildingWidthListFromButtomToTop.Count; y++)
+        for (int y = 0; y < buildingLayerListFromTopToBottum.Count; y++)
         {
-            for (int x = 0; x < buildingWidthListFromButtomToTop[y]; x++)
+            for (int x = 0; x < buildingLayerListFromTopToBottum[y].width; x++)
             {
-                if (GetGridObject(startX + x, startY + y).State != GridObject.OccupationState.Empty)
+                if (GetGridObject(startX + x, startY + y).State == GridObject.OccupationState.NotPlaceable)
                 {
                     return false;
                 }
             }
         }
 
-        for (int y = 0; y < buildingWidthListFromButtomToTop.Count; y++)
+        for (int y = 0; y < buildingLayerListFromTopToBottum.Count; y++)
         {
-            for (int x = 0; x < buildingWidthListFromButtomToTop[y]; x++)
+            for (int x = 0; x < buildingLayerListFromTopToBottum[y].width; x++)
             {
-                GetGridObject(startX + x, startY + y).SetOccupationState(GridObject.OccupationState.NotWalkable);
+                GetGridObject(startX + x, startY + y).SetOccupationState(buildingLayerListFromTopToBottum[y].occupationState[x]);
             }
         }
         return true;
     }
-    public bool TryMakeBuilding(Vector2 worldPosition, List<int> buildingWidthListFromTopToBottom)
+    public bool TryMakeBuilding(Vector2 worldPosition, List<BuildingLayer> buildingLayerListFromTopToBottum)
     {
         GetXY(worldPosition, out int startX, out int startY);
-        return TryMakeBuilding(startX, startY, buildingWidthListFromTopToBottom);
+        return TryMakeBuilding(startX, startY, buildingLayerListFromTopToBottum);
     }
 
     #endregion
@@ -565,7 +574,7 @@ public class Grid
             gridObjectSaveObjectArray = gridObjectSaveObjectList.ToArray(),
         };
 
-        SaveSystem.SaveJson(saveObject, SaveSystem.RootSavePath.DataPath, "Tile Map", "tilemap", true);
+        SaveSystem.SaveJson(saveObject, SaveSystem.RootSavePath.DataPath, "Tile Map", "tilemap", false);
     }
 
     public static Grid Load(string saveObjectJsonData)

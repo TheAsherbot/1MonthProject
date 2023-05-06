@@ -8,19 +8,31 @@ public class _BaseUnit : MonoBehaviour
 {
 
 
-    public event EventHandler<OnMoveInputPressedEventArgs> OnMoveInputPressed;
-    public class OnMoveInputPressedEventArgs : EventArgs
+    public event EventHandler OnReachedDestination;
+    public event EventHandler OnStopMoveing;
+    public event EventHandler<OnMoveEventArgs> OnMove;
+    public class OnMoveEventArgs : EventArgs
     {
-        public Vector2 mousePosition;
+        public Vector2 movePoint;
     }
 
 
-    protected void Trigger_OnMoveInputPressed(Vector2 mousePosition)
+    protected void Trigger_OnMove(Vector2 movePoint)
     {
-        OnMoveInputPressed?.Invoke(this, new OnMoveInputPressedEventArgs
+        OnMove?.Invoke(this, new OnMoveEventArgs
         {
-            mousePosition = Mouse2D.GetMousePosition2D(),
+            movePoint = movePoint,
         });
+    }
+    
+    protected void Trigger_OnStopMoveing()
+    {
+        OnStopMoveing?.Invoke(this, EventArgs.Empty);
+    }
+    
+    public void Trigger_OnReachedDestination()
+    {
+        OnReachedDestination?.Invoke(this, EventArgs.Empty);
     }
 
 }

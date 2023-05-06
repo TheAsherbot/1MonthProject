@@ -1,11 +1,5 @@
 using System.Collections.Generic;
 
-using TheAshBot.TwoDimentional;
-
-using Unity.VisualScripting;
-
-using UnityEditor.Rendering;
-
 using UnityEngine;
 
 [RequireComponent(typeof(_BaseUnit))]
@@ -47,18 +41,21 @@ public class UnitMovement : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("Awake");
         movementPath = new List<Vector2>();
 
-        unit = GetComponent<Unit>();
-        unit.OnMoveInputPressed += Unit_OnMoveInputPressed;
+        unit = GetComponent<Civilian>();
     }
 
     private void Start()
     {
-        grid = GridManager.Instance.Grid;
+        grid = GridManager.Instance.grid;
         movement_StartPosition = transform.position;
+
+
+        unit.OnMove += Unit_OnMoveInputPressed;
+        unit.OnStopMoveing += Unit_OnStopMoveing; ;
     }
+
 
     private void Update()
     {
@@ -71,12 +68,6 @@ public class UnitMovement : MonoBehaviour
 
 
     #region Private Functions
-
-    private void Unit_OnMoveInputPressed(object sender, _BaseUnit.OnMoveInputPressedEventArgs e)
-    {
-        lastMouseUpPosition = e.mousePosition;
-        StartPath();
-    }
 
     private void FindPath()
     {
@@ -95,7 +86,6 @@ public class UnitMovement : MonoBehaviour
                 FindPath();
             }
         }
-        DrawPathfingLines();
 
         void FindPath()
         {
@@ -126,12 +116,7 @@ public class UnitMovement : MonoBehaviour
 
 
         transform.position = Vector3.Lerp(movement_StartPosition, movement_EndPosition, movement_Curve.Evaluate(percentageComplate));
-        if (transform.position == Vector3.zero)
-        {
-            Debug.Log("movement_StartPosition: " + movement_StartPosition);
-            Debug.Log("movement_EndPosition: " + movement_EndPosition);
-            Debug.Log("Movement");
-        }
+        
 
         if (Mathf.Abs(Vector2.Distance(movement_EndPosition, transform.position)) <= reachedWayPointDistance)
         {
@@ -149,9 +134,13 @@ public class UnitMovement : MonoBehaviour
         {
             movement_EndPosition = movementPath[1];
         }
-        else
+        else if (movementPath.Count == 1)
         {
             movement_EndPosition = movementPath[0];
+        }
+        else
+        {
+            Debug.Log("movementPath.Count == 0");
         }
 
         rotation_ElapsedTime = 0;
@@ -190,17 +179,24 @@ public class UnitMovement : MonoBehaviour
         movementPath.Clear();
         movement_EndPosition = transform.position;
         movement_StartPosition = transform.position;
+
+        unit.Trigger_OnReachedDestination();
     }
 
-    private void DrawPathfingLines()
+    #endregion
+
+
+    #region Events
+
+    private void Unit_OnStopMoveing(object sender, System.EventArgs e)
     {
-        if (movementPath != null)
-        {
-            for (int i = 0; i < movementPath.Count - 1; i++)
-            {
-                Debug.DrawLine(movementPath[i], movementPath[i + 1], Color.green, 5f);
-            }
-        }
+        PathReached();
+    }
+
+    private void Unit_OnMoveInputPressed(object sender, _BaseUnit.OnMoveEventArgs e)
+    {
+        lastMouseUpPosition = e.movePoint;
+        StartPath();
     }
 
     #endregion

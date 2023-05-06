@@ -17,16 +17,16 @@ public class BuildingManager : MonoBehaviour
 
     private void Start()
     {
-        grid = GridManager.Instance.Grid;
+        grid = GridManager.Instance.grid;
     }
 
     private void Update()
     {
-        HandelInput();
+        TestInput();
     }
 
 
-    private void HandelInput()
+    private void TestInput()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -44,7 +44,7 @@ public class BuildingManager : MonoBehaviour
         Vector2 mouseWorldPosition = Mouse2D.GetMousePosition2D();
         if (selectedBuilding != null)
         {
-            if (grid.TryMakeBuilding(mouseWorldPosition, selectedBuilding.buildingWidthListFromTopToBottom))
+            if (grid.TryMakeBuilding(mouseWorldPosition, selectedBuilding.buildingLeyerListFromBottomToTop))
             {
                 _BaseBuilding newBuilding = Instantiate(buildingSOList[0].prefab, grid.SnapPositionToGrid(mouseWorldPosition), Quaternion.identity);
                 newBuilding.gameObject.name = selectedBuilding.name;

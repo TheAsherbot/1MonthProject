@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnerBuilding : _BaseBuilding, ISelectable
+public class TownHall : _BaseBuilding, ISelectable
 {
 
 
@@ -14,35 +14,46 @@ public class SpawnerBuilding : _BaseBuilding, ISelectable
 
 
     [SerializeField] private List<UnitSO> spawnAbleUnits;
-    [SerializeField] private Transform spawnPosition;
+    [SerializeField] private Transform unloadTransform;
+    [SerializeField] private Transform loadTransform;
 
 
     private void Update()
     {
         if (IsSelected)
         {
-            HandelInput();
+            TestInput();
         }
     }
 
 
-    private void HandelInput()
+    public Transform GetLoadTransform() 
+    {
+        return loadTransform;
+    }
+
+    private void TestInput()
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             Spawn(spawnAbleUnits[0]);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            //Spawn(spawnAbleUnits[1].prefab);
-        }
     }
 
     private void Spawn(UnitSO unitSO)
     {
-        _BaseUnit spawnedUnit = Instantiate(unitSO.prefab, spawnPosition.position, Quaternion.identity);
+        _BaseUnit spawnedUnit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
         spawnedUnit.name = unitSO.name;
+        if (spawnedUnit is Civilian)
+        {
+            ((Civilian)spawnedUnit).SetTownHall(this);
+        }
+
     }
+
+    
+
+    #region Interfaces
 
     public void Select()
     {
@@ -53,4 +64,7 @@ public class SpawnerBuilding : _BaseBuilding, ISelectable
     {
         IsSelected = false;
     }
+
+    #endregion
+
 }
