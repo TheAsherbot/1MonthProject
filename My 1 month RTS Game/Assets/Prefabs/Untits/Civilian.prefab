@@ -47,6 +47,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f54047fdc549144ca4082b8acfaac0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <HotBarSlotSOList>k__BackingField:
+  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
+  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
+  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
+  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
+  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
+  timeToMine: 3
 --- !u!114 &5736083375485587624
 MonoBehaviour:
   m_ObjectHideFlags: 0

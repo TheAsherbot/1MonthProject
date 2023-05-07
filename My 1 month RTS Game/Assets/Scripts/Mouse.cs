@@ -1,12 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-
-using TheAshBot.TwoDimentional;
+using System;
 
 using UnityEngine;
 
+using TheAshBot.TwoDimentional;
+
 public class Mouse : MonoBehaviour
 {
+
+
+    public event EventHandler<OnSelectedChangedEventArgs> OnSelectedChanged;
+    public class OnSelectedChangedEventArgs : EventArgs
+    {
+        public ISelectable selected;
+    }
 
 
     private ISelectable selected;
@@ -22,6 +28,11 @@ public class Mouse : MonoBehaviour
         Mouse2D.FallowMousePosition2D(gameObject);
     }
 
+
+    public ISelectable GetSelected()
+    {
+        return selected;
+    }
 
     private void TestInput()
     {
@@ -44,6 +55,10 @@ public class Mouse : MonoBehaviour
             if (hit.TryGetComponent(out selected))
             {
                 selected.Select();
+                OnSelectedChanged?.Invoke(this, new OnSelectedChangedEventArgs
+                {
+                    selected = selected,
+                });
             }
         }
     }

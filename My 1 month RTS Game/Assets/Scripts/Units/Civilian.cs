@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using TheAshBot.TwoDimentional;
 
@@ -17,8 +18,16 @@ public class Civilian : _BaseUnit, ISelectable
     }
 
 
+    #region Variables
+
     [field : Header("Generial")]
     public bool IsSelected
+    {
+        get;
+        set;
+    }
+    [field: SerializeField]
+    public List<HotBarSlotSO> HotBarSlotSOList
     {
         get;
         set;
@@ -27,15 +36,18 @@ public class Civilian : _BaseUnit, ISelectable
 
 
     [Header("Mining")]
-    [SerializeField] private float gatherMinerialRange = 1.5f;
     [SerializeField] private float timeToMine = 3f;
 
+    private bool isReturningFromMiningSate;
     private TownHall townHall;
+    private Vector3 minerial;
 
 
     private HealthSystem healthSystem;
 
     private Vector2 movePoint;
+
+    #endregion
 
 
     #region Unity Functions
@@ -48,24 +60,17 @@ public class Civilian : _BaseUnit, ISelectable
         OnReachedDestination += Civilian_OnReachedDestination;
         OnStopMoveing += Civilian_OnReachedDestination;
     }
-    
+
     private void Update()
     {
         if (IsSelected)
         {
             TestInput();
-
-            TestState();
         }
+        TestState();
     }
 
     #endregion
-
-
-    public void SetTownHall(TownHall townHall) 
-    {
-        this.townHall = townHall;
-    }
 
 
     #region Input
@@ -88,25 +93,11 @@ public class Civilian : _BaseUnit, ISelectable
             return;
         }
 
-        GridObject closestNeighbour = null;
-        foreach (GridObject neighbour in gridObject.neighbourNodeList)
-        {
-            if (neighbour.State != GridObject.OccupationState.Empty) continue;
-            if (closestNeighbour == null)
-            {
-                closestNeighbour = neighbour;
-                continue;
-            }
+        minerial = GridManager.Instance.grid.GetWorldPosition(gridObject.X, gridObject.Y);
 
-            if (Vector2.Distance(transform.position, GridManager.Instance.grid.GetWorldPosition(neighbour.X, neighbour.Y)) <
-                Vector2.Distance(transform.position, GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y)))
-            {
-                // this node in closer.
-                closestNeighbour = neighbour;
-            }
-        }
-
+        GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(gridObject);
         Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y));
+        movePoint = GridManager.Instance.grid.GetWorldPosition(gridObject.X, gridObject.Y);
         state = States.MovingToMine;
     }
 
@@ -142,7 +133,7 @@ public class Civilian : _BaseUnit, ISelectable
 
     private void MoveingToMineState()
     {
-        if (movePoint != null && Vector2.Distance(transform.position, movePoint) < gatherMinerialRange)
+        if (GridManager.Instance.grid.GetGridObject(minerial).neighbourNodeList.Contains(GridManager.Instance.grid.GetGridObject(transform.position)))
         {
             Trigger_OnStopMoveing();
             state = States.Mining;
@@ -151,6 +142,7 @@ public class Civilian : _BaseUnit, ISelectable
 
     private async void MiningState()
     {
+        GridManager.Instance.grid.GetGridObject(transform.position).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotWalkable });
         await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(1000 * timeToMine));
         if (state == States.Mining)
         {
@@ -160,7 +152,11 @@ public class Civilian : _BaseUnit, ISelectable
 
     private void ReturnFromMiningState()
     {
-        Trigger_OnMove(townHall.GetLoadTransform().position);
+        if (!isReturningFromMiningSate)
+        {
+            isReturningFromMiningSate = true;
+            Trigger_OnMove(townHall.GetLoadTransform().position);
+        }
     }
 
     #endregion
@@ -175,6 +171,18 @@ public class Civilian : _BaseUnit, ISelectable
 
     private void Civilian_OnReachedDestination(object sender, EventArgs e)
     {
+        if (state == States.ReturnFromMining)
+        {
+            townHall.AddMinerials();
+
+            GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(GridManager.Instance.grid.GetGridObject(minerial));
+            Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y));
+            state = States.MovingToMine;
+            movePoint = minerial;
+            isReturningFromMiningSate = false;
+            return;
+        }
+
         movePoint = default;
         state = States.Idle;
     }
@@ -192,6 +200,57 @@ public class Civilian : _BaseUnit, ISelectable
     public void Unselect()
     {
         IsSelected = false;
+    }
+
+    public void OnSlot1ButtonClicked()
+    {
+    }
+
+    public void OnSlot2ButtonClicked()
+    {
+    }
+
+    public void OnSlot3ButtonClicked()
+    {
+    }
+
+    public void OnSlot4ButtonClicked()
+    {
+    }
+
+    public void OnSlot5ButtonClicked()
+    {
+    }
+
+    #endregion
+
+
+    #region Other
+
+    public void SetTownHall(TownHall townHall) 
+    {
+        this.townHall = townHall;
+    }
+    private GridObject GetClosedtNeighbourFromMinerial(GridObject minerialGridObject)
+    {
+        GridObject closestNeighbour = null;
+        foreach (GridObject neighbour in minerialGridObject.neighbourNodeList)
+        {
+            if (neighbour.StateList.Contains(GridObject.OccupationState.NotWalkable)) continue;
+            if (closestNeighbour == null)
+            {
+                closestNeighbour = neighbour;
+                continue;
+            }
+
+            if (Vector2.Distance(transform.position, GridManager.Instance.grid.GetWorldPosition(neighbour.X, neighbour.Y)) <
+                Vector2.Distance(transform.position, GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y)))
+            {
+                // this node in closer.
+                closestNeighbour = neighbour;
+            }
+        }
+        return closestNeighbour;
     }
 
     #endregion

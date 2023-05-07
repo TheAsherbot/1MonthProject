@@ -11,7 +11,13 @@ public class Grid
     public struct BuildingLayer
     {
         public int width;
-        public List<GridObject.OccupationState> occupationState;
+        public List<OcupationStateList> OcuupationStateLists;
+
+        [Serializable]
+        public class OcupationStateList
+        {
+            public List<GridObject.OccupationState> occupationState;
+        }
     }
 
 
@@ -186,7 +192,7 @@ public class Grid
         GridObject startNode = GetGridObject(startX, startY);
         GridObject endNode = GetGridObject(endX, endY);
 
-        if (endNode == null || endNode.State == GridObject.OccupationState.NotWalkable)
+        if (endNode == null || endNode.StateList.Contains(GridObject.OccupationState.NotWalkable))
         {
             // End node is not on the grid
             return default;
@@ -226,11 +232,20 @@ public class Grid
             {
                 if (closedList.Contains(neighbourNode)) continue;
 
-                    if (unwalkableStates.Contains(neighbourNode.State))
+                bool continueneighbourNodeForeach = false;
+                foreach (GridObject.OccupationState state in unwalkableStates)
+                {
+                    if (neighbourNode.StateList.Contains(state))
                     {
                         closedList.Add(neighbourNode);
-                        continue;
+                        continueneighbourNodeForeach = true; 
+                        break;
                     }
+                }
+                if (continueneighbourNodeForeach)
+                {
+                    continue;
+                }
 
                 float tentativeGCost = currentNode.gCost + CalculateDistance(currentNode, neighbourNode);
 
@@ -283,6 +298,7 @@ public class Grid
         {
             // Left
             neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y));
+            /*
             if (canWalkDiagonally)
             {
                 // Left Down
@@ -296,11 +312,13 @@ public class Grid
                     neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y + 1));
                 }
             }
+            */
         }
         if (currentNode.X + 1 < GetWidth())
         {
             // Right
             neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y));
+            /*
             if (canWalkDiagonally)
             {
                 // Right Down
@@ -314,6 +332,7 @@ public class Grid
                     neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y + 1));
                 }
             }
+            */
         }
         // Bottom
         if (currentNode.Y - 1 >= 0)
@@ -522,7 +541,7 @@ public class Grid
         {
             for (int x = 0; x < buildingLayerListFromTopToBottum[y].width; x++)
             {
-                if (GetGridObject(startX + x, startY + y).State == GridObject.OccupationState.NotPlaceable)
+                if (GetGridObject(startX + x, startY + y).StateList.Contains(GridObject.OccupationState.NotPlaceable))
                 {
                     return false;
                 }
@@ -533,7 +552,7 @@ public class Grid
         {
             for (int x = 0; x < buildingLayerListFromTopToBottum[y].width; x++)
             {
-                GetGridObject(startX + x, startY + y).SetOccupationState(buildingLayerListFromTopToBottum[y].occupationState[x]);
+                GetGridObject(startX + x, startY + y).SetOccupationState(buildingLayerListFromTopToBottum[y].OcuupationStateLists[x].occupationState);
             }
         }
         return true;

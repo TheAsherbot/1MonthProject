@@ -34,7 +34,7 @@ public class GridManager : MonoBehaviour
             Instance = this;
         }
 
-        //Grid = new Grid(xSize, ySize, cellSize, transform.position, false);
+        // grid = new Grid(xSize, ySize, cellSize, transform.position, false, true, null);
 
         grid = Grid.Load(savedData.text);
 

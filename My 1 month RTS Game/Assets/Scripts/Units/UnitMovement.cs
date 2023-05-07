@@ -18,6 +18,7 @@ public class UnitMovement : MonoBehaviour
     [SerializeField] private float timeToMove = 2;
     [SerializeField] private AnimationCurve movement_Curve;
 
+    private bool stopedMoving;
     private float movement_ElapsedTime;
     private Vector2 movement_StartPosition;
     private Vector2 movement_EndPosition;
@@ -52,10 +53,9 @@ public class UnitMovement : MonoBehaviour
         movement_StartPosition = transform.position;
 
 
-        unit.OnMove += Unit_OnMoveInputPressed;
-        unit.OnStopMoveing += Unit_OnStopMoveing; ;
+        unit.OnMove += Unit_OnMove;
+        unit.OnStopMoveing += Unit_OnStopMoveing;
     }
-
 
     private void Update()
     {
@@ -86,6 +86,8 @@ public class UnitMovement : MonoBehaviour
                 FindPath();
             }
         }
+
+        DrawPath();
 
         void FindPath()
         {
@@ -129,6 +131,9 @@ public class UnitMovement : MonoBehaviour
     {
         FindPath();
 
+
+        GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
+
         movement_StartPosition = transform.position;
         if (movementPath.Count > 1)
         {
@@ -143,6 +148,8 @@ public class UnitMovement : MonoBehaviour
             Debug.Log("movementPath.Count == 0");
         }
 
+        GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotPlaceable });
+
         rotation_ElapsedTime = 0;
         rotation_StartPosition = transform.up;
         rotation_EndPosition = movement_EndPosition - (Vector2)transform.position;
@@ -150,14 +157,21 @@ public class UnitMovement : MonoBehaviour
 
     private void SubpathReached()
     {
+
+        if (stopedMoving)
+        {
+            PathStoped();
+            return;
+        }
         if (movementPath.Count == 1)
         {
-            // Has reached Destination
             PathReached();
             return;
         }
 
         FindPath();
+
+        GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
 
         movement_StartPosition = transform.position;
         if (movementPath.Count > 1)
@@ -168,6 +182,8 @@ public class UnitMovement : MonoBehaviour
         {
             movement_EndPosition = movementPath[0];
         }
+
+        GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotPlaceable});
 
         rotation_ElapsedTime = 0;
         rotation_StartPosition = transform.up;
@@ -183,6 +199,15 @@ public class UnitMovement : MonoBehaviour
         unit.Trigger_OnReachedDestination();
     }
 
+    private void PathStoped()
+    {
+        movementPath.Clear();
+        movement_EndPosition = transform.position;
+        movement_StartPosition = transform.position;
+
+        stopedMoving = false;
+    }
+
     #endregion
 
 
@@ -190,15 +215,27 @@ public class UnitMovement : MonoBehaviour
 
     private void Unit_OnStopMoveing(object sender, System.EventArgs e)
     {
-        PathReached();
+        stopedMoving = true;
     }
 
-    private void Unit_OnMoveInputPressed(object sender, _BaseUnit.OnMoveEventArgs e)
+    private void Unit_OnMove(object sender, _BaseUnit.OnMoveEventArgs e)
     {
         lastMouseUpPosition = e.movePoint;
         StartPath();
     }
 
     #endregion
+
+
+
+    private void DrawPath()
+    {
+        for (int i = 1; i < movementPath.Count; i++)
+        {
+            Debug.DrawLine(movementPath[i -1], movementPath[i], Color.green, 5f);
+        }
+    }
+
+
 
 }

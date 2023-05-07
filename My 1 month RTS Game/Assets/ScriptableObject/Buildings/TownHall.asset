@@ -15,7 +15,15 @@ MonoBehaviour:
   prefab: {fileID: 1529501886, guid: 8d09d94431171b345a87bd5d59a4c1cb, type: 3}
   buildingLeyerListFromBottomToTop:
   - width: 4
-    occupationState: ffffffffffffffffffffffffffffffff
+    OcuupationStateLists:
+    - occupationState: 0200000001000000
+    - occupationState: 0200000001000000
+    - occupationState: 0200000001000000
+    - occupationState: 02000000
   - width: 4
-    occupationState: ffffffffffffffffffffffff02000000
+    OcuupationStateLists:
+    - occupationState: 0200000001000000
+    - occupationState: 0200000001000000
+    - occupationState: 0200000001000000
+    - occupationState: 0200000001000000
   name: TownHall

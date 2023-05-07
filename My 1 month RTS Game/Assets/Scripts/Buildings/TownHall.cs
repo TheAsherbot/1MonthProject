@@ -1,22 +1,40 @@
-using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class TownHall : _BaseBuilding, ISelectable
 {
 
 
+    #region Variables
+
     public bool IsSelected
     {
         get;
         set;
     }
+    [field : SerializeField] 
+    public List<HotBarSlotSO> HotBarSlotSOList
+    {
+        get;
+        set;
+    }
 
-
-    [SerializeField] private List<UnitSO> spawnAbleUnits;
+    [SerializeField] private List<UnitSO> spawnableUnits;
     [SerializeField] private Transform unloadTransform;
     [SerializeField] private Transform loadTransform;
+    [Space(5)]
+    [SerializeField] private TeamManager teamManager;
 
+    #endregion
+
+
+    #region Unity Functions
+
+    private void Start()
+    {
+        GridManager.Instance.grid.TryMakeBuilding(transform.position, buildingSO.buildingLeyerListFromBottomToTop);
+    }
 
     private void Update()
     {
@@ -26,32 +44,51 @@ public class TownHall : _BaseBuilding, ISelectable
         }
     }
 
+    #endregion
 
-    public Transform GetLoadTransform() 
+
+    #region public
+
+    public Transform GetLoadTransform()
     {
         return loadTransform;
     }
+
+    public void AddMinerials()
+    {
+        int amount = 10;
+        teamManager.AddMinerials(amount);
+    }
+
+    #endregion
+
+
+    #region Input
 
     private void TestInput()
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            Spawn(spawnAbleUnits[0]);
+            Spawn(spawnableUnits[0]);
         }
     }
 
     private void Spawn(UnitSO unitSO)
     {
-        _BaseUnit spawnedUnit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
-        spawnedUnit.name = unitSO.name;
-        if (spawnedUnit is Civilian)
+        if (teamManager.TryUseMinerials(unitSO.cost))
         {
-            ((Civilian)spawnedUnit).SetTownHall(this);
+            _BaseUnit spawnedUnit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
+            spawnedUnit.name = unitSO.name;
+            teamManager.UnitSpawned(spawnedUnit);
+            if (spawnedUnit is Civilian)
+            {
+                ((Civilian)spawnedUnit).SetTownHall(this);
+            }
         }
-
     }
 
-    
+    #endregion
+
 
     #region Interfaces
 
@@ -65,6 +102,32 @@ public class TownHall : _BaseBuilding, ISelectable
         IsSelected = false;
     }
 
+    public void OnSlot1ButtonClicked()
+    {
+        Spawn(spawnableUnits[0]);
+    }
+
+    public void OnSlot2ButtonClicked()
+    {
+        Spawn(spawnableUnits[1]);
+    }
+
+    public void OnSlot3ButtonClicked()
+    {
+        Spawn(spawnableUnits[2]);
+    }
+
+    public void OnSlot4ButtonClicked()
+    {
+        Spawn(spawnableUnits[3]);
+    }
+
+    public void OnSlot5ButtonClicked()
+    {
+        Spawn(spawnableUnits[4]);
+    }
+
     #endregion
+
 
 }

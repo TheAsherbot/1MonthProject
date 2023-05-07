@@ -77,15 +77,15 @@ public class TileMapPainter : MonoBehaviour
         grid.SetTilemapSprite(mousePosition, tilemapSprite);
         if (tilemapSprite == GridObject.TilemapSprite.None)
         {
-            grid.GetGridObject(mousePosition).SetOccupationState(GridObject.OccupationState.Empty);
+            grid.GetGridObject(mousePosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty } );
         }
         else if (tilemapSprite == GridObject.TilemapSprite.Dirt)
         {
-            grid.GetGridObject(mousePosition).SetOccupationState(GridObject.OccupationState.Empty);
+            grid.GetGridObject(mousePosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
         }
         else if (tilemapSprite == GridObject.TilemapSprite.Building)
         {
-            grid.GetGridObject(mousePosition).SetOccupationState(GridObject.OccupationState.NotWalkable & GridObject.OccupationState.NotPlaceable);
+            grid.GetGridObject(mousePosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotWalkable, GridObject.OccupationState.NotPlaceable });
         }
         else if (tilemapSprite == GridObject.TilemapSprite.Minerials)
         {

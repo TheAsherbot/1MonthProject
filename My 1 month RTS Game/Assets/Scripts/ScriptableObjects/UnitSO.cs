@@ -8,5 +8,6 @@ public class UnitSO : ScriptableObject
 
     public _BaseUnit prefab;
     public new string name;
+    public int cost;
 
 }

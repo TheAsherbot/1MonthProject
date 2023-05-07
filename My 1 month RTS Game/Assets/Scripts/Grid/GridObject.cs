@@ -16,7 +16,7 @@ public class GridObject
         Minerials,
     }
 
-    [Serializable, Flags]
+    [Serializable]
     public enum OccupationState
     {
         Empty,
@@ -49,7 +49,7 @@ public class GridObject
     public float fCost;
 
 
-    public OccupationState State
+    public List<OccupationState> StateList
     {
         get;
         private set;
@@ -67,15 +67,15 @@ public class GridObject
         this.grid = grid;
         X = x;
         Y = y;
-        State = OccupationState.Empty;
+        StateList = new List<OccupationState>();
     }
 
 
     #region Pathfinding
 
-    public void SetOccupationState(OccupationState state)
+    public void SetOccupationState(List<OccupationState> stateList)
     {
-        State = state;
+        StateList = stateList;
         grid.TriggerGridObjectChanged(X, Y);
     }
 
@@ -90,14 +90,9 @@ public class GridObject
     public void SetTilemapSprite(TilemapSprite tilemapSprite)
     {
         this.tilemapSprite = tilemapSprite;
-        if (tilemapSprite != TilemapSprite.None)
+        if (tilemapSprite == TilemapSprite.None)
         {
-            State = OccupationState.NotWalkable & OccupationState.NotPlaceable;
-
-        }
-        else
-        {
-            State = OccupationState.Empty;
+            StateList = new List<OccupationState> { OccupationState.Empty };
         }
         grid.TriggerGridObjectChanged(X, Y);
     }
@@ -105,7 +100,12 @@ public class GridObject
 
     public override string ToString()
     {
-        return State == OccupationState.NotWalkable ? "T" : "F";
+        string returnedString = "F";
+        if (StateList.Contains(OccupationState.NotPlaceable))
+        {
+            returnedString = "T";
+        }
+        return returnedString;
     }
 
 
@@ -114,7 +114,7 @@ public class GridObject
     [Serializable]
     public class SaveObject
     {
-        public OccupationState State;
+        public List<OccupationState> StateList;
 
         public TilemapSprite tilemapSprite;
         public int x;
@@ -125,7 +125,7 @@ public class GridObject
     {
         return new SaveObject
         {
-            State = State,
+            StateList = StateList,
 
             tilemapSprite = tilemapSprite,
             x = X,
@@ -138,6 +138,10 @@ public class GridObject
         if (saveObject.tilemapSprite == default)
         {
             saveObject.tilemapSprite = TilemapSprite.None;
+        }
+        else if (saveObject.tilemapSprite == TilemapSprite.Minerials)
+        {
+            SetOccupationState(new List<OccupationState> { OccupationState.NotWalkable, OccupationState.NotPlaceable });
         }
         SetTilemapSprite(saveObject.tilemapSprite);
     }
