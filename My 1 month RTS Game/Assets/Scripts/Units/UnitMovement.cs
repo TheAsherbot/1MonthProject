@@ -15,7 +15,7 @@ public class UnitMovement : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float reachedWayPointDistance = 0.05f;
-    [SerializeField] private float timeToMove = 2;
+    [SerializeField] private float timeToMove = 0.3f;
     [SerializeField] private AnimationCurve movement_Curve;
 
     private bool stopedMoving;
@@ -28,7 +28,7 @@ public class UnitMovement : MonoBehaviour
 
 
     [Header("Rotation")]
-    [SerializeField] private float timeToRotate = 0.5f;
+    [SerializeField] private float timeToRotate = 0.2f;
     [SerializeField] private AnimationCurve rotation_Curve;
 
     private float rotation_ElapsedTime;
@@ -44,7 +44,7 @@ public class UnitMovement : MonoBehaviour
     {
         movementPath = new List<Vector2>();
 
-        unit = GetComponent<Civilian>();
+        unit = GetComponent<_BaseUnit>();
     }
 
     private void Start()

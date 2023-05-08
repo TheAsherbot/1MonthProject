@@ -5,7 +5,7 @@ using TheAshBot.TwoDimentional;
 
 using UnityEngine;
 
-public class Civilian : _BaseUnit, ISelectable
+public class Civilian : _BaseUnit, ISelectable, IDamageable
 {
 
     public enum States
@@ -45,7 +45,6 @@ public class Civilian : _BaseUnit, ISelectable
 
     private HealthSystem healthSystem;
 
-    private Vector2 movePoint;
 
     #endregion
 
@@ -55,8 +54,8 @@ public class Civilian : _BaseUnit, ISelectable
     private void Start()
     {
         healthSystem = HealthBar.Create(10, transform, Vector3.up, new Vector3(2, 0.3f), Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = 0.1f });
-        
-        OnMove += Civilian_OnMove;
+
+        healthSystem.OnHealthDepleted += HealthSystem_OnHealthDepleted;
         OnReachedDestination += Civilian_OnReachedDestination;
         OnStopMoveing += Civilian_OnReachedDestination;
     }
@@ -97,7 +96,6 @@ public class Civilian : _BaseUnit, ISelectable
 
         GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(gridObject);
         Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y));
-        movePoint = GridManager.Instance.grid.GetWorldPosition(gridObject.X, gridObject.Y);
         state = States.MovingToMine;
     }
 
@@ -164,9 +162,10 @@ public class Civilian : _BaseUnit, ISelectable
 
     #region Events
 
-    private void Civilian_OnMove(object sender, OnMoveEventArgs e)
+    private void HealthSystem_OnHealthDepleted(object sender, EventArgs e)
     {
-        movePoint = e.movePoint;
+        townHall.GetTeamManager().UnitKilled(this);
+        Destroy(gameObject);
     }
 
     private void Civilian_OnReachedDestination(object sender, EventArgs e)
@@ -178,12 +177,10 @@ public class Civilian : _BaseUnit, ISelectable
             GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(GridManager.Instance.grid.GetGridObject(minerial));
             Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y));
             state = States.MovingToMine;
-            movePoint = minerial;
             isReturningFromMiningSate = false;
             return;
         }
 
-        movePoint = default;
         state = States.Idle;
     }
 
@@ -222,6 +219,13 @@ public class Civilian : _BaseUnit, ISelectable
     {
     }
 
+
+    public void Damage(int amount)
+    {
+        Debug.Log("amount: " + amount);
+        healthSystem.Damage(amount);
+    }
+
     #endregion
 
 
@@ -231,6 +235,8 @@ public class Civilian : _BaseUnit, ISelectable
     {
         this.townHall = townHall;
     }
+
+    
     private GridObject GetClosedtNeighbourFromMinerial(GridObject minerialGridObject)
     {
         GridObject closestNeighbour = null;

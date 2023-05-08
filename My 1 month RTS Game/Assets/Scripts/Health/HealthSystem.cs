@@ -1,9 +1,12 @@
 using System;
 
+using UnityEngine;
+
 public class HealthSystem
 {
 
 
+    public event EventHandler OnHealthDepleted;
     public event EventHandler<OnHealthChangedEventArgs> OnHealthChanged;
     public class OnHealthChangedEventArgs : EventArgs
     {
@@ -35,16 +38,23 @@ public class HealthSystem
 
     public float GetHealthPercent()
     {
+        Debug.Log("(float)health / maxHealth: " + (float)health / maxHealth);
         return (float)health / maxHealth;
     }
 
     public void Damage(int damageAmount)
     {
+        Debug.Log("damageAmount: " + damageAmount);
+        Debug.Log("Old health: " + health);
         health -= damageAmount;
+        Debug.Log("health: " + health);
+        Debug.Log("(float)health / maxHealth: " + (float)health / maxHealth);
         
-        if (health < 0)
+        if (health <= 0)
         {
+            Debug.Log("health <= 0");
             health = 0;
+            OnHealthDepleted?.Invoke(this, EventArgs.Empty);
             return;
         }
         

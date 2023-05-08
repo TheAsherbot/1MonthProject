@@ -57,7 +57,7 @@ public class HealthBar : MonoBehaviour
 
         HealthBar healthBar = healthBarGameObject.AddComponent<HealthBar>();
         HealthSystem healthSystem = new HealthSystem(maxHealth);
-        healthBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, contentGameObject, hideWhenFull);
+        healthBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, healthBarGameObject, contentGameObject, hideWhenFull);
         return healthSystem;
     }
     
@@ -75,6 +75,7 @@ public class HealthBar : MonoBehaviour
     private Vector3 offset;
     private Transform bar;
     private Transform fallow;
+    private GameObject healthBarGameObject;
     private GameObject contentGameObject;
 
     private HealthSystem healthSystem;
@@ -85,12 +86,13 @@ public class HealthBar : MonoBehaviour
         transform.position = fallow.position + offset;
     }
 
-    private void SetUp(HealthSystem healthSystem, Vector3 offset, Transform fallow, Transform bar, GameObject contentGameObject, bool hideWhenFull)
+    private void SetUp(HealthSystem healthSystem, Vector3 offset, Transform fallow, Transform bar, GameObject healthBarGameObject, GameObject contentGameObject, bool hideWhenFull)
     {
         this.hideWhenFull = hideWhenFull;
         this.offset = offset;
-        this.bar = bar;
         this.fallow = fallow;
+        this.bar = bar;
+        this.healthBarGameObject = healthBarGameObject;
         this.contentGameObject = contentGameObject;
 
         this.healthSystem = healthSystem;
@@ -101,6 +103,12 @@ public class HealthBar : MonoBehaviour
         }
         
         healthSystem.OnHealthChanged += HealthSystem_OnHealthChanged;
+        healthSystem.OnHealthDepleted += HealthSystem_OnHealthDepleted;
+    }
+
+    private void HealthSystem_OnHealthDepleted(object sender, System.EventArgs e)
+    {
+        Destroy(healthBarGameObject);
     }
 
     private void HealthSystem_OnHealthChanged(object sender, HealthSystem.OnHealthChangedEventArgs e)
@@ -111,7 +119,7 @@ public class HealthBar : MonoBehaviour
             contentGameObject.SetActive(hide);
         }
 
-        bar.localScale = new Vector3(e.amount, 1);
+        bar.localScale = new Vector3(healthSystem.GetHealthPercent(), 1);
     }
 
 }

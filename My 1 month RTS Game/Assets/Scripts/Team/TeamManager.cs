@@ -81,7 +81,7 @@ public class TeamManager : MonoBehaviour
     {
         teamUnitList.Add(unit);
     }
-    public void KillUnit(_BaseUnit unit)
+    public void UnitKilled(_BaseUnit unit)
     {
         teamUnitList.Add(unit);
     }

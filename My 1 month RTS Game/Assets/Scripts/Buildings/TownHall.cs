@@ -54,6 +54,11 @@ public class TownHall : _BaseBuilding, ISelectable
         return loadTransform;
     }
 
+    public TeamManager GetTeamManager()
+    {
+        return teamManager;
+    }
+
     public void AddMinerials()
     {
         int amount = 10;
