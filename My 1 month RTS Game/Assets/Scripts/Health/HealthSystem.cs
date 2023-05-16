@@ -36,23 +36,57 @@ public class HealthSystem
         return maxHealth;
     }
 
+    public void AddMaxHealth(int amount)
+    {
+        maxHealth += amount;
+        OnHealthChanged?.Invoke(this, new OnHealthChangedEventArgs
+        {
+            value = health,
+            amount = 0,
+        });
+    }
+
+    public void SetMaxHealth(int maxHealth)
+    {
+        this.maxHealth = maxHealth;
+        OnHealthChanged?.Invoke(this, new OnHealthChangedEventArgs
+        {
+            value = health,
+            amount = 0,
+        });
+    }
+
+    public void SetHealthToMaxHealth()
+    {
+        health = maxHealth;
+        OnHealthChanged?.Invoke(this, new OnHealthChangedEventArgs
+        {
+            value = health,
+            amount = 0,
+        });
+    }
+
+    public void SetHealth(int health)
+    {
+        this.health = health;
+        OnHealthChanged?.Invoke(this, new OnHealthChangedEventArgs
+        {
+            value = health,
+            amount = 0,
+        });
+    }
+
     public float GetHealthPercent()
     {
-        Debug.Log("(float)health / maxHealth: " + (float)health / maxHealth);
         return (float)health / maxHealth;
     }
 
     public void Damage(int damageAmount)
     {
-        Debug.Log("damageAmount: " + damageAmount);
-        Debug.Log("Old health: " + health);
         health -= damageAmount;
-        Debug.Log("health: " + health);
-        Debug.Log("(float)health / maxHealth: " + (float)health / maxHealth);
         
         if (health <= 0)
         {
-            Debug.Log("health <= 0");
             health = 0;
             OnHealthDepleted?.Invoke(this, EventArgs.Empty);
             return;

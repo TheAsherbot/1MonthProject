@@ -9,13 +9,12 @@ public class MinerialUI : MonoBehaviour
 {
     
     
-    [SerializeField] private TeamManager teamManager;
     [SerializeField] private TextMeshProUGUI minerialAmountTxt;
 
 
     private void Awake()
     {
-        teamManager.OnMinerialValueChanged += TeamManager_OnMinerialValueChanged;
+        TeamManager.PlayerInstance.OnMinerialValueChanged += TeamManager_OnMinerialValueChanged;
     }
 
 

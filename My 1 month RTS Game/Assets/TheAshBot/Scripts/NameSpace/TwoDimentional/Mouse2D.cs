@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 namespace TheAshBot.TwoDimentional
 {
@@ -12,7 +12,8 @@ namespace TheAshBot.TwoDimentional
         
         public static bool TryGetObjectAtMousePosition(Camera camera, out GameObject hit)
         {
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = camera.ScreenPointToRay(UnityEngine.InputSystem.Mouse.current.position.ReadValue());
+
             RaycastHit2D raycastHit = Physics2D.Raycast(ray.origin, ray.direction);
 
             if (raycastHit.transform != null)
@@ -40,7 +41,7 @@ namespace TheAshBot.TwoDimentional
         /// <returns>This return the mouse posintion</returns>
         public static Vector2 GetMousePosition2D(Camera camera, float zPosition)
         {
-            Vector3 mouseWorldPosition = camera.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorldPosition = camera.ScreenToWorldPoint(UnityEngine.InputSystem.Mouse.current.position.ReadValue());
             mouseWorldPosition.z = zPosition;
             return mouseWorldPosition;
         }

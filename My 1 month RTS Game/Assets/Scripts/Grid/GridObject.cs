@@ -12,8 +12,9 @@ public class GridObject
     {
         None,
         Dirt,
-        Building,
+        Rocks,
         Minerials,
+        Building,
     }
 
     [Serializable]

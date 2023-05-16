@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System;
-using TheAshBot.Grid;
 using UnityEngine;
-using Unity.VisualScripting;
 
 public class Grid
 {
@@ -284,7 +282,6 @@ public class Grid
         return FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
     }
 
-
     #endregion
 
 
@@ -502,6 +499,21 @@ public class Grid
         int x, y;
         GetXY(worldPosition, out x, out y);
         return GetGridObject(x, y);
+    }
+
+    /// <summary>
+    /// This will test to see if a position is on the grid.
+    /// </summary>
+    /// <param name="worldPosition">This is the grid objects world position</param>
+    /// <returns>True if the position is on the grid, and false if it is not on the grid</returns>
+    public bool IsPositionOnGrid(Vector2 worldPosition)
+    {
+        GetXY(worldPosition, out int x, out int y);
+        if (x < 0 || y < 0)
+        {
+            return false;
+        }
+        return true;
     }
 
     public void TriggerGridObjectChanged(int x, int y)

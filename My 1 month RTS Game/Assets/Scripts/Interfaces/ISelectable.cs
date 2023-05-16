@@ -30,6 +30,4 @@ public interface ISelectable
     public void OnSlot1ButtonClicked();
     public void OnSlot2ButtonClicked();
     public void OnSlot3ButtonClicked();
-    public void OnSlot4ButtonClicked();
-    public void OnSlot5ButtonClicked();
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -5,6 +6,17 @@ using UnityEngine;
 [RequireComponent(typeof(_BaseUnit))]
 public class UnitMovement : MonoBehaviour
 {
+
+    #region Events
+
+    public event EventHandler<OnDirectionChangedEventArgs> OnDirectionChanged;
+    public class OnDirectionChangedEventArgs : EventArgs
+    {
+        public Vector2 direction;
+    }
+
+    #endregion
+
 
     #region Variables
 
@@ -19,15 +31,17 @@ public class UnitMovement : MonoBehaviour
     [SerializeField] private AnimationCurve movement_Curve;
 
     private bool stopedMoving;
+    private bool isMoving;
     private float movement_ElapsedTime;
     private Vector2 movement_StartPosition;
     private Vector2 movement_EndPosition;
-    private List<Vector2> movementPath;
-
+    private Vector2 lastMoveDirection;
     private Vector2 lastMouseUpPosition;
+    private List<Vector2> movementPath;
 
 
     [Header("Rotation")]
+    [SerializeField] private bool rotate = true;
     [SerializeField] private float timeToRotate = 0.2f;
     [SerializeField] private AnimationCurve rotation_Curve;
 
@@ -87,7 +101,19 @@ public class UnitMovement : MonoBehaviour
             }
         }
 
-        DrawPath();
+        if (movementPath.Count >= 2)
+        {
+            if ((movementPath[1] - movementPath[0]) != lastMoveDirection)
+            {
+                lastMoveDirection = movementPath[1] - movementPath[0];
+                InvokeOnDirectionChanged();
+            }
+        }
+        else
+        {
+            lastMoveDirection = Vector2.zero;
+            InvokeOnDirectionChanged();
+        }
 
         void FindPath()
         {
@@ -97,10 +123,14 @@ public class UnitMovement : MonoBehaviour
                 GridObject.OccupationState.NotWalkable,
             });
         }
+
+        
     }
 
     private void Rotate()
     {
+        if (!rotate) return;
+
         rotation_ElapsedTime += Time.deltaTime;
         float percentageComplate = rotation_ElapsedTime / timeToRotate;
 
@@ -129,8 +159,16 @@ public class UnitMovement : MonoBehaviour
 
     private void StartPath()
     {
-        FindPath();
+        if (isMoving == true)
+        {
+            return;
+        }
+        else
+        {
+            FindPath();
+        }
 
+        isMoving = true;
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
 
@@ -146,6 +184,7 @@ public class UnitMovement : MonoBehaviour
         else
         {
             Debug.Log("movementPath.Count == 0");
+            return;
         }
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotPlaceable });
@@ -157,12 +196,12 @@ public class UnitMovement : MonoBehaviour
 
     private void SubpathReached()
     {
-
         if (stopedMoving)
         {
             PathStoped();
             return;
         }
+
         if (movementPath.Count == 1)
         {
             PathReached();
@@ -195,6 +234,7 @@ public class UnitMovement : MonoBehaviour
         movementPath.Clear();
         movement_EndPosition = transform.position;
         movement_StartPosition = transform.position;
+        isMoving = false;
 
         unit.Trigger_OnReachedDestination();
     }
@@ -211,11 +251,24 @@ public class UnitMovement : MonoBehaviour
     #endregion
 
 
+    private void InvokeOnDirectionChanged()
+    {
+        OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
+        {
+            direction = lastMoveDirection,
+        });
+    }
+
+
     #region Events
 
     private void Unit_OnStopMoveing(object sender, System.EventArgs e)
     {
         stopedMoving = true;
+        isMoving = false;
+
+        lastMoveDirection = Vector2.zero;
+        InvokeOnDirectionChanged();
     }
 
     private void Unit_OnMove(object sender, _BaseUnit.OnMoveEventArgs e)

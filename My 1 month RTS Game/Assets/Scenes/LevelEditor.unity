@@ -156,14 +156,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemapSpriteUVArray:
   - tilemapSprite: 1
-    uv00Pixels: {x: 6, y: 0}
-    uv11Pixels: {x: 8, y: 8}
+    uv00Pixels: {x: 0, y: 0}
+    uv11Pixels: {x: 32, y: 32}
   - tilemapSprite: 2
-    uv00Pixels: {x: 4, y: 0}
-    uv11Pixels: {x: 6, y: 6}
+    uv00Pixels: {x: 32, y: 0}
+    uv11Pixels: {x: 64, y: 32}
   - tilemapSprite: 3
-    uv00Pixels: {x: 2, y: 0}
-    uv11Pixels: {x: 4, y: 4}
+    uv00Pixels: {x: 64, y: 0}
+    uv11Pixels: {x: 96, y: 32}
+  - tilemapSprite: 4
+    uv00Pixels: {x: 96, y: 0}
+    uv11Pixels: {x: 97, y: 1}
+  - tilemapSprite: 6
+    uv00Pixels: {x: 160, y: 0}
+    uv11Pixels: {x: 161, y: 1}
 --- !u!4 &336281819
 Transform:
   m_ObjectHideFlags: 0
@@ -199,7 +205,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ad8eeab2a0ef93e41b0c6c576016589a, type: 2}
+  - {fileID: 2100000, guid: 1be5d5b97ed60ad41b728e96c5b8a0d7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -476,8 +482,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197b3c0eb3859054cb0f840d294b350a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 20
-  height: 20
+  width: 100
+  height: 100
   cellSize: 1
   loadOnStart: 0
   saveData: {fileID: 0}

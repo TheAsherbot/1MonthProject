@@ -15,42 +15,41 @@ public class HotBarUI : MonoBehaviour
     [SerializeField] private Button slot1;
     [SerializeField] private Button slot2;
     [SerializeField] private Button slot3;
-    [SerializeField] private Button slot4;
-    [SerializeField] private Button slot5;
 
 
     private ISelectable selected;
+    private GameInputActions inputActions;
 
 
     private void Start()
     {
         mouse.OnSelectedChanged += Mouse_OnSelectedChanged;
+        inputActions = new GameInputActions();
+        inputActions.GameUI.Enable();
+        inputActions.GameUI.HotBar1.performed += HotBar1_performed;
+        inputActions.GameUI.HotBar2.performed += HotBar2_performed;
+        inputActions.GameUI.HotBar3.performed += HotBar3_performed;
     }
 
-    private void Update()
+    private void HotBar1_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
         if (selected == null) return;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            selected.OnSlot1ButtonClicked();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            selected.OnSlot2ButtonClicked();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            selected.OnSlot3ButtonClicked();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            selected.OnSlot4ButtonClicked();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            selected.OnSlot5ButtonClicked();
-        }
+        selected.OnSlot1ButtonClicked();
+    }
+
+    private void HotBar2_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (selected == null) return;
+
+        selected.OnSlot2ButtonClicked();
+    }
+
+    private void HotBar3_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (selected == null) return;
+
+        selected.OnSlot3ButtonClicked();
     }
 
     private void Mouse_OnSelectedChanged(object sender, Mouse.OnSelectedChangedEventArgs e)
@@ -62,18 +61,18 @@ public class HotBarUI : MonoBehaviour
             slot1.image.sprite = selected.HotBarSlotSOList[0].image;
             slot2.image.sprite = selected.HotBarSlotSOList[1].image;
             slot3.image.sprite = selected.HotBarSlotSOList[2].image;
-            slot4.image.sprite = selected.HotBarSlotSOList[3].image;
-            slot5.image.sprite = selected.HotBarSlotSOList[4].image;
         }
         catch (System.IndexOutOfRangeException exception)
         {
             Debug.LogError(exception);
         }
 
+        slot1.onClick.RemoveAllListeners();
+        slot2.onClick.RemoveAllListeners();
+        slot3.onClick.RemoveAllListeners();
+
         slot1.onClick.AddListener(e.selected.OnSlot1ButtonClicked);
         slot2.onClick.AddListener(e.selected.OnSlot2ButtonClicked);
         slot3.onClick.AddListener(e.selected.OnSlot3ButtonClicked);
-        slot4.onClick.AddListener(e.selected.OnSlot4ButtonClicked);
-        slot5.onClick.AddListener(e.selected.OnSlot5ButtonClicked);
     }
 }

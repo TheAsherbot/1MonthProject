@@ -16,11 +16,14 @@ public class Mouse : MonoBehaviour
 
 
     private ISelectable selected;
+    private GameInputActions inputActions;
 
 
-    private void Update()
+    private void Start()
     {
-        TestInput();
+        inputActions = new GameInputActions();
+        inputActions.Game.Enable();
+        inputActions.Game.Select.performed += Select_performed;
     }
 
     private void LateUpdate()
@@ -33,13 +36,12 @@ public class Mouse : MonoBehaviour
     {
         return selected;
     }
-
-    private void TestInput()
+    
+    private void Select_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Select();
-        }
+        if (!GridManager.Instance.grid.IsPositionOnGrid(Mouse2D.GetMousePosition2D())) return;
+
+        Select();
     }
 
     private void Select()

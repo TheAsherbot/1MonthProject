@@ -24,7 +24,14 @@ public class TownHall : _BaseBuilding, ISelectable
     [SerializeField] private Transform unloadTransform;
     [SerializeField] private Transform loadTransform;
     [Space(5)]
-    [SerializeField] private TeamManager teamManager;
+    
+    
+    private TeamManager teamManager;
+
+
+    [Header("Health")]
+    [SerializeField] private int maxHealth;
+    private HealthSystem healthSystem;
 
     #endregion
 
@@ -33,14 +40,22 @@ public class TownHall : _BaseBuilding, ISelectable
 
     private void Start()
     {
+        Vector3 offset = new Vector3(1.6f, 2.5f);
+        Vector3 size = new Vector3(3, 0.3f);
+        HealthBar.Border border = new HealthBar.Border();
+        border.thickness = 0.075f;
+        border.color = Color.black;
+        healthSystem = HealthBar.Create(maxHealth, transform, offset, size, Color.red, Color.gray, border);
         GridManager.Instance.grid.TryMakeBuilding(transform.position, buildingSO.buildingLeyerListFromBottomToTop);
-    }
-
-    private void Update()
-    {
-        if (IsSelected)
+        if (GetComponent<IsOnPlayerTeam>() != null)
         {
-            TestInput();
+            // Is On Player team
+            teamManager = TeamManager.PlayerInstance;
+        }
+        else
+        {
+            // is not on player team (So is on AI team)
+            teamManager = TeamManager.AIInstance;
         }
     }
 
@@ -70,21 +85,31 @@ public class TownHall : _BaseBuilding, ISelectable
 
     #region Input
 
-    private void TestInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha0))
-        {
-            Spawn(spawnableUnits[0]);
-        }
-    }
-
     private void Spawn(UnitSO unitSO)
     {
+        Vector2 raycastPosition = (Vector2)transform.position + new Vector2(3.5f, 1.5f);
+        RaycastHit2D raycastHit = Physics2D.Raycast(raycastPosition, Vector3.forward, 100f);
+
+        if (raycastHit.transform != null)
+        {
+            return; // Unit is alrady at the spawn point
+        }
+
         if (teamManager.TryUseMinerials(unitSO.cost))
         {
             _BaseUnit spawnedUnit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
             spawnedUnit.name = unitSO.name;
             teamManager.UnitSpawned(spawnedUnit);
+            if (GetComponent<IsOnPlayerTeam>() != null)
+            {
+                // Is on player team
+                spawnedUnit.gameObject.AddComponent<IsOnPlayerTeam>();
+            }
+            else
+            {
+                // is on AI team
+                spawnedUnit.gameObject.AddComponent<IsOnAITeam>();
+            }
             if (spawnedUnit is Civilian)
             {
                 ((Civilian)spawnedUnit).SetTownHall(this);
@@ -120,16 +145,6 @@ public class TownHall : _BaseBuilding, ISelectable
     public void OnSlot3ButtonClicked()
     {
         Spawn(spawnableUnits[2]);
-    }
-
-    public void OnSlot4ButtonClicked()
-    {
-        Spawn(spawnableUnits[3]);
-    }
-
-    public void OnSlot5ButtonClicked()
-    {
-        Spawn(spawnableUnits[4]);
     }
 
     #endregion

@@ -29,7 +29,8 @@ public class HealthBar : MonoBehaviour
             borderGameObject.transform.localScale = size + Vector3.one * border.thickness;
             borderGameObject.GetComponent<SpriteRenderer>().color = border.color;
             borderGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
-            borderGameObject.GetComponent<SpriteRenderer>().sortingOrder = 90;
+            RendererSortingOrderSorter borderRendererSortingOrderSorter = borderGameObject.AddComponent<RendererSortingOrderSorter>();
+            borderRendererSortingOrderSorter.offset = -40;
         }
 
         // Background
@@ -39,7 +40,8 @@ public class HealthBar : MonoBehaviour
         backgroundGameObject.transform.localScale = size;
         backgroundGameObject.GetComponent<SpriteRenderer>().color = backgroundColor;
         backgroundGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
-        backgroundGameObject.GetComponent<SpriteRenderer>().sortingOrder = 100;
+        RendererSortingOrderSorter backgroundRendererSortingOrderSorter = backgroundGameObject.AddComponent<RendererSortingOrderSorter>();
+        backgroundRendererSortingOrderSorter.offset = -50;
 
         // Bar
         GameObject barGameObject = new GameObject("Bar");
@@ -53,7 +55,8 @@ public class HealthBar : MonoBehaviour
         barSpriteGameObject.transform.localScale = size;
         barSpriteGameObject.GetComponent<SpriteRenderer>().color = barColor;
         barSpriteGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
-        barSpriteGameObject.GetComponent<SpriteRenderer>().sortingOrder = 110;
+        RendererSortingOrderSorter barSpriteRendererSortingOrderSorter = barSpriteGameObject.AddComponent<RendererSortingOrderSorter>();
+        barSpriteRendererSortingOrderSorter.offset = -60;
 
         HealthBar healthBar = healthBarGameObject.AddComponent<HealthBar>();
         HealthSystem healthSystem = new HealthSystem(maxHealth);

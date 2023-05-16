@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Civilian : _BaseUnit, ISelectable, IDamageable
 {
@@ -37,13 +38,16 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
     [Header("Mining")]
     [SerializeField] private float timeToMine = 3f;
+    [SerializeField] private TownHall townHall;
 
     private bool isReturningFromMiningSate;
-    private TownHall townHall;
     private Vector3 minerial;
 
 
     private HealthSystem healthSystem;
+
+
+    private GameInputActions inputActions;
 
 
     #endregion
@@ -53,19 +57,28 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
     private void Start()
     {
-        healthSystem = HealthBar.Create(10, transform, Vector3.up, new Vector3(2, 0.3f), Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = 0.1f });
+        Vector2 healthBarOffset = Vector3.up * 2;
+        Vector2 healthBarSize = new Vector3(2, 0.3f);
+        healthSystem = HealthBar.Create(10, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = 0.1f });
+
+        inputActions = new GameInputActions();
+        inputActions.Game.Enable();
+        inputActions.Game.Action1.performed += Action1_performed;
 
         healthSystem.OnHealthDepleted += HealthSystem_OnHealthDepleted;
         OnReachedDestination += Civilian_OnReachedDestination;
         OnStopMoveing += Civilian_OnReachedDestination;
     }
 
+    private void Action1_performed(InputAction.CallbackContext obj)
+    {
+        if (!IsSelected) return;
+
+        MoveInputPressed();
+    }
+
     private void Update()
     {
-        if (IsSelected)
-        {
-            TestInput();
-        }
         TestState();
     }
 
@@ -74,16 +87,10 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
     #region Input
 
-    private void TestInput()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            MoveInputPressed();
-        }
-    }
-
     private void MoveInputPressed()
     {
+        if (!GridManager.Instance.grid.IsPositionOnGrid(Mouse2D.GetMousePosition2D())) return;
+     
         GridObject gridObject = GridManager.Instance.grid.GetGridObject(Mouse2D.GetMousePosition2D());
         if (gridObject.tilemapSprite != GridObject.TilemapSprite.Minerials)
         {
@@ -211,18 +218,9 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
     {
     }
 
-    public void OnSlot4ButtonClicked()
-    {
-    }
-
-    public void OnSlot5ButtonClicked()
-    {
-    }
-
 
     public void Damage(int amount)
     {
-        Debug.Log("amount: " + amount);
         healthSystem.Damage(amount);
     }
 

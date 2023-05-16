@@ -7,6 +7,19 @@ public class TeamManager : MonoBehaviour
 {
 
 
+    public static TeamManager PlayerInstance
+    {
+        get;
+        private set;
+    }
+    
+    public static TeamManager AIInstance
+    {
+        get;
+        private set;
+    }
+
+
     public event EventHandler<OnMinerialValueChangedEventArgs> OnMinerialValueChanged;
     public class OnMinerialValueChangedEventArgs : EventArgs
     {
@@ -15,21 +28,38 @@ public class TeamManager : MonoBehaviour
     }
 
 
+    public enum Teams
+    {
+        PlayerTeam,
+        AITeam,
+    }
+
+
     [SerializeField] private int startingMinerials;
+    [SerializeField] private Teams team;
 
 
     private int minerials;
 
-    private List<_BaseBuilding> teamBuildingList;
-    private List<_BaseUnit> teamUnitList;
+    [Space(5)]
+
+    private int maxNumberOfUnits;
+    [SerializeField] private List<_BaseBuilding> teamBuildingList;
+    [SerializeField] private List<_BaseUnit> teamUnitList;
 
 
     private void Awake()
     {
-        teamBuildingList = new List<_BaseBuilding>();
-        teamUnitList = new List<_BaseUnit>();
-
         minerials = startingMinerials;
+
+        if (team == Teams.PlayerTeam)
+        {
+            PlayerInstance = this;
+        }
+        else if (team == Teams.AITeam)
+        {
+            AIInstance = this;
+        }
     }
 
     private void Start()

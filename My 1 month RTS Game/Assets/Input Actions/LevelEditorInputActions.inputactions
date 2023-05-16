@@ -1,0 +1,154 @@
+{
+    "name": "LevelEditorInputActions",
+    "maps": [
+        {
+            "name": "LevelEditor",
+            "id": "1070a665-a264-4cd5-a5fa-f9e407fd3b24",
+            "actions": [
+                {
+                    "name": "Paint",
+                    "type": "Button",
+                    "id": "ab8dd277-a0d1-4cab-890b-ba9f7ad2b06c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TileMapSprite1",
+                    "type": "Button",
+                    "id": "c32c8246-329e-49c9-90f4-cc084821faea",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TileMapSprite2",
+                    "type": "Button",
+                    "id": "04321209-e0ad-40d4-a389-0de168ba14b6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TileMapSprite3",
+                    "type": "Button",
+                    "id": "5e1c9f22-ce6d-45c4-b076-1aa43bd0858d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TileMapSprite4",
+                    "type": "Button",
+                    "id": "a2903b01-141d-4e07-af7d-3f72614e581a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TileMapSprite5",
+                    "type": "Button",
+                    "id": "244b7d53-de8e-49c0-9198-3f8f861661d5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Save",
+                    "type": "Button",
+                    "id": "b70397d0-baea-4c97-90b8-54901f4c108f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "eb991afc-399e-4c60-ba64-e2445fbcb491",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Paint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "38187638-9493-4eab-873e-b61faff025e8",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TileMapSprite1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "200b527b-ee3d-4a2c-b624-e013d0cfd58d",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TileMapSprite2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "604f4eb2-fdcc-445a-8a9b-90276eab1110",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TileMapSprite3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "51a50657-6aea-47f0-9e39-c3338aa3e429",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TileMapSprite4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4f7746de-4c76-471f-ac23-542eb65c1e19",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TileMapSprite5",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "85efbe1e-b5bf-402d-b9cf-3603070b3cfd",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Save",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
