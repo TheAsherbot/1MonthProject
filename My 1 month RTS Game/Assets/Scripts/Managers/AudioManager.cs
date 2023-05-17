@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-using TheAshBot;
-
-using Unity.VisualScripting;
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+using TheAshBot;
 
 [RequireComponent(typeof(AudioSource))]
 public class AudioManager : MonoBehaviour
@@ -26,6 +24,10 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private List<AudioClip> mainMenuAudioClipList;
     [SerializeField] private List<AudioClip> loadingAudioClipList;
     [SerializeField] private List<AudioClip> inGameAudioClipList;
+
+
+    private float timerMaxOffset = 3;
+    private float timePastedScenceMusicHasStarted;
 
 
     private AudioSource audioSource;
@@ -50,12 +52,11 @@ public class AudioManager : MonoBehaviour
 
         OnAudioClipFinished += AudioManager_OnAudioClipFinished;
         SceneLoader.Instance.OnSceneLoaded += SceneLoader_OnSceneLoaded;
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void Update()
     {
-        GertAndPlayAudioCLip();
+        CountTimePastedScenceMusicHasStarted();
     }
 
     private void AudioManager_OnAudioClipFinished(object sender, EventArgs eventArgs)
@@ -68,54 +69,43 @@ public class AudioManager : MonoBehaviour
         GertAndPlayAudioCLip();
     }
 
-    private void OnApplicationQuit()
-    {
-        OnAudioClipFinished = null;
-    }
-
     private void GertAndPlayAudioCLip()
     {
+        timePastedScenceMusicHasStarted = 0;
         currentAudioClip = GetAudioClipForCurrentScene();
         audioSource.clip = currentAudioClip;
         audioSource.Play();
-
-        WiatOntillTheMuscHasStoped();
     }
 
     private AudioClip GetAudioClipForCurrentScene()
     {
         if (SceneLoader.Instance.scene == SceneLoader.Scenes.MainMenu)
         {
-            return mainMenuAudioClipList[UnityEngine.Random.Range(0, mainMenuAudioClipList.Count - 1)];
+            return mainMenuAudioClipList[UnityEngine.Random.Range(0, mainMenuAudioClipList.Count)];
         }
         else if (SceneLoader.Instance.scene == SceneLoader.Scenes.Loading)
         {
-            return loadingAudioClipList[UnityEngine.Random.Range(0, loadingAudioClipList.Count - 1)];
+            return loadingAudioClipList[UnityEngine.Random.Range(0, loadingAudioClipList.Count)];
         }
         else if (SceneLoader.Instance.scene == SceneLoader.Scenes.Game)
         {
-            int index = UnityEngine.Random.Range(0, inGameAudioClipList.Count - 1);
-            this.Log("index: " + index);
-            this.Log("inGameAudioClipList.Count: " + inGameAudioClipList.Count);
+            int index = UnityEngine.Random.Range(0, inGameAudioClipList.Count);
             return inGameAudioClipList[index];
         }
         else
         {
             // Defualts to gte loading music
-            return loadingAudioClipList[UnityEngine.Random.Range(0, loadingAudioClipList.Count - 1)];
+            return loadingAudioClipList[UnityEngine.Random.Range(0, loadingAudioClipList.Count)];
         }
     }
 
-    private async void WiatOntillTheMuscHasStoped()
+    private void CountTimePastedScenceMusicHasStarted()
     {
-        AudioClip lastAudioClip = currentAudioClip;
-        int addedTimeInMilliseconds = 1000;
-        await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt((currentAudioClip.length * 1000) + addedTimeInMilliseconds));
-
-        if (lastAudioClip == currentAudioClip)
+        timePastedScenceMusicHasStarted += Time.unscaledDeltaTime;
+        if (timePastedScenceMusicHasStarted >= currentAudioClip.length + timerMaxOffset)
         {
+            timePastedScenceMusicHasStarted = 0;
             OnAudioClipFinished?.Invoke(this, EventArgs.Empty);
         }
     }
-
 }
