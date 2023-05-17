@@ -44,6 +44,15 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShiftSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""bbfdea8c-d9e6-4985-bf4b-9ccfff1f6024"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -66,6 +75,17 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Action1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90d2ac28-3155-4d44-b358-562c3c1362dd"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShiftSelect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -218,6 +238,7 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
         m_Game = asset.FindActionMap("Game", throwIfNotFound: true);
         m_Game_Select = m_Game.FindAction("Select", throwIfNotFound: true);
         m_Game_Action1 = m_Game.FindAction("Action1", throwIfNotFound: true);
+        m_Game_ShiftSelect = m_Game.FindAction("ShiftSelect", throwIfNotFound: true);
         // CameraMovement
         m_CameraMovement = asset.FindActionMap("CameraMovement", throwIfNotFound: true);
         m_CameraMovement_Movement = m_CameraMovement.FindAction("Movement", throwIfNotFound: true);
@@ -289,12 +310,14 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
     private List<IGameActions> m_GameActionsCallbackInterfaces = new List<IGameActions>();
     private readonly InputAction m_Game_Select;
     private readonly InputAction m_Game_Action1;
+    private readonly InputAction m_Game_ShiftSelect;
     public struct GameActions
     {
         private @GameInputActions m_Wrapper;
         public GameActions(@GameInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Select => m_Wrapper.m_Game_Select;
         public InputAction @Action1 => m_Wrapper.m_Game_Action1;
+        public InputAction @ShiftSelect => m_Wrapper.m_Game_ShiftSelect;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -310,6 +333,9 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
             @Action1.started += instance.OnAction1;
             @Action1.performed += instance.OnAction1;
             @Action1.canceled += instance.OnAction1;
+            @ShiftSelect.started += instance.OnShiftSelect;
+            @ShiftSelect.performed += instance.OnShiftSelect;
+            @ShiftSelect.canceled += instance.OnShiftSelect;
         }
 
         private void UnregisterCallbacks(IGameActions instance)
@@ -320,6 +346,9 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
             @Action1.started -= instance.OnAction1;
             @Action1.performed -= instance.OnAction1;
             @Action1.canceled -= instance.OnAction1;
+            @ShiftSelect.started -= instance.OnShiftSelect;
+            @ShiftSelect.performed -= instance.OnShiftSelect;
+            @ShiftSelect.canceled -= instance.OnShiftSelect;
         }
 
         public void RemoveCallbacks(IGameActions instance)
@@ -449,6 +478,7 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
     {
         void OnSelect(InputAction.CallbackContext context);
         void OnAction1(InputAction.CallbackContext context);
+        void OnShiftSelect(InputAction.CallbackContext context);
     }
     public interface ICameraMovementActions
     {

@@ -1,5 +1,5 @@
 {
-    "name": "PlayerInputActions",
+    "name": "GameInputActions",
     "maps": [
         {
             "name": "Game",
@@ -18,6 +18,15 @@
                     "name": "Action1",
                     "type": "Button",
                     "id": "43a56aa7-2182-4913-8a85-6d4deaefdcf5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ShiftSelect",
+                    "type": "Button",
+                    "id": "bbfdea8c-d9e6-4985-bf4b-9ccfff1f6024",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -44,6 +53,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Action1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "90d2ac28-3155-4d44-b358-562c3c1362dd",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShiftSelect",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

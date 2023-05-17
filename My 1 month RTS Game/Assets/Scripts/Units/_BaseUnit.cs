@@ -1,6 +1,6 @@
 using System;
 
-using TheAshBot.TwoDimentional;
+using TheAshBot;
 
 using UnityEngine;
 
@@ -16,6 +16,21 @@ public class _BaseUnit : MonoBehaviour
         public Vector2 movePoint;
     }
 
+    protected void Start()
+    {
+        if (TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
+        {
+            //UnitSelections.Instance.AddToUnitList(gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
+        {
+            //UnitSelections.Instance.RemoveFromUnitList(gameObject);
+        }
+    }
 
     protected void Trigger_OnMove(Vector2 movePoint)
     {

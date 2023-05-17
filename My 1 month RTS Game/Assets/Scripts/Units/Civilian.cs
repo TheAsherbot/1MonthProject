@@ -21,14 +21,17 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
     #region Variables
 
-    [field : Header("Generial")]
-    public bool IsSelected
+    [Header("Generial")]
+    [SerializeField] private GameObject selectedVisual;
+    [field: SerializeField]
+    public List<HotBarSlotSO> HotBarSlotSOList
     {
         get;
         set;
     }
-    [field: SerializeField]
-    public List<HotBarSlotSO> HotBarSlotSOList
+
+
+    public bool IsSelected
     {
         get;
         set;
@@ -55,8 +58,10 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
     #region Unity Functions
 
-    private void Start()
+    private new void Start()
     {
+        base.Start();
+
         Vector2 healthBarOffset = Vector3.up * 2;
         Vector2 healthBarSize = new Vector3(2, 0.3f);
         healthSystem = HealthBar.Create(10, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = 0.1f });
@@ -199,11 +204,15 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
     public void Select()
     {
         IsSelected = true;
+
+        selectedVisual.SetActive(true);
     }
 
     public void Unselect()
     {
         IsSelected = false;
+
+        selectedVisual.SetActive(false);
     }
 
     public void OnSlot1ButtonClicked()

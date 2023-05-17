@@ -36,7 +36,7 @@ public class UnitMovement : MonoBehaviour
     private Vector2 movement_StartPosition;
     private Vector2 movement_EndPosition;
     private Vector2 lastMoveDirection;
-    private Vector2 lastMouseUpPosition;
+    private Vector2 movePoint;
     private List<Vector2> movementPath;
 
 
@@ -85,7 +85,7 @@ public class UnitMovement : MonoBehaviour
 
     private void FindPath()
     {
-        Vector2 endPosition = lastMouseUpPosition;
+        Vector2 endPosition = movePoint;
         List<Vector2> lastMovementPath;
 
         FindPath();
@@ -273,7 +273,7 @@ public class UnitMovement : MonoBehaviour
 
     private void Unit_OnMove(object sender, _BaseUnit.OnMoveEventArgs e)
     {
-        lastMouseUpPosition = e.movePoint;
+        movePoint = e.movePoint;
         StartPath();
     }
 

@@ -5,7 +5,6 @@ using TheAshBot.TwoDimentional;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SubsystemsImplementation;
 
 public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
 {
@@ -33,11 +32,8 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
 
     #region Variables
 
-    public bool IsSelected
-    {
-        get;
-        set;
-    }
+    [Header("Visual")]
+    [SerializeField] private GameObject selectedVisual;
     [field: SerializeField]
     public List<HotBarSlotSO> HotBarSlotSOList
     {
@@ -45,9 +41,16 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
         set;
     }
 
+
+    public bool IsSelected
+    {
+        get;
+        set;
+    }
     private States state;
 
     
+    [Header("Health")]
     [SerializeField] private int maxHealth;
     private HealthSystem healthSystem;
 
@@ -78,8 +81,10 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
     
     #region Unity Functions
 
-    private void Start()
+    private new void Start()
     {
+        base.Start();
+
         Vector2 healthBarOffset = Vector3.up * 2;
         Vector2 healthBarSize = new Vector3(3, 0.3f);
         healthSystem = HealthBar.Create(maxHealth, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = .1f });
@@ -273,11 +278,15 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
     public void Select()
     {
         IsSelected = true;
+
+        selectedVisual.SetActive(true);
     }
     
     public void Unselect()
     {
         IsSelected = false;
+
+        selectedVisual.SetActive(false);
     }
 
     public void OnSlot1ButtonClicked()
