@@ -8,6 +8,8 @@ public class TownHall : _BaseBuilding, ISelectable
 
     #region Variables
 
+    [SerializeField] private GameObject selectedVisual;
+
     public bool IsSelected
     {
         get;
@@ -125,11 +127,15 @@ public class TownHall : _BaseBuilding, ISelectable
     public void Select()
     {
         IsSelected = true;
+
+        selectedVisual.SetActive(true);
     }
 
     public void Unselect()
     {
         IsSelected = false;
+
+        selectedVisual.SetActive(false);
     }
 
     public void OnSlot1ButtonClicked()

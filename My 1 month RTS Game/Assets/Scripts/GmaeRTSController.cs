@@ -3,8 +3,11 @@ using System.Collections.Generic;
 
 using TheAshBot.TwoDimentional;
 
+using UnityEditor.SearchService;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class GmaeRTSController : MonoBehaviour
 {
@@ -104,6 +107,7 @@ public class GmaeRTSController : MonoBehaviour
 
         RemoveAllFromSelectedList();
         List<ISelectable> listOfNewSellectedItems = new List<ISelectable>();
+        bool hasUnits = false;
         foreach (Collider2D collider2D in collider2DArray)
         {
             if (team == Teams.Player)
@@ -112,7 +116,7 @@ public class GmaeRTSController : MonoBehaviour
                 {
                     listOfNewSellectedItems.Add(selectable);
                     selectedList.Add(selectable);
-                    selectable.Select();
+                    if (selectable is _BaseUnit unit) hasUnits = true;
                 }
             }
             else if (team == Teams.AI)
@@ -121,9 +125,27 @@ public class GmaeRTSController : MonoBehaviour
                 {
                     listOfNewSellectedItems.Add(selectable);
                     selectedList.Add(selectable);
-                    selectable.Select();
+                    if (selectable is _BaseBuilding building) hasUnits = false;
                 }
             }
+        }
+
+        List<ISelectable> removeList = new List<ISelectable>();
+        foreach (ISelectable selectable in selectedList)
+        {
+            if (hasUnits)
+            {
+                if (selectable is _BaseBuilding building)
+                {
+                    removeList.Add(selectable);
+                    continue;
+                }
+                selectable.Select();
+            }
+        }
+        foreach (ISelectable selected in removeList)
+        {
+            selectedList.Remove(selected);
         }
 
         OnSellect?.Invoke(this, new OnSellectEventArgs
