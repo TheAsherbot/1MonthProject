@@ -6,7 +6,7 @@ using TheAshBot.TwoDimentional;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Civilian : _BaseUnit, ISelectable, IDamageable
+public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 {
 
     public enum States
@@ -68,19 +68,12 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
         inputActions = new GameInputActions();
         inputActions.Game.Enable();
-        inputActions.Game.Action1.performed += Action1_performed;
 
         healthSystem.OnHealthDepleted += HealthSystem_OnHealthDepleted;
         OnReachedDestination += Civilian_OnReachedDestination;
         OnStopMoveing += Civilian_OnReachedDestination;
     }
 
-    private void Action1_performed(InputAction.CallbackContext obj)
-    {
-        if (!IsSelected) return;
-
-        MoveInputPressed();
-    }
 
     private void Update()
     {
@@ -92,23 +85,20 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
     #region Input
 
-    private void MoveInputPressed()
+    private Vector2 TestIfShouldMine(Vector2 position)
     {
-        if (!GridManager.Instance.grid.IsPositionOnGrid(Mouse2D.GetMousePosition2D())) return;
-     
-        GridObject gridObject = GridManager.Instance.grid.GetGridObject(Mouse2D.GetMousePosition2D());
+        GridObject gridObject = GridManager.Instance.grid.GetGridObject(position);
         if (gridObject.tilemapSprite != GridObject.TilemapSprite.Minerials)
         {
             state = States.Moving;
-            Trigger_OnMove(Mouse2D.GetMousePosition2D());
-            return;
+            return position;
         }
 
         minerial = GridManager.Instance.grid.GetWorldPosition(gridObject.X, gridObject.Y);
 
         GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(gridObject);
-        Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y));
         state = States.MovingToMine;
+        return GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y);
     }
 
     #endregion
@@ -201,6 +191,8 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
 
     #region Interfaces
 
+    #region ISelectable
+
     public void Select()
     {
         IsSelected = true;
@@ -227,11 +219,36 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable
     {
     }
 
+    #endregion
+
+    #region IDamagable
 
     public void Damage(int amount)
     {
         healthSystem.Damage(amount);
     }
+
+    #endregion
+
+    #region IMoveable
+
+    public void Move(Vector2 position)
+    {
+        if (IsSelected)
+        {
+            if (!GridManager.Instance.grid.IsPositionOnGrid(position)) return;
+
+            Trigger_OnMove(TestIfShouldMine(position));
+        }
+    }
+
+    public void Move(float x, float y)
+    {
+        Move(new Vector2(x, y));
+    }
+
+    #endregion
+
 
     #endregion
 

@@ -10,7 +10,7 @@ public class HotBarUI : MonoBehaviour
 {
 
 
-    [SerializeField] private Mouse mouse;
+    [SerializeField] private GmaeRTSController rtsController;
     [Space(6)]
     [SerializeField] private Button slot1;
     [SerializeField] private Button slot2;
@@ -23,7 +23,7 @@ public class HotBarUI : MonoBehaviour
 
     private void Start()
     {
-        mouse.OnSelectedChanged += Mouse_OnSelectedChanged;
+        rtsController.OnSellect += Mouse_OnSelectedChanged;
         inputActions = new GameInputActions();
         inputActions.GameUI.Enable();
         inputActions.GameUI.HotBar1.performed += HotBar1_performed;
@@ -52,9 +52,10 @@ public class HotBarUI : MonoBehaviour
         selected.OnSlot3ButtonClicked();
     }
 
-    private void Mouse_OnSelectedChanged(object sender, Mouse.OnSelectedChangedEventArgs e)
+    private void Mouse_OnSelectedChanged(object sender, GmaeRTSController.OnSellectEventArgs eventArgs)
     {
-        selected = e.selected;
+        if (eventArgs.allSelected.Count > 1 || eventArgs.allSelected.Count == 0) return;
+        selected = eventArgs.allSelected[0];
 
         try
         {
@@ -71,8 +72,8 @@ public class HotBarUI : MonoBehaviour
         slot2.onClick.RemoveAllListeners();
         slot3.onClick.RemoveAllListeners();
 
-        slot1.onClick.AddListener(e.selected.OnSlot1ButtonClicked);
-        slot2.onClick.AddListener(e.selected.OnSlot2ButtonClicked);
-        slot3.onClick.AddListener(e.selected.OnSlot3ButtonClicked);
+        slot1.onClick.AddListener(eventArgs.allSelected[0].OnSlot1ButtonClicked);
+        slot2.onClick.AddListener(eventArgs.allSelected[0].OnSlot2ButtonClicked);
+        slot3.onClick.AddListener(eventArgs.allSelected[0].OnSlot3ButtonClicked);
     }
 }

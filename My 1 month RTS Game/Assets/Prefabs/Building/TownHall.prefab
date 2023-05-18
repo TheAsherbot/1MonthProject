@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   runOnlyOnce: 1
-  sortingOrderBase: 5000
+  sortingOrderBase: 4900
   offset: -1
 --- !u!1 &2610642204391458572
 GameObject:
@@ -173,7 +173,7 @@ GameObject:
   - component: {fileID: 4907278784268882458}
   - component: {fileID: 681601876455187821}
   - component: {fileID: 1529501886}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TownHall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

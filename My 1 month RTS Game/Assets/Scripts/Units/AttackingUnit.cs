@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
-public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
+public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
 {
 
 
@@ -32,7 +34,7 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
 
     #region Variables
 
-    [Header("Visual")]
+    [Header("Selected")]
     [SerializeField] private GameObject selectedVisual;
     [field: SerializeField]
     public List<HotBarSlotSO> HotBarSlotSOList
@@ -41,13 +43,17 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
         set;
     }
 
-
+    
     public bool IsSelected
     {
         get;
         set;
     }
+    
+    
     private States state;
+
+
 
     
     [Header("Health")]
@@ -73,9 +79,6 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
     private Vector2 last_EnemyPosition;
 
 
-    [Header("Input")]
-    private GameInputActions inputActions;
-
     #endregion
 
     
@@ -88,10 +91,6 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
         Vector2 healthBarOffset = Vector3.up * 2;
         Vector2 healthBarSize = new Vector3(3, 0.3f);
         healthSystem = HealthBar.Create(maxHealth, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = .1f });
-
-        inputActions = new GameInputActions();
-        inputActions.Game.Enable();
-        inputActions.Game.Action1.performed += Action1_performed;
 
         attack_ElapsedTime = timeToAttack;
         OnReachedDestination += SwordsMan_OnReachedDestination;
@@ -140,24 +139,17 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
 
     #region Input
 
-    private void Action1_performed(InputAction.CallbackContext obj)
+    private void TestShouldAttack(Vector2 position)
     {
-        if (IsSelected)
-        {
-            MoveInputPressed();
-        }
-    }
-
-    private void MoveInputPressed()
-    {
-        if (!GridManager.Instance.grid.IsPositionOnGrid(Mouse2D.GetMousePosition2D())) return;
-
         state = States.Moving;
-        if (Mouse2D.TryGetObjectAtMousePosition(out GameObject hit))
+
+        int raycastDistance = 100;
+        RaycastHit2D raycastHit = Physics2D.Raycast(position, Vector3.forward, raycastDistance);
+        if (raycastHit.transform != null)
         {
-            if (gameObject.TryGetComponent<IsOnPlayerTeam>(out var trash)) // I do not need the "trash" variable
+            if (gameObject.TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
             {
-                if (hit.TryGetComponent(out IsOnAITeam enemy))
+                if (raycastHit.transform.TryGetComponent(out IsOnAITeam enemy))
                 {
                     enemy.TryGetComponent(out iDamageableEnemy);
                     this.enemy = enemy;
@@ -166,7 +158,7 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
             }
             else
             {
-                if (hit.TryGetComponent(out IsOnPlayerTeam enemy))
+                if (raycastHit.transform.TryGetComponent(out IsOnPlayerTeam enemy))
                 {
                     enemy.TryGetComponent(out iDamageableEnemy);
                     this.enemy = enemy;
@@ -175,8 +167,6 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
             }
             
         }
-
-        Trigger_OnMove(Mouse2D.GetMousePosition2D());
     }
 
     #endregion
@@ -275,6 +265,8 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
 
     #region Interfaces
 
+    #region ISelectable
+
     public void Select()
     {
         IsSelected = true;
@@ -333,11 +325,37 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable
         }
     }
 
+    #endregion
+
+    #region IDamagable
 
     public void Damage(int amount)
     {
         healthSystem.Damage(amount);
     }
+
+    #endregion
+
+    #region IMoveable
+
+    public void Move(Vector2 position)
+    {
+        if (IsSelected)
+        {
+            if (!GridManager.Instance.grid.IsPositionOnGrid(Mouse2D.GetMousePosition2D())) return;
+
+            TestShouldAttack(position);
+
+            Trigger_OnMove(position);
+        }
+    }
+
+    public void Move(float x, float y)
+    {
+        Move(new Vector2(x, y));
+    }
+
+    #endregion
 
     #endregion
 

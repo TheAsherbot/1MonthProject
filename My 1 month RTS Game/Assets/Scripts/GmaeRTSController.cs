@@ -1,7 +1,6 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 
-using TheAshBot;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
@@ -9,6 +8,29 @@ using UnityEngine.InputSystem;
 
 public class GmaeRTSController : MonoBehaviour
 {
+
+    public enum Teams
+    {
+        Player,
+        AI,
+    }
+
+    #region Events
+
+    public event EventHandler<OnSellectEventArgs> OnSellect;
+    public class OnSellectEventArgs : EventArgs
+    {
+        public List<ISelectable> allSelected;
+        public List<ISelectable> newSelected;
+    }
+
+    #endregion
+
+
+    #region Variables
+
+    [Header("Team")]
+    [SerializeField] private Teams team;
 
 
     [Header("Selecting")]
@@ -28,6 +50,10 @@ public class GmaeRTSController : MonoBehaviour
     private bool isHoldingSelect;
     private GameInputActions inputActions;
 
+    #endregion
+
+
+    #region Unity Functions
 
     private void Awake()
     {
@@ -56,6 +82,10 @@ public class GmaeRTSController : MonoBehaviour
         }
     }
 
+    #endregion
+
+
+    #region Subscription
 
     private void Select_started(InputAction.CallbackContext obj)
     {
@@ -63,7 +93,6 @@ public class GmaeRTSController : MonoBehaviour
         selectedAreaTransform.gameObject.SetActive(true);
 
         startPosition = Mouse2D.GetMousePosition2D();
-
     }
 
     private void Select_canceled(InputAction.CallbackContext obj)
@@ -74,17 +103,56 @@ public class GmaeRTSController : MonoBehaviour
         Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(startPosition, Mouse2D.GetMousePosition2D(), unitLayerMask);
 
         RemoveAllFromSelectedList();
+        List<ISelectable> listOfNewSellectedItems = new List<ISelectable>();
         foreach (Collider2D collider2D in collider2DArray)
         {
-            if (collider2D.TryGetComponent(out ISelectable selectable))
+            if (team == Teams.Player)
             {
-                selectedList.Add(selectable);
-                selectable.Select();
+                if (collider2D.TryGetComponent(out ISelectable selectable) && collider2D.TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
+                {
+                    listOfNewSellectedItems.Add(selectable);
+                    selectedList.Add(selectable);
+                    selectable.Select();
+                }
+            }
+            else if (team == Teams.AI)
+            {
+                if (collider2D.TryGetComponent(out ISelectable selectable) && collider2D.TryGetComponent(out IsOnAITeam isOnAITeam))
+                {
+                    listOfNewSellectedItems.Add(selectable);
+                    selectedList.Add(selectable);
+                    selectable.Select();
+                }
             }
         }
 
-        this.Log(selectedList.Count);
+        OnSellect?.Invoke(this, new OnSellectEventArgs
+        {
+            allSelected = selectedList,
+            newSelected = listOfNewSellectedItems,
+        });
     }
+
+    private void Action1_started(InputAction.CallbackContext callbackContext)
+    {
+        Vector2 moveToPosition = Mouse2D.GetMousePosition2D();
+        List<Vector2> targetPositionList = GetPositionListAround(moveToPosition, new float[] { 1, 2, 3, 4, 5 }, new int[] { 5, 10, 20, 40, 80 });
+
+        int targetPositionListIndex = 0;
+        foreach (ISelectable selectable in selectedList)
+        {
+            if (selectable is IMoveable moveable)
+            {
+                moveable.Move(targetPositionList[targetPositionListIndex]);
+                targetPositionListIndex = (targetPositionListIndex + 1) % targetPositionList.Count;
+            }
+        }
+    }
+
+    #endregion
+
+
+    #region Selection
 
     private void RemoveAllFromSelectedList()
     {
@@ -95,9 +163,41 @@ public class GmaeRTSController : MonoBehaviour
         selectedList.Clear();
     }
 
-    private void Action1_started(InputAction.CallbackContext obj)
+    #endregion
+
+
+    #region Move Units
+
+    private List<Vector2> GetPositionListAround(Vector2 startPosition, float[] ringDistanceArray, int[] ringPositionCountArray)
     {
-        
+        List<Vector2> positionList = new List<Vector2>();
+        positionList.Add(startPosition);
+        for (int i = 0; i < ringDistanceArray.Length; i++)
+        {
+            positionList.AddRange(GetPositionListAround(startPosition, ringDistanceArray[i], ringPositionCountArray[i]));
+        }
+        return positionList;
     }
+
+    private List<Vector2> GetPositionListAround(Vector2 startPosition, float distance, int positionCount)
+    {
+        List<Vector2> positionList = new List<Vector2>();
+        for (int i = 0; i < positionCount; i++)
+        {
+            float angle = i * (360 / positionCount);
+            Vector2 direction = ApplyRotationToVector(new Vector3(1, 0), angle);
+            Vector2 position = startPosition + direction * distance;
+            positionList.Add(position);
+        }
+        return positionList;
+    }
+
+    private Vector2 ApplyRotationToVector(Vector3 vector, float angle)
+    {
+        return Quaternion.Euler(0, 0, angle) * vector;
+    }
+
+    #endregion
+
 
 }

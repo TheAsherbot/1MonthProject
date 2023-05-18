@@ -183,7 +183,7 @@ public class UnitMovement : MonoBehaviour
         }
         else
         {
-            Debug.Log("movementPath.Count == 0");
+            PathReached();
             return;
         }
 
