@@ -90,7 +90,7 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
 
         Vector2 healthBarOffset = Vector3.up * 2;
         Vector2 healthBarSize = new Vector3(3, 0.3f);
-        healthSystem = HealthBar.Create(maxHealth, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = .1f });
+        healthSystem = HealthBar.Create(maxHealth, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = .1f }, false, 13);
 
         attack_ElapsedTime = timeToAttack;
         OnReachedDestination += SwordsMan_OnReachedDestination;

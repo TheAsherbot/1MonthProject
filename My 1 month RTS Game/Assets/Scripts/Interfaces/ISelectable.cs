@@ -26,6 +26,10 @@ public interface ISelectable
     {
         IsSelected = false;
     }
+    public bool UsesHotbar()
+    {
+        return true;
+    }
 
     public void OnSlot1ButtonClicked();
     public void OnSlot2ButtonClicked();

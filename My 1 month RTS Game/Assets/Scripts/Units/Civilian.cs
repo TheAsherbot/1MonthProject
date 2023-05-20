@@ -5,6 +5,7 @@ using TheAshBot.TwoDimentional;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 {
@@ -64,7 +65,7 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 
         Vector2 healthBarOffset = Vector3.up * 2;
         Vector2 healthBarSize = new Vector3(2, 0.3f);
-        healthSystem = HealthBar.Create(10, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = 0.1f });
+        healthSystem = HealthBar.Create(10, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = 0.1f }, false, 13);
 
         inputActions = new GameInputActions();
         inputActions.Game.Enable();
@@ -205,6 +206,11 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
         IsSelected = false;
 
         selectedVisual.SetActive(false);
+    }
+
+    public bool UsesHotbar()
+    {
+        return false;
     }
 
     public void OnSlot1ButtonClicked()

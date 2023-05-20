@@ -140,10 +140,7 @@ public class GridObject
         {
             saveObject.tilemapSprite = TilemapSprite.None;
         }
-        else if (saveObject.tilemapSprite == TilemapSprite.Minerials)
-        {
-            SetOccupationState(new List<OccupationState> { OccupationState.NotWalkable, OccupationState.NotPlaceable });
-        }
+        StateList = saveObject.StateList;
         SetTilemapSprite(saveObject.tilemapSprite);
     }
 

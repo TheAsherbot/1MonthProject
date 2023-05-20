@@ -13,13 +13,13 @@ TagManager:
   - UI
   - Unit
   - Buildings
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - DefualAndMiniMapAndBehindMask
+  - MiniMap
+  - DefualAndMiniMap
+  - MiniMapAndBehindMask
+  - Mask
+  - BehindMask
+  - Black
   - 
   - 
   - 

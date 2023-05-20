@@ -47,7 +47,7 @@ public class TownHall : _BaseBuilding, ISelectable
         HealthBar.Border border = new HealthBar.Border();
         border.thickness = 0.075f;
         border.color = Color.black;
-        healthSystem = HealthBar.Create(maxHealth, transform, offset, size, Color.red, Color.gray, border);
+        healthSystem = HealthBar.Create(maxHealth, transform, offset, size, Color.red, Color.gray, border, false, 13);
         GridManager.Instance.grid.TryMakeBuilding(transform.position, buildingSO.buildingLeyerListFromBottomToTop);
         if (GetComponent<IsOnPlayerTeam>() != null)
         {

@@ -3,11 +3,8 @@ using System.Collections.Generic;
 
 using TheAshBot.TwoDimentional;
 
-using UnityEditor.SearchService;
-
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class GmaeRTSController : MonoBehaviour
 {

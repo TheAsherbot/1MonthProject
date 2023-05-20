@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using TheAshBot;
+using System.Reflection.Emit;
 
 [RequireComponent(typeof(AudioSource))]
 public class AudioManager : MonoBehaviour
@@ -21,6 +22,7 @@ public class AudioManager : MonoBehaviour
     public event EventHandler OnAudioClipFinished;
 
 
+    [Header("Music")]
     [SerializeField] private List<AudioClip> mainMenuAudioClipList;
     [SerializeField] private List<AudioClip> loadingAudioClipList;
     [SerializeField] private List<AudioClip> inGameAudioClipList;
@@ -108,4 +110,6 @@ public class AudioManager : MonoBehaviour
             OnAudioClipFinished?.Invoke(this, EventArgs.Empty);
         }
     }
+
+
 }

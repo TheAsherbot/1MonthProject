@@ -11,7 +11,7 @@ public class HealthBar : MonoBehaviour
     }
 
 
-    public static HealthSystem Create(int maxHealth, Transform fallow, Vector3 offset, Vector3 size, Color barColor, Color backgroundColor, Border border = null, bool hideWhenFull = false)
+    public static HealthSystem Create(int maxHealth, Transform fallow, Vector3 offset, Vector3 size, Color barColor, Color backgroundColor, Border border = null, bool hideWhenFull = false, int layer = 0)
     {
         // Main Health Bar
         GameObject healthBarGameObject = new GameObject("HealthBar");
@@ -30,6 +30,7 @@ public class HealthBar : MonoBehaviour
             borderGameObject.GetComponent<SpriteRenderer>().color = border.color;
             borderGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
             RendererSortingOrderSorter borderRendererSortingOrderSorter = borderGameObject.AddComponent<RendererSortingOrderSorter>();
+            borderGameObject.gameObject.layer = layer;
             borderRendererSortingOrderSorter.offset = -40;
         }
 
@@ -41,6 +42,7 @@ public class HealthBar : MonoBehaviour
         backgroundGameObject.GetComponent<SpriteRenderer>().color = backgroundColor;
         backgroundGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
         RendererSortingOrderSorter backgroundRendererSortingOrderSorter = backgroundGameObject.AddComponent<RendererSortingOrderSorter>();
+        backgroundGameObject.gameObject.layer = layer;
         backgroundRendererSortingOrderSorter.offset = -50;
 
         // Bar
@@ -56,6 +58,7 @@ public class HealthBar : MonoBehaviour
         barSpriteGameObject.GetComponent<SpriteRenderer>().color = barColor;
         barSpriteGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
         RendererSortingOrderSorter barSpriteRendererSortingOrderSorter = barSpriteGameObject.AddComponent<RendererSortingOrderSorter>();
+        barSpriteGameObject.gameObject.layer = layer;
         barSpriteRendererSortingOrderSorter.offset = -60;
 
         HealthBar healthBar = healthBarGameObject.AddComponent<HealthBar>();
