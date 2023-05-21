@@ -29,6 +29,16 @@ public class GmaeRTSController : MonoBehaviour
 
     #region Variables
 
+
+    private bool IsGamePlaying
+    {
+        get
+        {
+            return Time.deltaTime != 0;
+        }
+    }
+
+
     [Header("Team")]
     [SerializeField] private Teams team;
 
@@ -72,6 +82,8 @@ public class GmaeRTSController : MonoBehaviour
 
     private void Update()
     {
+        if (!IsGamePlaying) return;
+
         if (isHoldingSelect)
         {
             Vector3 currentMaousePosition = Mouse2D.GetMousePosition2D();
@@ -89,6 +101,8 @@ public class GmaeRTSController : MonoBehaviour
 
     private void Select_started(InputAction.CallbackContext obj)
     {
+        if (!IsGamePlaying) return;
+
         isHoldingSelect = true;
         selectedAreaTransform.gameObject.SetActive(true);
 
@@ -97,6 +111,8 @@ public class GmaeRTSController : MonoBehaviour
 
     private void Select_canceled(InputAction.CallbackContext obj)
     {
+        if (!IsGamePlaying) return;
+
         isHoldingSelect = false;
         selectedAreaTransform.gameObject.SetActive(false);
 
@@ -154,6 +170,8 @@ public class GmaeRTSController : MonoBehaviour
 
     private void Action1_started(InputAction.CallbackContext callbackContext)
     {
+        if (!IsGamePlaying) return;
+
         Vector2 moveToPosition = Mouse2D.GetMousePosition2D();
         List<Vector2> targetPositionList = GetPositionListAround(moveToPosition, new float[] { 1, 2, 3, 4, 5 }, new int[] { 5, 10, 20, 40, 80 });
 

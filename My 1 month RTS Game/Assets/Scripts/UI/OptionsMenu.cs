@@ -6,25 +6,34 @@ using UnityEngine.Audio;
 using TMPro;
 
 using TheAshBot;
-using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class OptionsMenu : MonoBehaviour
 {
+
+    private const string OPTIONS_DATA_PATH = "SavedData\\";
+    private const string OPTIONS_DATA_NAME = "Option";
 
 
     [SerializeField] private GameObject window;
 
 
     [Header("Valume")]
+    [SerializeField] private Slider volumeSlider;
     [SerializeField] private AudioMixer audioMixer;
 
 
     [Header("Sceen Resolution")]
     [SerializeField] private TMP_Dropdown resolutionDropdown;
+    [SerializeField] private Toggle fullScreenToggle;
 
     private int currentRefressRate;
     private List<Resolution> resolutionList;
     private List<Resolution> filteredResolutionList;
+
+
+    [Header("Quality")]
+    [SerializeField] private TMP_Dropdown graphicsQualityDropdown;
 
 
     private bool isOpen;
@@ -33,28 +42,40 @@ public class OptionsMenu : MonoBehaviour
     private void Start()
     {
         DisplayResolutions();
+
+        TryLoadOptions();
     }
 
+
+    #region Buttons
 
     public void SetVolume(float volume)
     {
         audioMixer.SetFloat("MasterVolume", volume);
+
+        Save();
     }
 
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
+
+        Save();
     }
 
     public void SetFullScreen(bool isFullScreen)
     {
         Screen.fullScreen = isFullScreen;
+
+        Save();
     }
 
     public void SetResolution(int resolutionIndex)
     {
         Resolution resolution = filteredResolutionList[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+
+        Save();
     }
 
     public void Quit()
@@ -76,6 +97,44 @@ public class OptionsMenu : MonoBehaviour
         window.SetActive(isOpen);
     }
 
+    #endregion
+
+
+    #region Save; Load
+
+    public bool TryLoadOptions()
+    {
+        SaveOptionsData optionsData = SaveSystem.LoadJson<SaveOptionsData>(SaveSystem.RootSavePath.Resources, OPTIONS_DATA_PATH, OPTIONS_DATA_NAME);
+
+        if (optionsData == null)
+        {
+            // Nothing was found
+            this.Log("Nothing was found");
+            return false;
+        }
+
+        resolutionDropdown.value = optionsData.filteredResolutionIndex;
+        fullScreenToggle.isOn = optionsData.isFullScreened;
+        graphicsQualityDropdown.value = optionsData.qualityIndex;
+        volumeSlider.value = optionsData.volume;
+
+        return true;
+    }
+
+    public void Save()
+    {
+        SaveOptionsData saveOptionsData = new SaveOptionsData()
+        {
+            isFullScreened = fullScreenToggle.isOn,
+            filteredResolutionIndex = resolutionDropdown.value,
+            volume = volumeSlider.value,
+            qualityIndex = graphicsQualityDropdown.value,
+        };
+
+        SaveSystem.SaveJson(saveOptionsData, SaveSystem.RootSavePath.Resources, OPTIONS_DATA_PATH, OPTIONS_DATA_NAME, true);
+    }
+
+    #endregion
 
     private void DisplayResolutions()
     {
@@ -108,8 +167,21 @@ public class OptionsMenu : MonoBehaviour
         }
 
         resolutionDropdown.AddOptions(screenResolutionStringList);
-        resolutionDropdown.value = currentResolutionIndex;
+        resolutionDropdown.SetValueWithoutNotify(currentResolutionIndex);
         resolutionDropdown.RefreshShownValue();
     }
+
+
+
+    private class SaveOptionsData
+    {
+        public bool isFullScreened;
+        public int filteredResolutionIndex;
+        
+        public int qualityIndex;
+
+        public float volume;
+    }
+
 
 }

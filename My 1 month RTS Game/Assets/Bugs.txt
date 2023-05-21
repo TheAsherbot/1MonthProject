@@ -1,6 +1,4 @@
-if they already have minerials then I tell them to mine more they get stuck.
 Randomly starts to walk then I can not controll him.
 able to select while in puase mode.
-Valume Does nothing.
 
 if I get to manny units game will crash.

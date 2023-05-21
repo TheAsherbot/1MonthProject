@@ -5,7 +5,11 @@ public class GridManager : MonoBehaviour
 {
 
 
-    public static GridManager Instance;
+    public static GridManager Instance
+    {
+        get;
+        private set;
+    }
 
 
     [Header("Grid")]

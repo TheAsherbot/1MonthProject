@@ -7,6 +7,8 @@ public class CameraMovement : MonoBehaviour
 
 
     [SerializeField] private float movementSpeed = 15;
+    [SerializeField] private Vector2 bottomLeftBounds = new Vector2(0, 0);
+    [SerializeField] private Vector2 topRightBounds = new Vector2(100, 100);
 
 
     private Vector2 moveDirrection;
@@ -24,6 +26,26 @@ public class CameraMovement : MonoBehaviour
         moveDirrection = inputActions.CameraMovement.Movement.ReadValue<Vector2>();
         
         transform.position += new Vector3(moveDirrection.x, moveDirrection.y) * Time.deltaTime * movementSpeed;
+    }
+
+    private void LateUpdate()
+    {
+        if (transform.position.x > topRightBounds.x)
+        {
+            transform.position = new Vector2(topRightBounds.x, transform.position.y);
+        }
+        else if (transform.position.y > topRightBounds.y)
+        {
+            transform.position = new Vector2(transform.position.x, topRightBounds.y);
+        }
+        else if (transform.position.y < bottomLeftBounds.y)
+        {
+            transform.position = new Vector2(transform.position.x, bottomLeftBounds.y);
+        }
+        else if (transform.position.x < bottomLeftBounds.x)
+        {
+            transform.position = new Vector2(bottomLeftBounds.x, transform.position.y);
+        }
     }
 
 }

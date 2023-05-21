@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using TheAshBot;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
@@ -44,6 +45,7 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
     [SerializeField] private float timeToMine = 3f;
     [SerializeField] private TownHall townHall;
 
+    private bool hasMinerials;
     private bool isReturningFromMiningSate;
     private Vector3 minerial;
 
@@ -88,6 +90,13 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 
     private Vector2 TestIfShouldMine(Vector2 position)
     {
+        if (GridManager.Instance == null) return Vector2.zero;
+        
+        if (hasMinerials)
+        {
+            Trigger_OnMove(townHall.GetLoadTransform().position);
+        }
+
         GridObject gridObject = GridManager.Instance.grid.GetGridObject(position);
         if (gridObject.tilemapSprite != GridObject.TilemapSprite.Minerials)
         {
@@ -99,6 +108,7 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 
         GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(gridObject);
         state = States.MovingToMine;
+        Debug.Log(closestNeighbour);
         return GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y);
     }
 
@@ -112,10 +122,8 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
         switch (state)
         {
             case States.Idle:
-
                 break;
             case States.Moving:
-                
                 break;
             case States.MovingToMine:
                 MoveingToMineState();
@@ -134,6 +142,11 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 
     private void MoveingToMineState()
     {
+        if (hasMinerials)
+        {
+            state = States.ReturnFromMining;
+        }
+
         if (GridManager.Instance.grid.GetGridObject(minerial).neighbourNodeList.Contains(GridManager.Instance.grid.GetGridObject(transform.position)))
         {
             Trigger_OnStopMoveing();
@@ -155,6 +168,7 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
     {
         if (!isReturningFromMiningSate)
         {
+            hasMinerials = true;
             isReturningFromMiningSate = true;
             Trigger_OnMove(townHall.GetLoadTransform().position);
         }
@@ -176,8 +190,10 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
         if (state == States.ReturnFromMining)
         {
             townHall.AddMinerials();
+            hasMinerials = false;
 
             GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(GridManager.Instance.grid.GetGridObject(minerial));
+            this.Log(GridManager.Instance);
             Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y));
             state = States.MovingToMine;
             isReturningFromMiningSate = false;

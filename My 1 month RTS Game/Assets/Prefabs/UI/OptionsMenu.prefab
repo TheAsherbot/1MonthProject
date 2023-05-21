@@ -3019,7 +3019,7 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: High
       m_Image: {fileID: 0}
-    - m_Text: Very Hight
+    - m_Text: Very High
       m_Image: {fileID: 0}
     - m_Text: Ultra High
       m_Image: {fileID: 0}
@@ -4460,8 +4460,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   window: {fileID: 3347524454964097240}
+  volumeSlider: {fileID: 3347524454494115554}
   audioMixer: {fileID: 24100000, guid: e298deaa7d4d08d40b117d9962166e1c, type: 2}
   resolutionDropdown: {fileID: 3347524453784690390}
+  fullScreenToggle: {fileID: 3347524453338263550}
+  graphicsQualityDropdown: {fileID: 3347524454343978884}
 --- !u!1 &6313696074267533836
 GameObject:
   m_ObjectHideFlags: 0
