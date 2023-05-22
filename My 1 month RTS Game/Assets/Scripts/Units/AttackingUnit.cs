@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using TheAshBot;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
@@ -84,10 +85,8 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
     
     #region Unity Functions
 
-    private new void Start()
+    private void Start()
     {
-        base.Start();
-
         Vector2 healthBarOffset = Vector3.up * 2;
         Vector2 healthBarSize = new Vector3(3, 0.3f);
         healthSystem = HealthBar.Create(maxHealth, transform, healthBarOffset, healthBarSize, Color.red, Color.gray, new HealthBar.Border { color = Color.black, thickness = .1f }, false, 13);
@@ -152,6 +151,13 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
                 if (raycastHit.transform.TryGetComponent(out IsOnAITeam enemy))
                 {
                     enemy.TryGetComponent(out iDamageableEnemy);
+
+                    if (GridManager.Instance.grid.GetGridObject(enemy.transform.position).StateList.Contains(GridObject.OccupationState.NotWalkable))
+                    {
+                        GridObject closestNieghbour = GetClosedtNeighbourToEmeney(GridManager.Instance.grid.GetGridObject(position));
+                        Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNieghbour.X, closestNieghbour.Y));
+                    }
+
                     this.enemy = enemy;
                     state = States.MovingToAttack;
                 }
@@ -199,8 +205,17 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
         if (GridManager.Instance.grid.SnapPositionToGrid(enemy.transform.position) != GridManager.Instance.grid.SnapPositionToGrid(last_EnemyPosition))
         {
             last_EnemyPosition = GridManager.Instance.grid.SnapPositionToGrid(enemy.transform.position);
-            Trigger_OnMove(enemy.transform.position);
+            if (GridManager.Instance.grid.GetGridObject(enemy.transform.position).StateList.Contains(GridObject.OccupationState.NotWalkable))
+            {
+                GridObject closestNieghbour = GetClosedtNeighbourToEmeney(GridManager.Instance.grid.GetGridObject(enemy.transform.position));
+                Trigger_OnMove(GridManager.Instance.grid.GetWorldPosition(closestNieghbour.X, closestNieghbour.Y));
+            }
+            else
+            {
+                Trigger_OnMove(enemy.transform.position);
+            }
         }
+
 
         if (Vector2.Distance(transform.position, enemy.transform.position) <= startAttackingRange)
         {
@@ -358,6 +373,34 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
     #endregion
 
     #endregion
+
+
+    private GridObject GetClosedtNeighbourToEmeney(GridObject enemyGridObject)
+    {
+        GridObject closestNeighbour = null;
+        foreach (GridObject neighbour in enemyGridObject.neighbourNodeList)
+        {
+            if (neighbour.StateList.Contains(GridObject.OccupationState.NotWalkable))
+            {
+                continue;
+            }
+
+
+            if (closestNeighbour == null)
+            {
+                closestNeighbour = neighbour;
+                continue;
+            }
+
+            if (Vector2.Distance(transform.position, GridManager.Instance.grid.GetWorldPosition(neighbour.X, neighbour.Y)) <
+                Vector2.Distance(transform.position, GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y)))
+            {
+                // this node in closer.
+                closestNeighbour = neighbour;
+            }
+        }
+        return closestNeighbour;
+    }
 
 
 }

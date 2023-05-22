@@ -34,15 +34,15 @@ public class CameraMovement : MonoBehaviour
         {
             transform.position = new Vector2(topRightBounds.x, transform.position.y);
         }
-        else if (transform.position.y > topRightBounds.y)
+        if (transform.position.y > topRightBounds.y)
         {
             transform.position = new Vector2(transform.position.x, topRightBounds.y);
         }
-        else if (transform.position.y < bottomLeftBounds.y)
+        if (transform.position.y < bottomLeftBounds.y)
         {
             transform.position = new Vector2(transform.position.x, bottomLeftBounds.y);
         }
-        else if (transform.position.x < bottomLeftBounds.x)
+        if (transform.position.x < bottomLeftBounds.x)
         {
             transform.position = new Vector2(bottomLeftBounds.x, transform.position.y);
         }

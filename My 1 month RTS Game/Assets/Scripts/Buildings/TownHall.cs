@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public class TownHall : _BaseBuilding, ISelectable
+public class TownHall : _BaseBuilding, ISelectable, IDamageable
 {
 
 
@@ -138,6 +138,7 @@ public class TownHall : _BaseBuilding, ISelectable
         selectedVisual.SetActive(false);
     }
 
+
     public void OnSlot1ButtonClicked()
     {
         Spawn(spawnableUnits[0]);
@@ -151,6 +152,14 @@ public class TownHall : _BaseBuilding, ISelectable
     public void OnSlot3ButtonClicked()
     {
         Spawn(spawnableUnits[2]);
+    }
+
+
+
+
+    public void Damage(int amount)
+    {
+        healthSystem.Damage(amount);
     }
 
     #endregion

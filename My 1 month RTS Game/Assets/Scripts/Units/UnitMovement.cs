@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 
+using Pathfinding;
+
 using UnityEngine;
 
+[RequireComponent(typeof(AIPath))]
 [RequireComponent(typeof(_BaseUnit))]
 public class UnitMovement : MonoBehaviour
 {
@@ -51,6 +54,8 @@ public class UnitMovement : MonoBehaviour
 
     #endregion
 
+    private AIPath aiPath;
+
 
     #region MonoBehaviour Functions
 
@@ -63,6 +68,8 @@ public class UnitMovement : MonoBehaviour
 
     private void Start()
     {
+        aiPath = GetComponent<AIPath>();
+
         grid = GridManager.Instance.grid;
         movement_StartPosition = transform.position;
 
@@ -118,10 +125,11 @@ public class UnitMovement : MonoBehaviour
         void FindPath()
         {
             lastMovementPath = movementPath;
-            movementPath = grid.FindPathAsVector2s(transform.position, endPosition, new List<GridObject.OccupationState>
-            {
-                GridObject.OccupationState.NotWalkable,
-            });
+            seeker.mo
+            //movementPath = grid.FindPathAsVector2s(transform.position, endPosition, new List<GridObject.OccupationState>
+            //{
+            //    GridObject.OccupationState.NotWalkable,
+            //});
         }
 
         

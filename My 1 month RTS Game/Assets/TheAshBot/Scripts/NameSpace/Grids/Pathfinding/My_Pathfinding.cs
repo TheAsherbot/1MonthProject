@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-public class Pathfinding
+public class My_Pathfinding
 {
     
     
@@ -47,7 +47,7 @@ public class Pathfinding
     private List<PathNode> closedList;
 
 
-    public Pathfinding(int width, int height, float cellSize, Vector2 originPosition, bool showDebug, Transform parent)
+    public My_Pathfinding(int width, int height, float cellSize, Vector2 originPosition, bool showDebug, Transform parent)
     {
         this.width = width;
         this.height = height;
@@ -91,7 +91,7 @@ public class Pathfinding
             };
         }
     }
-    public Pathfinding(int width, int height, float cellSize, Vector2 originPosition)
+    public My_Pathfinding(int width, int height, float cellSize, Vector2 originPosition)
     {
         this.width = width;
         this.height = height;

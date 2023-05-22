@@ -15,11 +15,11 @@ public class PathNode
     public PathNode cameFromNode;
 
 
-    private Pathfinding grid;
+    private My_Pathfinding grid;
 
     public List<PathNode> neighbourNodeList;
      
-    public PathNode(Pathfinding grid, int x, int y)
+    public PathNode(My_Pathfinding grid, int x, int y)
     {
         this.grid = grid;
         this.x = x;
