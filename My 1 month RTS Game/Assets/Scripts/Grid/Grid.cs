@@ -149,245 +149,6 @@ public class Grid
     }
 
 
-    #region Find Path
-
-    public List<Vector2> FindPathAsVector2s(int startX, int startY, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
-    {
-        List<GridObject> path = FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
-        if (path == null)
-        {
-            return null;
-        }
-        else
-        {
-            List<Vector2> vectorPath = new List<Vector2>();
-            foreach (GridObject gridObject in path)
-            {
-                vectorPath.Add(new Vector2(gridObject.X, gridObject.Y) * GetCellSize() + Vector2.one * GetCellSize() * 0.5f + originPosition);
-            }
-            return vectorPath;
-        }
-    }
-    public List<Vector2> FindPathAsVector2s(int startX, int startY, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
-    {
-        GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsVector2s(startX, startY, endX, endY, unwalkableStates);
-    }
-    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
-    {
-        GetXY(startWorldPosition, out int startX, out int startY);
-        GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsVector2s(startX, startY, endX, endY, unwalkableStates);
-    }
-    public List<Vector2> FindPathAsVector2s(Vector2 startWorldPosition, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
-    {
-        GetXY(startWorldPosition, out int startX, out int startY);
-        return FindPathAsVector2s(startX, startY, endX, endY, unwalkableStates);
-    }
-
-
-    public List<GridObject> FindPathAsGridObjects(int startX, int startY, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
-    {
-        GridObject startNode = GetGridObject(startX, startY);
-        GridObject endNode = GetGridObject(endX, endY);
-
-        if (endNode == null || endNode.StateList.Contains(GridObject.OccupationState.NotWalkable))
-        {
-            // End node is not on the grid
-            return default;
-        }
-
-        openList = new List<GridObject>() { startNode };
-        closedList = new List<GridObject>();
-
-        for (int x = 0; x < GetWidth(); x++)
-        {
-            for (int y = 0; y < GetHeight(); y++)
-            {
-                GridObject pathNode = GetGridObject(x, y);
-                pathNode.gCost = int.MaxValue;
-                pathNode.CalculateFCost();
-                pathNode.cameFromNode = null;
-            }
-        }
-
-        startNode.gCost = 0;
-        startNode.hCost = CalculateDistance(startNode, endNode);
-        startNode.CalculateFCost();
-
-        while (openList.Count > 0)
-        {
-            GridObject currentNode = GetLowestFCostNode(openList);
-            if (currentNode == endNode)
-            {
-                // Reached finel node
-                return CalculatePath(endNode);
-            }
-
-            openList.Remove(currentNode);
-            closedList.Add(currentNode);
-
-            foreach (GridObject neighbourNode in currentNode.neighbourNodeList)
-            {
-                if (closedList.Contains(neighbourNode)) continue;
-
-                bool continueneighbourNodeForeach = false;
-                foreach (GridObject.OccupationState state in unwalkableStates)
-                {
-                    if (neighbourNode.StateList.Contains(state))
-                    {
-                        closedList.Add(neighbourNode);
-                        continueneighbourNodeForeach = true; 
-                        break;
-                    }
-                }
-                if (continueneighbourNodeForeach)
-                {
-                    continue;
-                }
-
-                float tentativeGCost = currentNode.gCost + CalculateDistance(currentNode, neighbourNode);
-
-                if (tentativeGCost < neighbourNode.gCost)
-                {
-                    neighbourNode.cameFromNode = currentNode;
-                    neighbourNode.gCost = tentativeGCost;
-                    neighbourNode.hCost = CalculateDistance(neighbourNode, endNode);
-                    neighbourNode.CalculateFCost();
-
-                    if (!openList.Contains(neighbourNode))
-                    {
-                        openList.Add(neighbourNode);
-                    }
-                }
-            }
-        }
-
-        // Out of nodes on the open lsit
-        return null;
-    }
-    public List<GridObject> FindPathAsGridObjects(Vector2 startWorldPosition, int endX, int endY, List<GridObject.OccupationState> unwalkableStates)
-    {
-        GetXY(startWorldPosition, out int startX, out int startY);
-        return FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
-    }
-    public List<GridObject> FindPathAsGridObjects(Vector2 startWorldPosition, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
-    {
-        GetXY(startWorldPosition, out int startX, out int startY);
-        GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
-    }
-    public List<GridObject> FindPathAsGridObjects(int startX, int startY, Vector2 endWorldPosition, List<GridObject.OccupationState> unwalkableStates)
-    {
-        GetXY(endWorldPosition, out int endX, out int endY);
-        return FindPathAsGridObjects(startX, startY, endX, endY, unwalkableStates);
-    }
-
-    #endregion
-
-
-    #region Pathfinding
-
-    private List<GridObject> GetNeighbourList(GridObject currentNode)
-    {
-        List<GridObject> neighbourList = new List<GridObject>();
-
-        if (currentNode.X - 1 >= 0)
-        {
-            // Left
-            neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y));
-            /*
-            if (canWalkDiagonally)
-            {
-                // Left Down
-                if (currentNode.Y - 1 >= 0)
-                {
-                    neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y - 1));
-                }
-                // Left Up
-                if (currentNode.Y + 1 < GetHeight())
-                {
-                    neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y + 1));
-                }
-            }
-            */
-        }
-        if (currentNode.X + 1 < GetWidth())
-        {
-            // Right
-            neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y));
-            /*
-            if (canWalkDiagonally)
-            {
-                // Right Down
-                if (currentNode.Y - 1 >= 0)
-                {
-                    neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y - 1));
-                }
-                // Right Up
-                if (currentNode.Y + 1 < GetHeight())
-                {
-                    neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y + 1));
-                }
-            }
-            */
-        }
-        // Bottom
-        if (currentNode.Y - 1 >= 0)
-        {
-            neighbourList.Add(GetGridObject(currentNode.X, currentNode.Y - 1));
-        }
-        // Top
-        if (currentNode.Y + 1 < GetHeight())
-        {
-            neighbourList.Add(GetGridObject(currentNode.X, currentNode.Y + 1));
-        }
-
-        return neighbourList;
-    }
-
-    private List<GridObject> CalculatePath(GridObject endNode)
-    {
-        List<GridObject> path = new List<GridObject>();
-        path.Add(endNode);
-        GridObject currentNode = endNode;
-        while (currentNode.cameFromNode != null)
-        {
-            path.Add(currentNode.cameFromNode);
-            currentNode = currentNode.cameFromNode;
-        }
-
-        path.Reverse();
-        return path;
-    }
-
-    private float CalculateDistance(GridObject a, GridObject b)
-    {
-        int xDistance = Mathf.Abs(a.X - b.X);
-        int yDistance = Mathf.Abs(a.Y - b.Y);
-        int remaining = Mathf.Abs(xDistance - yDistance);
-
-        return moveDiagonalCost * Mathf.Min(xDistance, yDistance) + moveStraightCost * remaining;
-    }
-
-    private GridObject GetLowestFCostNode(List<GridObject> gridObjectList)
-    {
-        GridObject lowestFCostNode = gridObjectList[0];
-
-        for (int i = 1; i < gridObjectList.Count; i++)
-        {
-            if (gridObjectList[i].fCost < lowestFCostNode.fCost)
-            {
-                lowestFCostNode = gridObjectList[i];
-            }
-        }
-
-        return lowestFCostNode;
-    }
-
-    #endregion
-
-
     #region Basic Grid
 
     public int GetWidth()
@@ -656,5 +417,59 @@ public class Grid
     }
 
     #endregion
+
+
+    /// <summary>
+    /// This will get all the neighbours of a spicifec node NOTE: in this code I cash them when the grid is created so please use pathNode.neighbourNodeList
+    /// </summary>
+    /// <param name="currentNode">This is the node that you are getting hte neighbours of</param>
+    /// <returns>the list of neighbours</returns>
+    private List<GridObject> GetNeighbourList(GridObject currentNode)
+    {
+        List<GridObject> neighbourList = new List<GridObject>();
+
+        if (currentNode.X - 1 >= 0)
+        {
+            // Left
+            neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y));
+            // Left Down
+            if (currentNode.Y - 1 >= 0)
+            {
+                neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y - 1));
+            }
+            // Left Up
+            if (currentNode.Y + 1 < GetHeight())
+            {
+                neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y + 1));
+            }
+        }
+        if (currentNode.X + 1 < GetWidth())
+        {
+            // Right
+            neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y));
+            // Right Down
+            if (currentNode.Y - 1 >= 0)
+            {
+                neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y - 1));
+            }
+            // Right Up
+            if (currentNode.Y + 1 < GetHeight())
+            {
+                neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y + 1));
+            }
+        }
+        // Bottom
+        if (currentNode.Y - 1 >= 0)
+        {
+            neighbourList.Add(GetGridObject(currentNode.X, currentNode.Y - 1));
+        }
+        // Top
+        if (currentNode.Y + 1 < GetHeight())
+        {
+            neighbourList.Add(GetGridObject(currentNode.X, currentNode.Y + 1));
+        }
+
+        return neighbourList;
+    }
 
 }

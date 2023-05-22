@@ -1,3 +1,7 @@
+using Pathfinding;
+
+using TheAshBot;
+
 using UnityEngine;
 
 
@@ -47,6 +51,23 @@ public class GridManager : MonoBehaviour
     private void Start()
     {
         gridVisual.SetGrid(grid);
+        AstarPath astarPath = GetComponent<AstarPath>();
+
+        astarPath.AddWorkItem(new AstarWorkItem(ctx =>
+        {
+            GridGraph gridGraph = AstarPath.active.data.gridGraph;
+            for (int y = 0; y < grid.GetHeight(); y++)
+            {
+                for (int x = 0; x < grid.GetWidth(); x++)
+                {
+                    if (grid.GetGridObject(x, y).StateList.Contains(GridObject.OccupationState.NotWalkable))
+                    {
+                        GridNodeBase node = gridGraph.GetNode(x, y);
+                        node.Walkable = false;
+                    }
+                }
+            }
+        }));
     }
 
 }

@@ -286,6 +286,9 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
     private GridObject GetClosedtNeighbourFromMinerial(GridObject minerialGridObject)
     {
         GridObject closestNeighbour = null;
+
+        return minerialGridObject;
+        /*
         foreach (GridObject neighbour in minerialGridObject.neighbourNodeList)
         {
             if (neighbour.StateList.Contains(GridObject.OccupationState.NotWalkable)) continue;
@@ -302,6 +305,7 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
                 closestNeighbour = neighbour;
             }
         }
+        */
         return closestNeighbour;
     }
 

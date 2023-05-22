@@ -45,17 +45,11 @@ public class GridObject
     }
 
 
-    public float gCost;
-    public float hCost;
-    public float fCost;
-
-
     public List<OccupationState> StateList
     {
         get;
         private set;
     }
-    public GridObject cameFromNode;
 
     public List<GridObject> neighbourNodeList;
 
@@ -78,11 +72,6 @@ public class GridObject
     {
         StateList = stateList;
         grid.TriggerGridObjectChanged(X, Y);
-    }
-
-    public void CalculateFCost()
-    {
-        fCost = gCost + hCost;
     }
 
     #endregion

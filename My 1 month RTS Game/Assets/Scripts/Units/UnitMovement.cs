@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 using Pathfinding;
 
+using TheAshBot;
+
 using UnityEngine;
 
-[RequireComponent(typeof(AIPath))]
+[RequireComponent(typeof(Seeker))]
 [RequireComponent(typeof(_BaseUnit))]
 public class UnitMovement : MonoBehaviour
 {
@@ -40,35 +42,26 @@ public class UnitMovement : MonoBehaviour
     private Vector2 movement_EndPosition;
     private Vector2 lastMoveDirection;
     private Vector2 movePoint;
-    private List<Vector2> movementPath;
-
-
-    [Header("Rotation")]
-    [SerializeField] private bool rotate = true;
-    [SerializeField] private float timeToRotate = 0.2f;
-    [SerializeField] private AnimationCurve rotation_Curve;
-
-    private float rotation_ElapsedTime;
-    private Vector2 rotation_StartPosition;
-    private Vector2 rotation_EndPosition;
 
     #endregion
 
-    private AIPath aiPath;
+    private int currentWayPoint;
+    private bool reachedEndOfPath;
+
+    private Seeker seeker;
+    private Path path;
 
 
     #region MonoBehaviour Functions
 
     private void Awake()
     {
-        movementPath = new List<Vector2>();
-
         unit = GetComponent<_BaseUnit>();
     }
 
     private void Start()
     {
-        aiPath = GetComponent<AIPath>();
+        seeker = GetComponent<Seeker>();
 
         grid = GridManager.Instance.grid;
         movement_StartPosition = transform.position;
@@ -80,8 +73,6 @@ public class UnitMovement : MonoBehaviour
 
     private void Update()
     {
-        Rotate();
-
         Move();
     }
 
@@ -92,64 +83,25 @@ public class UnitMovement : MonoBehaviour
 
     private void FindPath()
     {
-        Vector2 endPosition = movePoint;
-        List<Vector2> lastMovementPath;
+        float cellSize = GridManager.Instance.grid.GetCellSize();
+        Vector2 endPosition = GridManager.Instance.grid.SnapPositionToGrid(movePoint) + new Vector2(cellSize / 2, cellSize / 2);
 
         FindPath();
 
-        while (movementPath == null)
-        {
-            movementPath = lastMovementPath;
-            if (movementPath.Count > 1)
-            {
-                movementPath.RemoveAt(movementPath.Count - 1);
-                endPosition = movementPath[movementPath.Count - 1];
-                FindPath();
-            }
-        }
-
-        if (movementPath.Count >= 2)
-        {
-            if ((movementPath[1] - movementPath[0]) != lastMoveDirection)
-            {
-                lastMoveDirection = movementPath[1] - movementPath[0];
-                InvokeOnDirectionChanged();
-            }
-        }
-        else
-        {
-            lastMoveDirection = Vector2.zero;
-            InvokeOnDirectionChanged();
-        }
-
         void FindPath()
         {
-            lastMovementPath = movementPath;
-            seeker.mo
-            //movementPath = grid.FindPathAsVector2s(transform.position, endPosition, new List<GridObject.OccupationState>
-            //{
-            //    GridObject.OccupationState.NotWalkable,
-            //});
+            seeker.StartPath(transform.position, endPosition, OnPathCalculated);
         }
 
         
     }
 
-    private void Rotate()
-    {
-        if (!rotate) return;
-
-        rotation_ElapsedTime += Time.deltaTime;
-        float percentageComplate = rotation_ElapsedTime / timeToRotate;
-
-        transform.up = Vector3.Slerp(rotation_StartPosition, rotation_EndPosition, rotation_Curve.Evaluate(percentageComplate));
-    }
-
     private void Move()
     {
-        if (movementPath == null || movementPath.Count == 0) return;
-
-        if (movementPath[0] == null) return;
+        if (IsPathNull())
+        {
+            return;
+        }
 
         movement_ElapsedTime += Time.deltaTime;
         float percentageComplate = movement_ElapsedTime / timeToMove;
@@ -175,31 +127,43 @@ public class UnitMovement : MonoBehaviour
         {
             FindPath();
         }
+    }
+
+    private void OnPathCalculated(Path path)
+    {
+        if (path.error)
+        {
+            this.LogError("There was a error when calculating the path\n" + path.errorLog);
+            return;
+        }
+
+        this.path = path;
+
+        if (path.vectorPath.Count >= 2)
+        {
+            if ((Vector2)(path.vectorPath[1] - path.vectorPath[0]) != lastMoveDirection)
+            {
+                lastMoveDirection = path.vectorPath[1] - path.vectorPath[0];
+                InvokeOnDirectionChanged();
+            }
+        }
+        else
+        {
+            lastMoveDirection = Vector2.zero;
+            InvokeOnDirectionChanged();
+        }
 
         isMoving = true;
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
 
-        movement_StartPosition = transform.position;
-        if (movementPath.Count > 1)
+        if (!TrySetEndAndStartPositions())
         {
-            movement_EndPosition = movementPath[1];
-        }
-        else if (movementPath.Count == 1)
-        {
-            movement_EndPosition = movementPath[0];
-        }
-        else
-        {
-            PathReached();
             return;
         }
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotPlaceable });
 
-        rotation_ElapsedTime = 0;
-        rotation_StartPosition = transform.up;
-        rotation_EndPosition = movement_EndPosition - (Vector2)transform.position;
     }
 
     private void SubpathReached()
@@ -210,7 +174,9 @@ public class UnitMovement : MonoBehaviour
             return;
         }
 
-        if (movementPath.Count == 1)
+        if (IsPathNull()) return;
+
+        if (path.vectorPath.Count == 1)
         {
             PathReached();
             return;
@@ -219,27 +185,57 @@ public class UnitMovement : MonoBehaviour
         FindPath();
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
-
-        movement_StartPosition = transform.position;
-        if (movementPath.Count > 1)
+        
+        if (!TrySetEndAndStartPositions())
         {
-            movement_EndPosition = movementPath[1];
-        }
-        else
-        {
-            movement_EndPosition = movementPath[0];
+            return;
         }
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotPlaceable});
-
-        rotation_ElapsedTime = 0;
-        rotation_StartPosition = transform.up;
-        rotation_EndPosition = movement_EndPosition - (Vector2)transform.position;
     }
+
+
+    private bool TrySetEndAndStartPositions()
+    {
+        if (IsPathNull())
+        {
+            return false;
+        }
+
+        movement_StartPosition = transform.position;
+        if (path.vectorPath.Count > 1)
+        {
+            movement_EndPosition = path.vectorPath[1];
+        }
+        else if (path.vectorPath.Count == 1)
+        {
+            movement_EndPosition = path.vectorPath[0];
+        }
+        else
+        {
+            PathReached();
+            return false;
+        }
+        return true;
+    }
+
+    private bool IsPathNull()
+    {
+        if (path == null) return true;
+
+        if (path.vectorPath == null) return true;
+
+        if (path.vectorPath.Count == 0) return true;
+
+        if (path.vectorPath[0] == null) return true;
+
+        return false;
+    }
+
 
     private void PathReached()
     {
-        movementPath.Clear();
+        path.vectorPath.Clear();
         movement_EndPosition = transform.position;
         movement_StartPosition = transform.position;
         isMoving = false;
@@ -249,7 +245,7 @@ public class UnitMovement : MonoBehaviour
 
     private void PathStoped()
     {
-        movementPath.Clear();
+        path.vectorPath.Clear();
         movement_EndPosition = transform.position;
         movement_StartPosition = transform.position;
 
@@ -286,17 +282,5 @@ public class UnitMovement : MonoBehaviour
     }
 
     #endregion
-
-
-
-    private void DrawPath()
-    {
-        for (int i = 1; i < movementPath.Count; i++)
-        {
-            Debug.DrawLine(movementPath[i -1], movementPath[i], Color.green, 5f);
-        }
-    }
-
-
 
 }
