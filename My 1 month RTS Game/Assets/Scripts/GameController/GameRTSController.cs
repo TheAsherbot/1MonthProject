@@ -8,11 +8,13 @@ using UnityEngine;
 public class GameRTSController : MonoBehaviour
 {
 
+    
     public enum Teams
     {
         Player,
         AI,
     }
+
 
     #region Events
 
@@ -28,16 +30,6 @@ public class GameRTSController : MonoBehaviour
 
     #region Variables
 
-
-    private bool IsGamePlaying
-    {
-        get
-        {
-            return Time.deltaTime != 0;
-        }
-    }
-
-
     [Header("Team")]
     [SerializeField] private Teams team;
 
@@ -46,7 +38,6 @@ public class GameRTSController : MonoBehaviour
     private Vector2 startPosition;
     private List<ISelectable> selectedList;
 
-    
 
     [Header("Visual")]
     [SerializeField] private Transform selectedAreaTransform;
@@ -54,10 +45,6 @@ public class GameRTSController : MonoBehaviour
 
     [Header("Collition")]
     [SerializeField] private LayerMask unitLayerMask;
-
-
-    [Header("Input")]
-    private bool isHoldingSelect;
 
     #endregion
 
@@ -70,20 +57,6 @@ public class GameRTSController : MonoBehaviour
         selectedAreaTransform.gameObject.SetActive(false);
     }
 
-    private void Update()
-    {
-        if (!IsGamePlaying) return;
-        
-        if (isHoldingSelect)
-        {
-            Vector3 currentMaousePosition = Mouse2D.GetMousePosition2D();
-            Vector3 lowerLeft = new Vector3(Mathf.Min(startPosition.x, currentMaousePosition.x), Mathf.Min(startPosition.y, currentMaousePosition.y));
-            Vector3 UpperRight = new Vector3(Mathf.Max(startPosition.x, currentMaousePosition.x), Mathf.Max(startPosition.y, currentMaousePosition.y));
-            selectedAreaTransform.position = lowerLeft;
-            selectedAreaTransform.localScale = UpperRight - lowerLeft;
-        }
-    }
-
     #endregion
 
 
@@ -91,9 +64,6 @@ public class GameRTSController : MonoBehaviour
 
     public void StartSelecting(Vector2 startPosition)
     {
-        if (!IsGamePlaying) return;
-
-        isHoldingSelect = true;
         selectedAreaTransform.gameObject.SetActive(true);
 
         this.startPosition = startPosition;
@@ -101,9 +71,6 @@ public class GameRTSController : MonoBehaviour
 
     public void StopSelecting(Vector2 endPosition)
     {
-        if (!IsGamePlaying) return;
-
-        isHoldingSelect = false;
         selectedAreaTransform.gameObject.SetActive(false);
 
         Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(startPosition, endPosition, unitLayerMask);
@@ -163,8 +130,6 @@ public class GameRTSController : MonoBehaviour
 
     public void MoveSelected(Vector2 movePosition)
     {
-        if (!IsGamePlaying) return;
-
         Vector2 moveToPosition = movePosition;
         List<Vector2> targetPositionList = GetPositionListAround(moveToPosition, new float[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, new int[] { 5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560 });
 
@@ -229,6 +194,5 @@ public class GameRTSController : MonoBehaviour
 
     #endregion
 
-
-
+    
 }
