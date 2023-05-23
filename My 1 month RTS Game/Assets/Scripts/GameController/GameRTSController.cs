@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class GmaeRTSController : MonoBehaviour
+public class GameRTSController : MonoBehaviour
 {
 
     public enum Teams
@@ -46,10 +45,8 @@ public class GmaeRTSController : MonoBehaviour
     [Header("Selecting")]
     private Vector2 startPosition;
     private List<ISelectable> selectedList;
-    private Func<Vector2> StartSelecting;
-    private Func<bool> IsHoldingSelect;
-    private Func<Vector2> EndSelecting;
 
+    
 
     [Header("Visual")]
     [SerializeField] private Transform selectedAreaTransform;
@@ -61,7 +58,6 @@ public class GmaeRTSController : MonoBehaviour
 
     [Header("Input")]
     private bool isHoldingSelect;
-    private GameInputActions inputActions;
 
     #endregion
 
@@ -74,19 +70,10 @@ public class GmaeRTSController : MonoBehaviour
         selectedAreaTransform.gameObject.SetActive(false);
     }
 
-    private void Start()
-    {
-        inputActions = new GameInputActions();
-        inputActions.Game.Enable();
-        inputActions.Game.Select.started += Select_started;
-        inputActions.Game.Select.canceled += Select_canceled;
-        inputActions.Game.Action1.started += Action1_started;
-    }
-
     private void Update()
     {
         if (!IsGamePlaying) return;
-
+        
         if (isHoldingSelect)
         {
             Vector3 currentMaousePosition = Mouse2D.GetMousePosition2D();
@@ -100,26 +87,26 @@ public class GmaeRTSController : MonoBehaviour
     #endregion
 
 
-    #region Subscription
+    #region Input (Public)
 
-    private void Select_started(InputAction.CallbackContext obj)
+    public void StartSelecting(Vector2 startPosition)
     {
         if (!IsGamePlaying) return;
 
         isHoldingSelect = true;
         selectedAreaTransform.gameObject.SetActive(true);
 
-        startPosition = Mouse2D.GetMousePosition2D();
+        this.startPosition = startPosition;
     }
 
-    private void Select_canceled(InputAction.CallbackContext obj)
+    public void StopSelecting(Vector2 endPosition)
     {
         if (!IsGamePlaying) return;
 
         isHoldingSelect = false;
         selectedAreaTransform.gameObject.SetActive(false);
 
-        Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(startPosition, Mouse2D.GetMousePosition2D(), unitLayerMask);
+        Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(startPosition, endPosition, unitLayerMask);
 
         RemoveAllFromSelectedList();
         List<ISelectable> listOfNewSellectedItems = new List<ISelectable>();
@@ -146,10 +133,12 @@ public class GmaeRTSController : MonoBehaviour
             }
         }
 
-        List<ISelectable> removeList = new List<ISelectable>();
-        foreach (ISelectable selectable in selectedList)
+        // Unselecing buildings if units are selected
+        if (hasUnits)
         {
-            if (hasUnits)
+            List<ISelectable> removeList = new List<ISelectable>();
+
+            foreach (ISelectable selectable in selectedList)
             {
                 if (selectable is _BaseBuilding building)
                 {
@@ -158,10 +147,11 @@ public class GmaeRTSController : MonoBehaviour
                 }
                 selectable.Select();
             }
-        }
-        foreach (ISelectable selected in removeList)
-        {
-            selectedList.Remove(selected);
+
+            foreach (ISelectable selected in removeList)
+            {
+                selectedList.Remove(selected);
+            }
         }
 
         OnSellect?.Invoke(this, new OnSellectEventArgs
@@ -171,12 +161,12 @@ public class GmaeRTSController : MonoBehaviour
         });
     }
 
-    private void Action1_started(InputAction.CallbackContext callbackContext)
+    public void MoveSelected(Vector2 movePosition)
     {
         if (!IsGamePlaying) return;
 
-        Vector2 moveToPosition = Mouse2D.GetMousePosition2D();
-        List<Vector2> targetPositionList = GetPositionListAround(moveToPosition, new float[] { 1, 2, 3, 4, 5 }, new int[] { 5, 10, 20, 40, 80 });
+        Vector2 moveToPosition = movePosition;
+        List<Vector2> targetPositionList = GetPositionListAround(moveToPosition, new float[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, new int[] { 5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560 });
 
         int targetPositionListIndex = 0;
         foreach (ISelectable selectable in selectedList)
@@ -238,6 +228,7 @@ public class GmaeRTSController : MonoBehaviour
     }
 
     #endregion
+
 
 
 }

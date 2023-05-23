@@ -10,7 +10,7 @@ public class HotBarUI : MonoBehaviour
 {
 
 
-    [SerializeField] private GmaeRTSController rtsController;
+    [SerializeField] private GameRTSController rtsController;
     [Space(6)]
     [SerializeField] private Image backgroundImage;
     [SerializeField] private Sprite HotBarSprite;
@@ -56,7 +56,7 @@ public class HotBarUI : MonoBehaviour
         selected.OnSlot3ButtonClicked();
     }
 
-    private void Mouse_OnSelectedChanged(object sender, GmaeRTSController.OnSellectEventArgs eventArgs)
+    private void Mouse_OnSelectedChanged(object sender, GameRTSController.OnSellectEventArgs eventArgs)
     {
         if (eventArgs.allSelected.Count > 1 || eventArgs.allSelected.Count == 0)
         {
