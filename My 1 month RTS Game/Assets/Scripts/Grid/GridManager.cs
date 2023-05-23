@@ -17,10 +17,6 @@ public class GridManager : MonoBehaviour
 
 
     [Header("Grid")]
-    [SerializeField] private int xSize = 20;
-    [SerializeField] private int ySize = 10;
-    [SerializeField] private int cellSize = 10;
-    [Space(5)]
     [SerializeField] private GridVisual gridVisual;
     [SerializeField] private TextAsset savedData;
 

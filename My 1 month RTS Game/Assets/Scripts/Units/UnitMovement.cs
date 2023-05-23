@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 using Pathfinding;
 
@@ -43,10 +44,9 @@ public class UnitMovement : MonoBehaviour
     private Vector2 lastMoveDirection;
     private Vector2 movePoint;
 
-    #endregion
+    [SerializeField] private List<Vector3> MovePositionListDebug;
 
-    private int currentWayPoint;
-    private bool reachedEndOfPath;
+    #endregion
 
     private Seeker seeker;
     private Path path;
@@ -74,51 +74,23 @@ public class UnitMovement : MonoBehaviour
     private void Update()
     {
         Move();
+
+        if (!IsPathNull())
+        {
+            MovePositionListDebug = path.vectorPath;
+        }
     }
 
     #endregion
 
 
-    #region Private Functions
-
-    private void FindPath()
-    {
-        float cellSize = GridManager.Instance.grid.GetCellSize();
-        Vector2 endPosition = GridManager.Instance.grid.SnapPositionToGrid(movePoint) + new Vector2(cellSize / 2, cellSize / 2);
-
-        FindPath();
-
-        void FindPath()
-        {
-            seeker.StartPath(transform.position, endPosition, OnPathCalculated);
-        }
-
-        
-    }
-
-    private void Move()
-    {
-        if (IsPathNull())
-        {
-            return;
-        }
-
-        movement_ElapsedTime += Time.deltaTime;
-        float percentageComplate = movement_ElapsedTime / timeToMove;
-
-
-        transform.position = Vector3.Lerp(movement_StartPosition, movement_EndPosition, movement_Curve.Evaluate(percentageComplate));
-        
-
-        if (Mathf.Abs(Vector2.Distance(movement_EndPosition, transform.position)) <= reachedWayPointDistance)
-        {
-            movement_ElapsedTime = 0;
-            SubpathReached();
-        }
-    }
+    #region Path Finding
 
     private void StartPath()
     {
+        float cellSize = GridManager.Instance.grid.GetCellSize();
+        movePoint = Vector2Int.FloorToInt(movePoint) + new Vector2(cellSize / 2, cellSize / 2);
+
         if (isMoving == true)
         {
             return;
@@ -126,6 +98,18 @@ public class UnitMovement : MonoBehaviour
         else
         {
             FindPath();
+        }
+    }
+
+    private void FindPath()
+    {
+        Vector2 endPosition = movePoint;
+
+        FindPath();
+
+        void FindPath()
+        {
+            seeker.StartPath(transform.position, endPosition, OnPathCalculated);
         }
     }
 
@@ -176,13 +160,13 @@ public class UnitMovement : MonoBehaviour
 
         if (IsPathNull()) return;
 
-        if (path.vectorPath.Count == 1)
+        if (path.vectorPath.Count <= 1 || MathF.Abs(Vector2.Distance(transform.position, movePoint)) <= reachedWayPointDistance)
         {
             PathReached();
             return;
         }
 
-        FindPath();
+        path.vectorPath.RemoveAt(0);
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
         
@@ -193,7 +177,6 @@ public class UnitMovement : MonoBehaviour
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.NotPlaceable});
     }
-
 
     private bool TrySetEndAndStartPositions()
     {
@@ -232,7 +215,6 @@ public class UnitMovement : MonoBehaviour
         return false;
     }
 
-
     private void PathReached()
     {
         path.vectorPath.Clear();
@@ -254,6 +236,31 @@ public class UnitMovement : MonoBehaviour
 
     #endregion
 
+    private void Move()
+    {
+        if (IsPathNull())
+        {
+            return;
+        }
+
+        movement_ElapsedTime += Time.deltaTime;
+        float percentageComplate = movement_ElapsedTime / timeToMove;
+
+
+        transform.position = Vector3.Lerp(movement_StartPosition, movement_EndPosition, movement_Curve.Evaluate(percentageComplate));
+        
+
+        if (Mathf.Abs(Vector2.Distance(movement_EndPosition, transform.position)) <= reachedWayPointDistance)
+        {
+            movement_ElapsedTime = 0;
+            if (MathF.Abs(Vector2.Distance(transform.position, movePoint)) <= reachedWayPointDistance)
+            {
+                PathReached();
+                return;
+            }
+            SubpathReached();
+        }
+    }
 
     private void InvokeOnDirectionChanged()
     {
@@ -270,7 +277,7 @@ public class UnitMovement : MonoBehaviour
     {
         stopedMoving = true;
         isMoving = false;
-
+        
         lastMoveDirection = Vector2.zero;
         InvokeOnDirectionChanged();
     }

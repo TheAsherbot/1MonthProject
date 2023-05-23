@@ -1,4 +1,1 @@
 Randomly starts to walk then I can not controll him.
-able to select while in puase mode.
-
-if I get to manny units game will crash.

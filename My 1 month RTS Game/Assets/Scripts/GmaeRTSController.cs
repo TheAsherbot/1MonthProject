@@ -46,6 +46,9 @@ public class GmaeRTSController : MonoBehaviour
     [Header("Selecting")]
     private Vector2 startPosition;
     private List<ISelectable> selectedList;
+    private Func<Vector2> StartSelecting;
+    private Func<bool> IsHoldingSelect;
+    private Func<Vector2> EndSelecting;
 
 
     [Header("Visual")]

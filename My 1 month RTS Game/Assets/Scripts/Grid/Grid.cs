@@ -432,31 +432,11 @@ public class Grid
         {
             // Left
             neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y));
-            // Left Down
-            if (currentNode.Y - 1 >= 0)
-            {
-                neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y - 1));
-            }
-            // Left Up
-            if (currentNode.Y + 1 < GetHeight())
-            {
-                neighbourList.Add(GetGridObject(currentNode.X - 1, currentNode.Y + 1));
-            }
         }
         if (currentNode.X + 1 < GetWidth())
         {
             // Right
             neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y));
-            // Right Down
-            if (currentNode.Y - 1 >= 0)
-            {
-                neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y - 1));
-            }
-            // Right Up
-            if (currentNode.Y + 1 < GetHeight())
-            {
-                neighbourList.Add(GetGridObject(currentNode.X + 1, currentNode.Y + 1));
-            }
         }
         // Bottom
         if (currentNode.Y - 1 >= 0)
