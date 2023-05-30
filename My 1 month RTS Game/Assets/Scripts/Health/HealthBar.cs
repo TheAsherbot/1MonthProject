@@ -28,7 +28,7 @@ public class HealthBar : MonoBehaviour
             borderGameObject.transform.localPosition = Vector3.zero;
             borderGameObject.transform.localScale = size + Vector3.one * border.thickness;
             borderGameObject.GetComponent<SpriteRenderer>().color = border.color;
-            borderGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
+            borderGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.SinglePixelSprite;
             RendererSortingOrderSorter borderRendererSortingOrderSorter = borderGameObject.AddComponent<RendererSortingOrderSorter>();
             borderGameObject.gameObject.layer = layer;
             borderRendererSortingOrderSorter.offset = -40;
@@ -40,7 +40,7 @@ public class HealthBar : MonoBehaviour
         backgroundGameObject.transform.localPosition = Vector3.zero;
         backgroundGameObject.transform.localScale = size;
         backgroundGameObject.GetComponent<SpriteRenderer>().color = backgroundColor;
-        backgroundGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
+        backgroundGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.SinglePixelSprite;
         RendererSortingOrderSorter backgroundRendererSortingOrderSorter = backgroundGameObject.AddComponent<RendererSortingOrderSorter>();
         backgroundGameObject.gameObject.layer = layer;
         backgroundRendererSortingOrderSorter.offset = -50;
@@ -56,7 +56,7 @@ public class HealthBar : MonoBehaviour
         barSpriteGameObject.transform.localPosition = new Vector3(size.x / 2f, 0f);
         barSpriteGameObject.transform.localScale = size;
         barSpriteGameObject.GetComponent<SpriteRenderer>().color = barColor;
-        barSpriteGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.singlePixelSprite;
+        barSpriteGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.SinglePixelSprite;
         RendererSortingOrderSorter barSpriteRendererSortingOrderSorter = barSpriteGameObject.AddComponent<RendererSortingOrderSorter>();
         barSpriteGameObject.gameObject.layer = layer;
         barSpriteRendererSortingOrderSorter.offset = -60;

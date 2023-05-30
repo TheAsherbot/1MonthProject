@@ -44,4 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35071bda547218f45a9ebdf29a11cd71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singlePixelSprite: {fileID: 21300000, guid: 480429d50c685504cab2e0c0d82cef73, type: 3}
+  <aiCivilianUnitSO>k__BackingField: {fileID: 0}
+  <singlePixelSprite>k__BackingField: {fileID: 21300000, guid: 480429d50c685504cab2e0c0d82cef73, type: 3}

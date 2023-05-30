@@ -18,8 +18,20 @@ public class GameAssets : MonoBehaviour
 
 
 
-    public Sprite singlePixelSprite;
 
+    [field: SerializeField]
+    public UnitSO AICivilianUnitSO
+    {
+        get;
+        private set;
+    }
+
+    [field: SerializeField]
+    public Sprite SinglePixelSprite
+    {
+        get;
+        private set;
+    }
 
 
 

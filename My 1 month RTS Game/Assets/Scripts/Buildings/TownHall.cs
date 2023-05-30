@@ -118,6 +118,43 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
             }
         }
     }
+    public bool Spawn(UnitSO unitSO, out _BaseUnit unit)
+    {
+        unit = default;
+
+        Vector2 raycastPosition = (Vector2)transform.position + new Vector2(3.5f, 1.5f);
+        RaycastHit2D raycastHit = Physics2D.Raycast(raycastPosition, Vector3.forward, 100f);
+
+        if (raycastHit.transform != null)
+        {
+            return false; // Unit is alrady at the spawn point
+        }
+
+        if (teamManager.TryUseMinerials(unitSO.cost))
+        {
+            unit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
+            unit.name = unitSO.name;
+            teamManager.UnitSpawned(unit);
+
+            if (GetComponent<IsOnPlayerTeam>() != null)
+            {
+                // Is on player team
+                unit.gameObject.AddComponent<IsOnPlayerTeam>();
+            }
+            else
+            {
+                // is on AI team
+                unit.gameObject.AddComponent<IsOnAITeam>();
+            }
+
+            if (unit is Civilian)
+            {
+                ((Civilian)unit).SetTownHall(this);
+            }
+        }
+
+        return true;
+    }
 
     #endregion
 

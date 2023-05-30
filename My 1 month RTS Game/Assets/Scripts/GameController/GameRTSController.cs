@@ -35,16 +35,7 @@ public class GameRTSController : MonoBehaviour
 
 
     [Header("Selecting")]
-    private Vector2 startPosition;
     private List<ISelectable> selectedList;
-
-
-    [Header("Visual")]
-    [SerializeField] private Transform selectedAreaTransform;
-
-
-    [Header("Collition")]
-    [SerializeField] private LayerMask unitLayerMask;
 
     #endregion
 
@@ -54,7 +45,6 @@ public class GameRTSController : MonoBehaviour
     private void Awake()
     {
         selectedList = new List<ISelectable>();
-        selectedAreaTransform.gameObject.SetActive(false);
     }
 
     #endregion
@@ -62,30 +52,19 @@ public class GameRTSController : MonoBehaviour
 
     #region Input (Public)
 
-    public void StartSelecting(Vector2 startPosition)
+    public void Select(List<ISelectable> selectedList)
     {
-        selectedAreaTransform.gameObject.SetActive(true);
-
-        this.startPosition = startPosition;
-    }
-
-    public void StopSelecting(Vector2 endPosition)
-    {
-        selectedAreaTransform.gameObject.SetActive(false);
-
-        Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(startPosition, endPosition, unitLayerMask);
-
         RemoveAllFromSelectedList();
         List<ISelectable> listOfNewSellectedItems = new List<ISelectable>();
         bool hasUnits = false;
-        foreach (Collider2D collider2D in collider2DArray)
+        foreach (Collider2D collider2D in selectedList)
         {
             if (team == Teams.Player)
             {
                 if (collider2D.TryGetComponent(out ISelectable selectable) && collider2D.TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
                 {
                     listOfNewSellectedItems.Add(selectable);
-                    selectedList.Add(selectable);
+                    this.selectedList.Add(selectable);
                     if (selectable is _BaseUnit unit) hasUnits = true;
                 }
             }
@@ -94,7 +73,7 @@ public class GameRTSController : MonoBehaviour
                 if (collider2D.TryGetComponent(out ISelectable selectable) && collider2D.TryGetComponent(out IsOnAITeam isOnAITeam))
                 {
                     listOfNewSellectedItems.Add(selectable);
-                    selectedList.Add(selectable);
+                    this.selectedList.Add(selectable);
                     if (selectable is _BaseBuilding building) hasUnits = false;
                 }
             }
@@ -105,7 +84,7 @@ public class GameRTSController : MonoBehaviour
         {
             List<ISelectable> removeList = new List<ISelectable>();
 
-            foreach (ISelectable selectable in selectedList)
+            foreach (ISelectable selectable in this.selectedList)
             {
                 if (selectable is _BaseBuilding building)
                 {
@@ -117,13 +96,13 @@ public class GameRTSController : MonoBehaviour
 
             foreach (ISelectable selected in removeList)
             {
-                selectedList.Remove(selected);
+                this.selectedList.Remove(selected);
             }
         }
 
         OnSellect?.Invoke(this, new OnSellectEventArgs
         {
-            allSelected = selectedList,
+            allSelected = this.selectedList,
             newSelected = listOfNewSellectedItems,
         });
     }

@@ -129,6 +129,10 @@ public class TeamManager : MonoBehaviour
     {
         teamBuildingList.Add(building);
     }
+    public List<_BaseBuilding> GetListOfAllBuildings()
+    {
+        return teamBuildingList;
+    }
 
     #endregion
 

@@ -2,11 +2,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 using TheAshBot.TwoDimentional;
+using System.Collections.Generic;
+using System.Linq;
 
 [RequireComponent(typeof(GameRTSController))]
 public class PlayerInput : MonoBehaviour
 {
 
+
+    #region Variables
 
     [Header("Logic")]
     private GameRTSController controller;
@@ -21,17 +25,30 @@ public class PlayerInput : MonoBehaviour
     }
 
 
+    [Header("Collition")]
+    [SerializeField] private LayerMask unitLayerMask;
+
+
     [Header("Visual")]
     [SerializeField] private Transform selectedAreaTransform;
 
     private Vector2 startPosition;
     private bool isHoldingSelect;
 
+    #endregion
+
+
+    #region Unity Functions
+
+    private void Awake()
+    {
+        selectedAreaTransform.gameObject.SetActive(false);
+        controller = GetComponent<GameRTSController>();
+        inputActions = new GameInputActions();
+    }
 
     private void Start()
     {
-        GetComponent<GameRTSController>();
-        inputActions = new GameInputActions();
         inputActions.Game.Enable();
         inputActions.Game.Select.started += Select_started;
         inputActions.Game.Select.canceled += Select_canceled;
@@ -52,6 +69,8 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
+    #endregion
+
 
     #region Events (Subscriptions)
 
@@ -59,7 +78,7 @@ public class PlayerInput : MonoBehaviour
     {
         if (!IsGamePlaying) return;
 
-        controller.StartSelecting(Mouse2D.GetMousePosition2D());
+        selectedAreaTransform.gameObject.SetActive(true);
 
         startPosition = Mouse2D.GetMousePosition2D();
         isHoldingSelect = true;
@@ -69,7 +88,17 @@ public class PlayerInput : MonoBehaviour
     {
         if (!IsGamePlaying) return;
 
-        controller.StopSelecting(Mouse2D.GetMousePosition2D());
+        selectedAreaTransform.gameObject.SetActive(false);
+
+        Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(startPosition, Mouse2D.GetMousePosition2D(), unitLayerMask);
+
+        List<ISelectable> selectableList = new List<ISelectable>();
+        foreach (Collider2D collider2D in collider2DArray)
+        {
+            if (collider2D is ISelectable selectable) selectableList.Add(selectable);
+        }
+
+        controller.Select(selectableList);
 
         startPosition = Vector2.zero;
         isHoldingSelect = false;
@@ -83,5 +112,6 @@ public class PlayerInput : MonoBehaviour
     }
 
     #endregion
+
 
 }
