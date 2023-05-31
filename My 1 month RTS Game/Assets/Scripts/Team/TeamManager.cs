@@ -46,6 +46,7 @@ public class TeamManager : MonoBehaviour
     private int maxNumberOfUnits;
     [SerializeField] private List<_BaseBuilding> teamBuildingList;
     [SerializeField] private List<_BaseUnit> teamUnitList;
+    [SerializeField] private List<AttackingUnit> teamAttckingUnitList;
 
 
     private void Awake()
@@ -110,10 +111,26 @@ public class TeamManager : MonoBehaviour
     public void UnitSpawned(_BaseUnit unit)
     {
         teamUnitList.Add(unit);
+        if (unit is AttackingUnit attackingUnit)
+        {
+            teamAttckingUnitList.Add(attackingUnit);
+        }
     }
     public void UnitKilled(_BaseUnit unit)
     {
-        teamUnitList.Add(unit);
+        teamUnitList.Remove(unit);
+        if (unit.TryGetComponent(out AttackingUnit attackingUnit))
+        {
+            teamAttckingUnitList.Remove(attackingUnit);
+        }
+    }
+    public List<_BaseUnit> GetListOfAllUnits()
+    {
+        return teamUnitList;
+    }
+    public List<AttackingUnit> GetListOfAllAttackingUnitUnits()
+    {
+        return teamAttckingUnitList;
     }
 
     #endregion

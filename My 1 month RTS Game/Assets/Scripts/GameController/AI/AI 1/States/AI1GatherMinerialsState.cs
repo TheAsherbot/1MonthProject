@@ -20,7 +20,7 @@ public class AI1GatherMinerialsState : AI1_BaseState
 
 
 
-    public AI1GatherMinerialsState(GameRTSController controller, TeamManager teamManager, TeamManager enemyTeamManager) : base(controller, teamManager, enemyTeamManager)
+    public AI1GatherMinerialsState(GameRTSController controller, TeamManager teamManager, TeamManager enemyTeamManager): base(controller, teamManager, enemyTeamManager)
     {
         this.controller = controller;
         this.teamManager = teamManager;
@@ -87,10 +87,10 @@ public class AI1GatherMinerialsState : AI1_BaseState
         // Spowning The Unit
         if (townHall.Spawn(GameAssets.Instance.AICivilianUnitSO, out _BaseUnit unit))
         {
-            Civilian civilian = unit as Civilian;
+            controller.Select(new List<ISelectable> { (ISelectable)unit } );
             GridObject minerial = GetClosestMinerialToTownHall(townHall);
 
-            civilian.Move(GridManager.Instance.grid.GetWorldPosition(minerial.X, minerial.Y));
+            controller.MoveSelected(GridManager.Instance.grid.GetWorldPosition(minerial.X, minerial.Y));
         }
     }
 

@@ -25,6 +25,18 @@ public class GameAssets : MonoBehaviour
         get;
         private set;
     }
+    [field: SerializeField]
+    public UnitSO AISwordsManUnitSO
+    {
+        get;
+        private set;
+    }
+    [field: SerializeField]
+    public UnitSO AIArcherUnitSO
+    {
+        get;
+        private set;
+    }
 
     [field: SerializeField]
     public Sprite SinglePixelSprite
