@@ -65,8 +65,16 @@ public class UnitMovement : MonoBehaviour
 
 
         unit.OnMove += Unit_OnMove;
+        unit.OnTest += Unit_OnTest;
         Debug.Log("unit.OnMove += Unit_OnMove");
         unit.OnStopMoveing += Unit_OnStopMoveing;
+    }
+
+    private void Unit_OnTest(Vector2 movePoint)
+    {
+        this.Log("Unit_OnTest");
+        this.movePoint = movePoint;
+        StartPath();
     }
 
     private void Update()

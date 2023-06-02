@@ -749,6 +749,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8321962855711176022, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
+      propertyPath: townHall
+      value: 
+      objectReference: {fileID: 1403203371}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
 --- !u!1001 &358851750
@@ -810,6 +814,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8321962855711176022, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
+      propertyPath: townHall
+      value: 
+      objectReference: {fileID: 1403203371}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
 --- !u!4 &358851751 stripped
@@ -2023,6 +2031,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8321962855711176022, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
+      propertyPath: townHall
+      value: 
+      objectReference: {fileID: 1403203371}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
 --- !u!1 &809489238
@@ -3110,6 +3122,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8321962855711176022, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
+      propertyPath: townHall
+      value: 
+      objectReference: {fileID: 1403203371}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
 --- !u!114 &1380774307 stripped
@@ -3303,6 +3319,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8321962855711176022, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
+      propertyPath: i
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8321962855711176022, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
+      propertyPath: townHall
+      value: 
+      objectReference: {fileID: 1403203371}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32815862aeae12a4b90baf1a0fee2581, type: 3}
 --- !u!1 &1438805546

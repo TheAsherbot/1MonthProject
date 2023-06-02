@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Sirenix.Serialization;
+
 using TheAshBot;
 using TheAshBot.TwoDimentional;
 
@@ -22,6 +24,10 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 
 
     #region Variables
+
+    public int i;
+    [OdinSerialize] public Test test;
+    [Serializable] public delegate void Test(int i);
 
     [Header("Generial")]
     [SerializeField] private bool isOnPlayerTeam;

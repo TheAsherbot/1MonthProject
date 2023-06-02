@@ -1,9 +1,13 @@
 using System;
 
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
+
 using TheAshBot;
 
 using UnityEngine;
 
+[ShowOdinSerializedPropertiesInInspector]
 public class _BaseUnit : MonoBehaviour
 {
 
@@ -15,6 +19,8 @@ public class _BaseUnit : MonoBehaviour
     {
         public Vector2 movePoint;
     }
+    public event Test OnTest;
+    public delegate void Test(Vector2 movePoint);
 
     protected void Trigger_OnMove(Vector2 movePoint)
     {
