@@ -1,5 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Headers;
+
+using TheAshBot;
+using TheAshBot.TwoDimentional;
+
 using UnityEngine;
 
 public class AI1BuildArmyState : AI1_BaseState
@@ -79,10 +85,10 @@ public class AI1BuildArmyState : AI1_BaseState
             case PotetalActions.Idle:
                 return this;
             case PotetalActions.SpawnSwordsMan:
-                SpawnSwordsMan();
+                SpawnUnit(GameAssets.Instance.AISwordsManUnitSO);
                 return this;
             case PotetalActions.SpawnSpawnRanger:
-                SpawnArcher();
+                SpawnUnit(GameAssets.Instance.AIArcherUnitSO);
                 return this;
             case PotetalActions.SwitchStateToGatherMinerials:
                 return new AI1GatherMinerialsState(controller, teamManager, enemyTeamManager);
@@ -150,7 +156,7 @@ public class AI1BuildArmyState : AI1_BaseState
         return true;
     }
 
-    private void SpawnSwordsMan()
+    private void SpawnUnit(UnitSO unitSO)
     {
         // Choising Random Town Hall
         List<TownHall> townHallList = new List<TownHall>();
@@ -165,40 +171,38 @@ public class AI1BuildArmyState : AI1_BaseState
         TownHall townHall = townHallList[townHallIndex];
 
         // Spawning The Unit
-        if (townHall.Spawn(GameAssets.Instance.AISwordsManUnitSO, out _BaseUnit unit))
+        if (townHall.Spawn(unitSO, out _BaseUnit unit))
         {
-            controller.Select(new List<ISelectable> { (ISelectable)unit });
-
             Vector2 wayPointOffset = new Vector2(-5, -5);
+            Vector2 movePosition = (Vector2)townHall.GetLoadTransform().position + wayPointOffset;
 
-            controller.MoveSelected((Vector2)townHall.GetLoadTransform().position - wayPointOffset);
-        }
-    }
+            Vector2 boxCastSize = new Vector2(2, 2);
+            Vector2 bottomLeft = movePosition - (boxCastSize / 2);
+            Vector2 topRight = movePosition + (boxCastSize / 2);
 
-    private void SpawnArcher()
-    {
-        // Choising Random Town Hall
-        List<TownHall> townHallList = new List<TownHall>();
-        foreach (_BaseBuilding building in teamManager.GetListOfAllBuildings())
-        {
-            if (building is TownHall)
+            Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(bottomLeft, topRight, GameAssets.Instance.AIUnitLayMask);
+
+            List <ISelectable> selectableList = new List<ISelectable>
             {
-                townHallList.Add((TownHall)building);
+                unit as ISelectable,
+            };
+            foreach (Collider2D collider2D in collider2DArray)
+            {
+                if (collider2D.TryGetComponent(out ISelectable selectable)) selectableList.Add(selectable);
             }
-        }
-        int townHallIndex = Random.Range(0, townHallList.Count);
-        TownHall townHall = townHallList[townHallIndex];
 
-        // Spawning The Unit
-        if (townHall.Spawn(GameAssets.Instance.AIArcherUnitSO, out _BaseUnit unit))
-        {
-            controller.Select(new List<ISelectable> { (ISelectable)unit });
+            controller.Select(selectableList);
 
-            Vector2 wayPointOffset = new Vector2(-5, -5);
-
-            controller.MoveSelected((Vector2)townHall.GetLoadTransform().position - wayPointOffset);
+            controller.StartCoroutine(MoveUnitsNextFrame(movePosition));
         }
     }
 
+
+    private IEnumerator MoveUnitsNextFrame(Vector2 position)
+    {
+        yield return null;
+
+        controller.MoveSelected(position);
+    }
 
 }

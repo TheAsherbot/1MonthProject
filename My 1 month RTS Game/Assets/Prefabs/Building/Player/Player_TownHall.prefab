@@ -357,7 +357,7 @@ GameObject:
   - component: {fileID: 681601876455187821}
   - component: {fileID: 1529501886}
   - component: {fileID: 1797152248}
-  m_Layer: 7
+  m_Layer: 3
   m_Name: Player_TownHall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -47,4 +47,7 @@ MonoBehaviour:
   <AICivilianUnitSO>k__BackingField: {fileID: 11400000, guid: 7a96c70b647228143a69978f9c27b1b9, type: 2}
   <AISwordsManUnitSO>k__BackingField: {fileID: 11400000, guid: 20b20d1e3bd2faa49b23edbbba24bf73, type: 2}
   <AIArcherUnitSO>k__BackingField: {fileID: 11400000, guid: ff9b63b823965f34ba4c3b85d0d4f494, type: 2}
+  <AIUnitLayMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 128
   <SinglePixelSprite>k__BackingField: {fileID: 21300000, guid: 480429d50c685504cab2e0c0d82cef73, type: 3}

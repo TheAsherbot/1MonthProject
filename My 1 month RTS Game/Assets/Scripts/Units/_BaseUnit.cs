@@ -19,20 +19,13 @@ public class _BaseUnit : MonoBehaviour
     {
         public Vector2 movePoint;
     }
-    public event Test OnTest;
-    public delegate void Test(Vector2 movePoint);
 
     protected void Trigger_OnMove(Vector2 movePoint)
     {
-        this.Log("Trigger_OnMove at " + movePoint);
         OnMove?.Invoke(this, new OnMoveEventArgs
         {
             movePoint = movePoint,
         });
-        if (OnMove == null)
-        {
-            this.Log("OnMove == null");
-        }
     }
     
     protected void Trigger_OnStopMoveing()

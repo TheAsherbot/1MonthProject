@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using TheAshBot;
 using TheAshBot.TwoDimentional;
 
+using UnityEditor.Rendering.Universal;
+
 using UnityEngine;
 
 public class GameRTSController : MonoBehaviour
@@ -89,7 +91,7 @@ public class GameRTSController : MonoBehaviour
 
             foreach (ISelectable selectable in this.selectedList)
             {
-                if (selectable is _BaseBuilding building)
+                if (selectable is _BaseBuilding)
                 {
                     removeList.Add(selectable);
                     continue;
@@ -115,15 +117,46 @@ public class GameRTSController : MonoBehaviour
         Vector2 moveToPosition = movePosition;
         List<Vector2> targetPositionList = GetPositionListAround(moveToPosition, new float[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, new int[] { 5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560 });
 
+        bool moveAllToPoint = false;
+        if (Mouse2D.TryGetObjectAtMousePosition(out GameObject hit))
+        {
+            if (hit.TryGetComponent(out _BaseIsOnTeam baseIsOnTeam))
+            {
+                if (team == Teams.Player)
+                {
+                    if (baseIsOnTeam is IsOnAITeam)
+                    {
+                        moveAllToPoint = true;
+                    }
+                }
+                else if (team == Teams.AI)
+                {
+                    if (baseIsOnTeam is IsOnPlayerTeam)
+                    {
+                        moveAllToPoint = true;
+                    }
+                }
+            }
+        }
+        else if (GridManager.Instance.grid.GetGridObject(movePosition).tilemapSprite == GridObject.TilemapSprite.Minerials)
+        {
+            moveAllToPoint = true;
+        }
+
         int targetPositionListIndex = 0;
         foreach (ISelectable selectable in selectedList)
         {
             if (selectable is IMoveable moveable)
             {
-                this.Log("selectable is IMoveable moveable");
-                this.Log("targetPositionList[targetPositionListIndex]: " + targetPositionList[targetPositionListIndex]);
-                moveable.Move(targetPositionList[targetPositionListIndex]);
-                targetPositionListIndex = (targetPositionListIndex + 1) % targetPositionList.Count;
+                if (moveAllToPoint)
+                {
+                    moveable.Move(movePosition);
+                }
+                else
+                {
+                    moveable.Move(targetPositionList[targetPositionListIndex]);
+                    targetPositionListIndex = (targetPositionListIndex + 1) % targetPositionList.Count;
+                }
             }
         }
     }

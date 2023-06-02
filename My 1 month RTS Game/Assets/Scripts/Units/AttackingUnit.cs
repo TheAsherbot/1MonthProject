@@ -272,6 +272,7 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
 
     private void HealthSystem_OnHealthDepleted(object sender, System.EventArgs e)
     {
+        teamManager.UnitKilled(this);
         Destroy(gameObject);
     }
 
@@ -357,7 +358,7 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
     {
         if (IsSelected)
         {
-            if (!GridManager.Instance.grid.IsPositionOnGrid(Mouse2D.GetMousePosition2D())) return;
+            if (!GridManager.Instance.grid.IsPositionOnGrid(position)) return;
 
             TestShouldAttack(position);
 

@@ -332,7 +332,7 @@ GameObject:
   - component: {fileID: 2192667747468976402}
   - component: {fileID: 2192667747468976401}
   - component: {fileID: 1058891433869786961}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Player_Archer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -439,7 +439,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  MovePositionListDebug: []
 --- !u!114 &1058891433869786961
 MonoBehaviour:
   m_ObjectHideFlags: 0

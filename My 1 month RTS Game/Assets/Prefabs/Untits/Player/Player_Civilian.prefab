@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 8321962855711176022}
   - component: {fileID: 5736083375485587624}
   - component: {fileID: 4964340814920329840}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Player_Civilian
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -333,6 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f54047fdc549144ca4082b8acfaac0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  i: 0
   isOnPlayerTeam: 1
   selectedVisual: {fileID: 1136546163359832502}
   <HotBarSlotSOList>k__BackingField:
@@ -381,7 +382,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  MovePositionListDebug: []
 --- !u!114 &4964340814920329840
 MonoBehaviour:
   m_ObjectHideFlags: 0

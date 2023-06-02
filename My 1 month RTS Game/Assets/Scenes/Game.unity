@@ -335,7 +335,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 8
   selectedAreaTransform: {fileID: 552292019}
 --- !u!1001 &161648167
 PrefabInstance:
@@ -1753,7 +1753,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e60fcc6254822f4e8397fe9b1fbb452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingMinerials: 100
+  startingMinerials: 1000
   team: 1
   teamBuildingList:
   - {fileID: 1403203371}

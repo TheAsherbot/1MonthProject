@@ -37,8 +37,7 @@ public class Arrow : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        float timeToTurnOnTrigger = 0.2f;
-        if ((timeToHit - elapsedTime) < timeToTurnOnTrigger)
+        if (collision.transform == target) 
         {
             if (collision.TryGetComponent(out IDamageable damageable))
             {

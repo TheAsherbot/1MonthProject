@@ -42,12 +42,9 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
 
     private void Start()
     {
-        Vector3 offset = new Vector3(1.6f, 2.5f);
-        Vector3 size = new Vector3(3, 0.3f);
-        HealthBar.Border border = new HealthBar.Border();
-        border.thickness = 0.075f;
-        border.color = Color.black;
-        healthSystem = HealthBar.Create(maxHealth, transform, offset, size, Color.red, Color.gray, border, false, 13);
+        MakeHealthBar();
+        healthSystem.OnHealthDepleted += HealthSystem_OnHealthDepleted;
+
         GridManager.Instance.grid.TryMakeBuilding(transform.position, buildingSO.buildingLeyerListFromBottomToTop);
         if (GetComponent<IsOnPlayerTeam>() != null)
         {
@@ -59,6 +56,21 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
             // is not on player team (So is on AI team)
             teamManager = TeamManager.AIInstance;
         }
+    }
+
+    #endregion
+
+
+    #region Private
+
+    private void MakeHealthBar()
+    {
+        Vector3 offset = new Vector3(1.6f, 2.5f);
+        Vector3 size = new Vector3(3, 0.3f);
+        HealthBar.Border border = new HealthBar.Border();
+        border.thickness = 0.075f;
+        border.color = Color.black;
+        healthSystem = HealthBar.Create(maxHealth, transform, offset, size, Color.red, Color.gray, border, false, 13);
     }
 
     #endregion
@@ -80,6 +92,16 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
     {
         int amount = 10;
         teamManager.AddMinerials(amount);
+    }
+
+    #endregion
+
+
+    #region Events (Subscriptions)
+
+    private void HealthSystem_OnHealthDepleted(object sender, System.EventArgs e)
+    {
+        teamManager.DestoryBuilding(this);
     }
 
     #endregion

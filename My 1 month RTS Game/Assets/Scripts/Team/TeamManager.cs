@@ -119,7 +119,7 @@ public class TeamManager : MonoBehaviour
     public void UnitKilled(_BaseUnit unit)
     {
         teamUnitList.Remove(unit);
-        if (unit.TryGetComponent(out AttackingUnit attackingUnit))
+        if (unit is AttackingUnit attackingUnit)
         {
             teamAttckingUnitList.Remove(attackingUnit);
         }
@@ -145,6 +145,19 @@ public class TeamManager : MonoBehaviour
     public void DestoryBuilding(_BaseBuilding building)
     {
         teamBuildingList.Add(building);
+        List<TownHall> townHallList = new List<TownHall>();
+        foreach (_BaseBuilding baseBuilding in teamBuildingList)
+        {
+            if (baseBuilding is TownHall townHall)
+            {
+                townHallList.Add(townHall);
+            }
+        }
+
+        if (townHallList.Count == 0)
+        {
+            // Trigger End Game
+        }
     }
     public List<_BaseBuilding> GetListOfAllBuildings()
     {

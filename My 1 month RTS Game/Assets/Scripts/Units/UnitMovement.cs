@@ -27,7 +27,6 @@ public class UnitMovement : MonoBehaviour
     #region Variables
 
     [Header("References")]
-    private Grid grid;
     private _BaseUnit unit;
 
 
@@ -60,21 +59,11 @@ public class UnitMovement : MonoBehaviour
 
     private void Start()
     {
-        grid = GridManager.Instance.grid;
         movement_StartPosition = transform.position;
 
 
         unit.OnMove += Unit_OnMove;
-        unit.OnTest += Unit_OnTest;
-        Debug.Log("unit.OnMove += Unit_OnMove");
         unit.OnStopMoveing += Unit_OnStopMoveing;
-    }
-
-    private void Unit_OnTest(Vector2 movePoint)
-    {
-        this.Log("Unit_OnTest");
-        this.movePoint = movePoint;
-        StartPath();
     }
 
     private void Update()
@@ -89,8 +78,6 @@ public class UnitMovement : MonoBehaviour
 
     private void StartPath()
     {
-        this.Log("StartPath");
-
         float cellSize = GridManager.Instance.grid.GetCellSize();
         movePoint = Vector2Int.FloorToInt(movePoint) + new Vector2(cellSize / 2, cellSize / 2);
 
@@ -287,7 +274,6 @@ public class UnitMovement : MonoBehaviour
 
     private void Unit_OnMove(object sender, _BaseUnit.OnMoveEventArgs e)
     {
-        this.Log("Unit_OnMove");
         movePoint = e.movePoint;
         StartPath();
     }
