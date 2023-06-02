@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using TheAshBot.TwoDimentional;
 using System.Collections.Generic;
 using System.Linq;
+using TheAshBot;
 
 [RequireComponent(typeof(GameRTSController))]
 public class PlayerInput : MonoBehaviour
@@ -92,10 +93,10 @@ public class PlayerInput : MonoBehaviour
 
         Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(startPosition, Mouse2D.GetMousePosition2D(), unitLayerMask);
 
-        List<ISelectable> selectableList = new List<ISelectable>();
+        List <ISelectable> selectableList = new List<ISelectable>();
         foreach (Collider2D collider2D in collider2DArray)
         {
-            if (collider2D is ISelectable selectable) selectableList.Add(selectable);
+            if (collider2D.TryGetComponent(out ISelectable selectable)) selectableList.Add(selectable);
         }
 
         controller.Select(selectableList);

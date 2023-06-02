@@ -44,8 +44,6 @@ public class UnitMovement : MonoBehaviour
     private Vector2 lastMoveDirection;
     private Vector2 movePoint;
 
-    [SerializeField] private List<Vector3> MovePositionListDebug;
-
     #endregion
 
     private Seeker seeker;
@@ -57,28 +55,23 @@ public class UnitMovement : MonoBehaviour
     private void Awake()
     {
         unit = GetComponent<_BaseUnit>();
+        seeker = GetComponent<Seeker>();
     }
 
     private void Start()
     {
-        seeker = GetComponent<Seeker>();
-
         grid = GridManager.Instance.grid;
         movement_StartPosition = transform.position;
 
 
         unit.OnMove += Unit_OnMove;
+        Debug.Log("unit.OnMove += Unit_OnMove");
         unit.OnStopMoveing += Unit_OnStopMoveing;
     }
 
     private void Update()
     {
         Move();
-
-        if (!IsPathNull())
-        {
-            MovePositionListDebug = path.vectorPath;
-        }
     }
 
     #endregion
@@ -88,6 +81,8 @@ public class UnitMovement : MonoBehaviour
 
     private void StartPath()
     {
+        this.Log("StartPath");
+
         float cellSize = GridManager.Instance.grid.GetCellSize();
         movePoint = Vector2Int.FloorToInt(movePoint) + new Vector2(cellSize / 2, cellSize / 2);
 
@@ -284,6 +279,7 @@ public class UnitMovement : MonoBehaviour
 
     private void Unit_OnMove(object sender, _BaseUnit.OnMoveEventArgs e)
     {
+        this.Log("Unit_OnMove");
         movePoint = e.movePoint;
         StartPath();
     }

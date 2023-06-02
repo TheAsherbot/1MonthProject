@@ -47,7 +47,7 @@ public class AI1DefendingState : AI1_BaseState
         float agroRange = 25 * GridManager.Instance.grid.GetCellSize();
 
         List<AttackingUnit> enemyAttackingUnitsInRange = new List<AttackingUnit>();
-        foreach (AttackingUnit AttackingUnit in TeamManager.PlayerInstance.GetListOfAllAttackingUnitUnits())
+        foreach (AttackingUnit AttackingUnit in enemyTeamManager.GetListOfAllAttackingUnitUnits())
         {
             foreach (TownHall townHall in townHallList)
             {

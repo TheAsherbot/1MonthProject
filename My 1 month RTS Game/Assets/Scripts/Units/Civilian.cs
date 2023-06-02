@@ -88,23 +88,35 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
     #region Input
 
     private Vector2 TestIfShouldMine(Vector2 position)
-    {   
+    {
+        this.Log("TestIfShouldMine 1");
         if (hasMinerials)
         {
+            this.Log("hasMinerials");
             return townHall.GetLoadTransform().position;
         }
+
+        this.Log("TestIfShouldMine 2");
 
         GridObject gridObject = GridManager.Instance.grid.GetGridObject(position);
         if (gridObject.tilemapSprite != GridObject.TilemapSprite.Minerials)
         {
+            this.Log("gridObject.tilemapSprite != Minerials");
             state = States.Moving;
             return position;
         }
 
+        this.Log("TestIfShouldMine 3");
+
         minerial = GridManager.Instance.grid.GetWorldPosition(gridObject.X, gridObject.Y);
+
+        this.Log("TestIfShouldMine 4");
 
         GridObject closestNeighbour = GetClosedtNeighbourFromMinerial(gridObject);
         state = States.MovingToMine;
+
+        this.Log("TestIfShouldMine 5");
+
         return GridManager.Instance.grid.GetWorldPosition(closestNeighbour.X, closestNeighbour.Y);
     }
 
@@ -251,10 +263,14 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 
     public void Move(Vector2 position)
     {
+        this.Log("Move");
         if (IsSelected)
         {
+            this.Log("IsSelected");
             if (GridManager.Instance.grid.IsPositionOnGrid(position))
             {
+                this.Log("IsPositionOnGrid");
+                Debug.Log("TestIfShouldMine(position): " + TestIfShouldMine(position));
                 Trigger_OnMove(TestIfShouldMine(position));
             }
         }

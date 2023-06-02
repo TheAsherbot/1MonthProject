@@ -60,8 +60,7 @@ public class AI1GatherMinerialsState : AI1_BaseState
             case PotetalActions.Idle:
                 return this;
             case PotetalActions.SwitchStateToBuildingArrmy:
-                // TODO: Add this.
-                break;
+                return new AI1BuildArmyState(controller, teamManager, enemyTeamManager);
             case PotetalActions.SpawnCivilianAndStartMining:
                 SpawnCivilianAndStartMining();
                 break;
@@ -90,6 +89,7 @@ public class AI1GatherMinerialsState : AI1_BaseState
             controller.Select(new List<ISelectable> { (ISelectable)unit } );
             GridObject minerial = GetClosestMinerialToTownHall(townHall);
 
+            Debug.Log("GridManager.Instance.grid.GetWorldPosition(minerial.X, minerial.Y: " + GridManager.Instance.grid.GetWorldPosition(minerial.X, minerial.Y));
             controller.MoveSelected(GridManager.Instance.grid.GetWorldPosition(minerial.X, minerial.Y));
         }
     }
@@ -98,6 +98,7 @@ public class AI1GatherMinerialsState : AI1_BaseState
     {
         Grid grid = GridManager.Instance.grid;
         Vector2 startPosition = grid.SnapPositionToGrid(townHall.GetLoadTransform().position);
+        Debug.Log("startPosition: " + startPosition);
         float cellSize = grid.GetCellSize();
 
         List<GridObject> minerialGridObjectList = new List<GridObject>();
@@ -108,7 +109,8 @@ public class AI1GatherMinerialsState : AI1_BaseState
             {
                 GridObject gridObject;
                 // Top Right
-                gridObject = grid.GetGridObject(new Vector2(startPosition.x + (cellSize * x), startPosition.y + (cellSize * y)));
+                gridObject = grid.GetGridObject(new Vector2(startPosition.x + x, startPosition.y + y));
+                Debug.Log("gridObject At " + (startPosition.x + x) + ", " + (startPosition.y + y) +  ": " + gridObject);
                 TestIfGridObjectsHasMinerialsAndAdd(gridObject);
 
                 // Top Left
@@ -136,10 +138,12 @@ public class AI1GatherMinerialsState : AI1_BaseState
         }
 
         GridObject closestMinerialGridObject = null;
+        Debug.Log("minerialGridObjectList.Count: " + minerialGridObjectList.Count);
         foreach (GridObject minerialGridObject in minerialGridObjectList)
         {
             if (closestMinerialGridObject == null)
             {
+                Debug.Log("closestMinerialGridObject == null");
                 closestMinerialGridObject = minerialGridObject;
                 continue;
             }
@@ -147,6 +151,7 @@ public class AI1GatherMinerialsState : AI1_BaseState
             if (Mathf.Abs(Vector2.Distance(townHall.GetLoadTransform().position, grid.GetWorldPosition(minerialGridObject.X, minerialGridObject.Y))) < 
                 Mathf.Abs(Vector2.Distance(townHall.GetLoadTransform().position, grid.GetWorldPosition(closestMinerialGridObject.X, closestMinerialGridObject.Y))))
             {
+                Debug.Log("Mathf.Abs");
                 // This is closer than the last one.
                 closestMinerialGridObject = minerialGridObject;
             }
@@ -156,9 +161,13 @@ public class AI1GatherMinerialsState : AI1_BaseState
 
         void TestIfGridObjectsHasMinerialsAndAdd(GridObject gridObject)
         {
-            if (gridObject.tilemapSprite == GridObject.TilemapSprite.Minerials)
+            if (gridObject != null)
             {
-                minerialGridObjectList.Add(gridObject);
+                if (gridObject.tilemapSprite == GridObject.TilemapSprite.Minerials)
+                {
+                    Debug.Log("<color=red>Yay</color>");
+                    minerialGridObjectList.Add(gridObject);
+                }
             }
         }
     }

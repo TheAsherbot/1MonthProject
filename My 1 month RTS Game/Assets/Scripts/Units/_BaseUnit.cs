@@ -18,10 +18,15 @@ public class _BaseUnit : MonoBehaviour
 
     protected void Trigger_OnMove(Vector2 movePoint)
     {
+        this.Log("Trigger_OnMove at " + movePoint);
         OnMove?.Invoke(this, new OnMoveEventArgs
         {
             movePoint = movePoint,
         });
+        if (OnMove == null)
+        {
+            this.Log("OnMove == null");
+        }
     }
     
     protected void Trigger_OnStopMoveing()

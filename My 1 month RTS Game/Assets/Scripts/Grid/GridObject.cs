@@ -91,7 +91,7 @@ public class GridObject
     public override string ToString()
     {
         string returnedString = "F";
-        if (StateList.Contains(OccupationState.NotPlaceable))
+        if (tilemapSprite == TilemapSprite.Minerials)
         {
             returnedString = "T";
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using TheAshBot;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
@@ -55,29 +56,31 @@ public class GameRTSController : MonoBehaviour
     public void Select(List<ISelectable> selectedList)
     {
         RemoveAllFromSelectedList();
-        List<ISelectable> listOfNewSellectedItems = new List<ISelectable>();
+        List<ISelectable> newISelecableList = new List<ISelectable>();
         bool hasUnits = false;
-        foreach (Collider2D collider2D in selectedList)
+        foreach (ISelectable selectable in selectedList)
         {
+            Component selectableAsComponent = selectable as Component;
+
             if (team == Teams.Player)
             {
-                if (collider2D.TryGetComponent(out ISelectable selectable) && collider2D.TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
+                if (selectableAsComponent.TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
                 {
-                    listOfNewSellectedItems.Add(selectable);
-                    this.selectedList.Add(selectable);
-                    if (selectable is _BaseUnit unit) hasUnits = true;
+                    newISelecableList.Add(selectable);
+                    if (selectableAsComponent.TryGetComponent(out _BaseUnit unit)) hasUnits = true;
                 }
             }
             else if (team == Teams.AI)
             {
-                if (collider2D.TryGetComponent(out ISelectable selectable) && collider2D.TryGetComponent(out IsOnAITeam isOnAITeam))
+                if (selectableAsComponent.TryGetComponent(out IsOnAITeam isOnAITeam))
                 {
-                    listOfNewSellectedItems.Add(selectable);
-                    this.selectedList.Add(selectable);
-                    if (selectable is _BaseBuilding building) hasUnits = false;
+                    newISelecableList.Add(selectable);
+                    if (selectableAsComponent.TryGetComponent(out _BaseUnit unit)) hasUnits = true;
                 }
             }
         }
+
+        this.selectedList = newISelecableList;
 
         // Unselecing buildings if units are selected
         if (hasUnits)
@@ -103,7 +106,7 @@ public class GameRTSController : MonoBehaviour
         OnSellect?.Invoke(this, new OnSellectEventArgs
         {
             allSelected = this.selectedList,
-            newSelected = listOfNewSellectedItems,
+            newSelected = newISelecableList,
         });
     }
 
@@ -117,6 +120,8 @@ public class GameRTSController : MonoBehaviour
         {
             if (selectable is IMoveable moveable)
             {
+                this.Log("selectable is IMoveable moveable");
+                this.Log("targetPositionList[targetPositionListIndex]: " + targetPositionList[targetPositionListIndex]);
                 moveable.Move(targetPositionList[targetPositionListIndex]);
                 targetPositionListIndex = (targetPositionListIndex + 1) % targetPositionList.Count;
             }
