@@ -28,13 +28,6 @@ public class TeamManager : MonoBehaviour
     }
 
 
-    public enum Teams
-    {
-        PlayerTeam,
-        AITeam,
-    }
-
-
     [SerializeField] private int startingMinerials;
     [SerializeField] private Teams team;
 
@@ -144,7 +137,8 @@ public class TeamManager : MonoBehaviour
     }
     public void DestoryBuilding(_BaseBuilding building)
     {
-        teamBuildingList.Add(building);
+        teamBuildingList.Remove(building);
+        
         List<TownHall> townHallList = new List<TownHall>();
         foreach (_BaseBuilding baseBuilding in teamBuildingList)
         {
@@ -156,7 +150,7 @@ public class TeamManager : MonoBehaviour
 
         if (townHallList.Count == 0)
         {
-            // Trigger End Game
+            GameManager.Instance.GameOver(team);
         }
     }
     public List<_BaseBuilding> GetListOfAllBuildings()

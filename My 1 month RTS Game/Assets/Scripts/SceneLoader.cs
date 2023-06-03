@@ -88,6 +88,9 @@ public class SceneLoader
     }
 
 
+    /// <summary>
+    /// DO NOT CALL THIS FROM ANY SCRIPT BESIDES "LoadingSceneMnager". Thank you.
+    /// </summary>
     public void LoadFromLoadingScene()
     {
         // Envoke the event then get rid of all subscribers

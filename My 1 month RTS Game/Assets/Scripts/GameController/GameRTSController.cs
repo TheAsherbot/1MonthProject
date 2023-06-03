@@ -11,13 +11,6 @@ using UnityEngine;
 public class GameRTSController : MonoBehaviour
 {
 
-    
-    public enum Teams
-    {
-        Player,
-        AI,
-    }
-
 
     #region Events
 
@@ -64,7 +57,7 @@ public class GameRTSController : MonoBehaviour
         {
             Component selectableAsComponent = selectable as Component;
 
-            if (team == Teams.Player)
+            if (team == Teams.PlayerTeam)
             {
                 if (selectableAsComponent.TryGetComponent(out IsOnPlayerTeam isOnPlayerTeam))
                 {
@@ -72,7 +65,7 @@ public class GameRTSController : MonoBehaviour
                     if (selectableAsComponent.TryGetComponent(out _BaseUnit unit)) hasUnits = true;
                 }
             }
-            else if (team == Teams.AI)
+            else if (team == Teams.AITeam)
             {
                 if (selectableAsComponent.TryGetComponent(out IsOnAITeam isOnAITeam))
                 {
@@ -122,14 +115,14 @@ public class GameRTSController : MonoBehaviour
         {
             if (hit.TryGetComponent(out _BaseIsOnTeam baseIsOnTeam))
             {
-                if (team == Teams.Player)
+                if (team == Teams.PlayerTeam)
                 {
                     if (baseIsOnTeam is IsOnAITeam)
                     {
                         moveAllToPoint = true;
                     }
                 }
-                else if (team == Teams.AI)
+                else if (team == Teams.AITeam)
                 {
                     if (baseIsOnTeam is IsOnPlayerTeam)
                     {
