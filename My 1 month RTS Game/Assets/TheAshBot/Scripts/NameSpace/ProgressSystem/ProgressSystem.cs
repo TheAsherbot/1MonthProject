@@ -81,16 +81,12 @@ namespace TheAshBot.ProgressBarSystem
         public void SetProgress(int progress)
         {
             this.progress = progress;
+
             OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
             {
                 value = progress,
                 amount = 0,
             });
-        }
-
-        public void AddProgress(int progress)
-        {
-            this.progress += progress;
 
             // At start progress
             if (isCountingUp ? this.progress <= 0 : this.progress >= maxProgress)
@@ -104,12 +100,30 @@ namespace TheAshBot.ProgressBarSystem
                 this.progress = isCountingUp ? maxProgress : 0;
                 OnProgressFinished?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        public void AddProgress(int progress)
+        {
+            this.progress += progress;
 
             OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
             {
                 value = progress,
                 amount = progress,
             });
+
+            // At start progress
+            if (isCountingUp ? this.progress <= 0 : this.progress >= maxProgress)
+            {
+                this.progress = isCountingUp ? 0 : maxProgress;
+            }
+
+            // At end progress
+            if (isCountingUp ? this.progress >= maxProgress : this.progress <= 0)
+            {
+                this.progress = isCountingUp ? maxProgress : 0;
+                OnProgressFinished?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void SetProgressToMaxProgress()
@@ -120,6 +134,21 @@ namespace TheAshBot.ProgressBarSystem
                 value = progress,
                 amount = 0,
             });
+
+
+            // At start progress
+            if (isCountingUp ? progress <= 0 : progress >= maxProgress)
+            {
+                progress = isCountingUp ? 0 : maxProgress;
+            }
+
+            // At end progress
+            if (isCountingUp ? progress >= maxProgress : progress <= 0)
+            {
+                progress = isCountingUp ? maxProgress : 0;
+                OnProgressFinished?.Invoke(this, EventArgs.Empty);
+            }
+
         }
 
         #endregion

@@ -44,10 +44,11 @@ public class UnitMovement : MonoBehaviour
     private Vector2 lastMoveDirection;
     private Vector2 movePoint;
 
-    #endregion
-
     private Seeker seeker;
     private Path path;
+
+    #endregion
+
 
 
     #region MonoBehaviour Functions

@@ -1,3 +1,5 @@
+using System;
+
 using TheAshBot.HealthBarSystem;
 using TheAshBot.MonoBehaviours.TwoDimentional;
 
@@ -8,6 +10,7 @@ namespace TheAshBot.ProgressBarSystem
     public class ProgressBar : MonoBehaviour
     {
 
+
         public class Border
         {
             public float thickness;
@@ -15,15 +18,14 @@ namespace TheAshBot.ProgressBarSystem
         }
 
 
-        public static ProgressSystem Create(int maxProgress, Transform fallow, Vector3 offset, Vector3 size, Color barColor, Color backgroundColor, 
-            Border border = null, bool hideWhenFull = false, int layer = 0, bool isCountingUp = true)
+        #region Create
+
+        public static ProgressSystem Create(int maxProgress, Transform fallow, Vector3 offset, Vector3 size, Color barColor, Color backgroundColor,
+            Border border = null, Action<ProgressBar> finished = null, bool isCountingUp = true, bool isVertical = false, int layer = 0)
         {
             // Main Health Bar
             GameObject healthBarGameObject = new GameObject("ProgressBar");
             healthBarGameObject.transform.localPosition = offset;
-
-            // Placeholder
-            GameObject contentGameObject = new GameObject("Content");
 
             if (border != null)
             {
@@ -66,75 +68,79 @@ namespace TheAshBot.ProgressBarSystem
             barSpriteGameObject.gameObject.layer = layer;
             barSpriteRendererSortingOrderSorter.offset = -60;
 
+            if (isVertical)
+            {
+                healthBarGameObject.transform.localRotation = Quaternion.Euler(0, 0, 90);
+            }
+
             ProgressBar progressBar = healthBarGameObject.AddComponent<ProgressBar>();
             ProgressSystem healthSystem = new ProgressSystem(maxProgress, isCountingUp);
-            progressBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, healthBarGameObject, contentGameObject, hideWhenFull);
+            progressBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, healthBarGameObject, finished);
             return healthSystem;
         }
 
-        public static ProgressSystem Create(int maxProgress, Vector3 position, Vector3 size, Color barColor, Color backgroundColor, 
-            Border border = null, bool hideWhenFull = false, int layer = 0, bool isCountingUp = true)
+        public static ProgressSystem Create(int maxProgress, Vector3 position, Vector3 size, Color barColor, Color backgroundColor,
+            Border border = null, Action<ProgressBar> finished = null, bool isCountingUp = true, bool isVertical = false, int layer = 0)
         {
-            return Create(maxProgress, null, position, size, barColor, backgroundColor, border, hideWhenFull, layer, isCountingUp);
+            return Create(maxProgress, null, position, size, barColor, backgroundColor, border, finished, isCountingUp, isVertical, layer);
         }
 
+        #endregion
 
 
+        #region Variables
 
-
-
-        private bool hideWhenFull;
         private Vector3 offset;
         private Transform bar;
         private Transform fallow;
         private GameObject healthBarGameObject;
-        private GameObject contentGameObject;
 
         private ProgressSystem progressSystem;
+        private Action<ProgressBar> finished;
 
+        #endregion
+
+
+        #region Unity Functions
 
         private void LateUpdate()
         {
             transform.position = fallow.position + offset;
         }
 
+        #endregion
 
-        private void SetUp(ProgressSystem progressSystem, Vector3 offset, Transform fallow, Transform bar, GameObject healthBarGameObject, GameObject contentGameObject, bool hideWhenFull)
+
+        private void SetUp(ProgressSystem progressSystem, Vector3 offset, Transform fallow, Transform bar, GameObject healthBarGameObject, Action<ProgressBar> finished)
         {
-            this.hideWhenFull = hideWhenFull;
             this.offset = offset;
             this.fallow = fallow;
             this.bar = bar;
             this.healthBarGameObject = healthBarGameObject;
-            this.contentGameObject = contentGameObject;
 
             this.progressSystem = progressSystem;
-
-            if (hideWhenFull)
-            {
-                contentGameObject.SetActive(false);
-            }
+            this.finished = finished;
 
             progressSystem.OnProgressChanged += ProgressSystem_OnProgressChanged;
-            progressSystem.OnProgressFinished += ProgressSystem_OnProgressFinished; ;
+            progressSystem.OnProgressFinished += ProgressSystem_OnProgressFinished;
         }
 
+
+        #region
 
         private void ProgressSystem_OnProgressChanged(object sender, ProgressSystem.OnProgressChangedEventArgs e)
         {
-            if (hideWhenFull)
-            {
-                bool hide = e.value == progressSystem.GetMaxProgress();
-                contentGameObject.SetActive(hide);
-            }
-
             bar.localScale = new Vector3(progressSystem.GetProgressPercent(), 1);
         }
 
-        private void ProgressSystem_OnProgressFinished(object sender, System.EventArgs e)
+        private void ProgressSystem_OnProgressFinished(object sender, EventArgs e)
         {
+            this.Log("ProgressSystem_OnProgressFinished");
+            finished?.Invoke(this);
             Destroy(healthBarGameObject);
         }
+
+        #endregion
 
 
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using TheAshBot;
 using TheAshBot.HealthBarSystem;
 
 using UnityEngine;
@@ -11,7 +12,11 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
 
     #region Events
 
-    public event EventHandler OnStartSpawningUnit;
+    public event EventHandler<OnStartSpawningUnitEventArgs> OnStartSpawningUnit;
+    public class OnStartSpawningUnitEventArgs : EventArgs
+    {
+        public UnitSO unitSO;
+    }
     public event EventHandler OnFinishedSpawningUnit;
 
     public delegate void FinishedSpawningUnits(_BaseUnit unit);
@@ -42,9 +47,6 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
     [SerializeField] private Transform loadTransform;
 
     private bool isSpawningUnit;
-
-    private float timeSienceStartedToSpawnUnit;
-    private UnitSO spawnedUnit;
 
     private TeamManager teamManager;
 
@@ -112,13 +114,6 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
         teamManager.AddMinerials(amount);
     }
 
-    public float GetSpawningPercentageNormalized()
-    {
-        if (spawnedUnit == null) return 0;
-
-        return timeSienceStartedToSpawnUnit / spawnedUnit.timeToSpawn;
-    }
-
     #endregion
 
 
@@ -148,8 +143,7 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
 
         if (teamManager.TryUseMinerials(unitSO.cost))
         {
-            this.spawnedUnit = unitSO;
-            OnStartSpawningUnit?.Invoke(this, EventArgs.Empty);
+            OnStartSpawningUnit?.Invoke(this, new OnStartSpawningUnitEventArgs { unitSO = unitSO } );
 
             isSpawningUnit = true;
             await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(unitSO.timeToSpawn * 1000));
@@ -191,8 +185,6 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
         
         if (teamManager.TryUseMinerials(unitSO.cost))
         {
-            spawnedUnit = unitSO;
-
             isSpawningUnit = true;
             await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(unitSO.timeToSpawn * 1000));
             isSpawningUnit = false;

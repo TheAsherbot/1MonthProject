@@ -356,6 +356,7 @@ GameObject:
   - component: {fileID: 4907278784268882458}
   - component: {fileID: 681601876455187821}
   - component: {fileID: 1529501886}
+  - component: {fileID: 8107948385923239959}
   - component: {fileID: 1797152248}
   m_Layer: 3
   m_Name: Player_TownHall
@@ -436,6 +437,19 @@ MonoBehaviour:
   unloadTransform: {fileID: 587531657}
   loadTransform: {fileID: 6531373101666348716}
   maxHealth: 123
+--- !u!114 &8107948385923239959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4907278784268882460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ff3cb03be16b0d438d163bf421c504e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  barColor: {r: 0.48567677, g: 0, b: 1, a: 1}
 --- !u!114 &1797152248
 MonoBehaviour:
   m_ObjectHideFlags: 0

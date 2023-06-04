@@ -22,12 +22,14 @@ namespace TheAshBot.HealthBarSystem
 
             // Placeholder
             GameObject contentGameObject = new GameObject("Content");
+            contentGameObject.transform.SetParent(healthBarGameObject.transform);
+            contentGameObject.transform.localPosition = Vector3.zero;
 
             if (border != null)
             {
                 // Border
                 GameObject borderGameObject = new GameObject("Border", typeof(SpriteRenderer));
-                borderGameObject.transform.SetParent(healthBarGameObject.transform);
+                borderGameObject.transform.SetParent(contentGameObject.transform);
                 borderGameObject.transform.localPosition = Vector3.zero;
                 borderGameObject.transform.localScale = size + Vector3.one * border.thickness;
                 borderGameObject.GetComponent<SpriteRenderer>().color = border.color;
@@ -39,7 +41,7 @@ namespace TheAshBot.HealthBarSystem
 
             // Background
             GameObject backgroundGameObject = new GameObject("Background", typeof(SpriteRenderer));
-            backgroundGameObject.transform.SetParent(healthBarGameObject.transform);
+            backgroundGameObject.transform.SetParent(contentGameObject.transform);
             backgroundGameObject.transform.localPosition = Vector3.zero;
             backgroundGameObject.transform.localScale = size;
             backgroundGameObject.GetComponent<SpriteRenderer>().color = backgroundColor;
@@ -50,7 +52,7 @@ namespace TheAshBot.HealthBarSystem
 
             // Bar
             GameObject barGameObject = new GameObject("Bar");
-            barGameObject.transform.SetParent(healthBarGameObject.transform);
+            barGameObject.transform.SetParent(contentGameObject.transform);
             barGameObject.transform.localPosition = new Vector3(-size.x / 2f, 0f);
 
             // Bar Sprite

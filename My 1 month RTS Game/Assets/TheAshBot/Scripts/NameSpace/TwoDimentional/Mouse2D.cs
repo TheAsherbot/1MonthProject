@@ -301,7 +301,7 @@ namespace TheAshBot.TwoDimentional
         public static bool IsMouseOverUIWithIgnores<T>()
         {
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-            pointerEventData.position = Input.mousePosition;
+            pointerEventData.position = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
 
             List<RaycastResult> raycastResultList = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
