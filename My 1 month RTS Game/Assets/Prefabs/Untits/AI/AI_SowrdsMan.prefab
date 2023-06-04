@@ -349,7 +349,7 @@ MonoBehaviour:
   startEndModifier:
     addPoints: 0
     exactStartPoint: 3
-    exactEndPoint: 3
+    exactEndPoint: 0
     useRaycasting: 0
     mask:
       serializedVersion: 2

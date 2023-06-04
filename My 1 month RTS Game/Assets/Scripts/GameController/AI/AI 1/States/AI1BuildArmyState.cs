@@ -25,7 +25,7 @@ public class AI1BuildArmyState : AI1_BaseState
 
 
     private const int NUMBER_OF_ACTIONS = 6;
-    private const int MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_DEFENDING_OR_ATTACKING_STATES = 10;
+    private const int MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_ATTACKING_STATE = 10;
 
 
 
@@ -49,8 +49,35 @@ public class AI1BuildArmyState : AI1_BaseState
         if (CanSpawnUnits())
         {
             validChoices.Add(1);
-            validChoices.Add(2);
         }
+
+        #region Defending
+
+        List<TownHall> townHallList = new List<TownHall>();
+        foreach (_BaseBuilding building in teamManager.GetListOfAllBuildings())
+        {
+            if (building is TownHall townHall)
+            {
+                townHallList.Add(townHall);
+            }
+        }
+
+        float agroRange = 25 * GridManager.Instance.grid.GetCellSize();
+
+        List<AttackingUnit> enemyAttackingUnitsInRange = new List<AttackingUnit>();
+        foreach (AttackingUnit AttackingUnit in enemyTeamManager.GetListOfAllAttackingUnitUnits())
+        {
+            foreach (TownHall townHall in townHallList)
+            {
+                if (Vector2.Distance(AttackingUnit.transform.position, townHall.transform.position) < agroRange)
+                {
+                    enemyAttackingUnitsInRange.Add(AttackingUnit);
+                    validChoices = new List<int> { 2 };
+                }
+            }
+        }
+
+        #endregion
 
         if (CanSwitchStateToDefendingState())
         {
@@ -93,15 +120,12 @@ public class AI1BuildArmyState : AI1_BaseState
             case PotetalActions.SwitchStateToGatherMinerials:
                 return new AI1GatherMinerialsState(controller, teamManager, enemyTeamManager);
             case PotetalActions.SwitchStateToDefending:
-
-                break;
+                return new AI1DefendingState(controller, teamManager, enemyTeamManager);
             case PotetalActions.SwitchStateToAttaching:
                 return new AI1AttackingState(controller, teamManager, enemyTeamManager);
             default:
                 return this;
         }
-
-        return this;
     }
 
 
@@ -117,7 +141,7 @@ public class AI1BuildArmyState : AI1_BaseState
 
     private bool CanSwitchStateToDefendingState()
     {
-        if (teamManager.GetListOfAllAttackingUnitUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_DEFENDING_OR_ATTACKING_STATES) 
+        if (teamManager.GetListOfAllAttackingUnitUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_ATTACKING_STATE) 
             return false;
 
 
@@ -150,7 +174,7 @@ public class AI1BuildArmyState : AI1_BaseState
 
     private bool CanSwitchToAttackingState()
     {
-        if (teamManager.GetListOfAllAttackingUnitUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_DEFENDING_OR_ATTACKING_STATES)
+        if (teamManager.GetListOfAllAttackingUnitUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_ATTACKING_STATE)
             return false;
 
         return true;
@@ -171,32 +195,34 @@ public class AI1BuildArmyState : AI1_BaseState
         TownHall townHall = townHallList[townHallIndex];
 
         // Spawning The Unit
-        if (townHall.Spawn(unitSO, out _BaseUnit unit))
-        {
-            Vector2 wayPointOffset = new Vector2(-5, -5);
-            Vector2 movePosition = (Vector2)townHall.GetLoadTransform().position + wayPointOffset;
-
-            Vector2 boxCastSize = new Vector2(2, 2);
-            Vector2 bottomLeft = movePosition - (boxCastSize / 2);
-            Vector2 topRight = movePosition + (boxCastSize / 2);
-
-            Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(bottomLeft, topRight, GameAssets.Instance.AIUnitLayMask);
-
-            List <ISelectable> selectableList = new List<ISelectable>
-            {
-                unit as ISelectable,
-            };
-            foreach (Collider2D collider2D in collider2DArray)
-            {
-                if (collider2D.TryGetComponent(out ISelectable selectable)) selectableList.Add(selectable);
-            }
-
-            controller.Select(selectableList);
-
-            controller.StartCoroutine(MoveUnitsNextFrame(movePosition));
-        }
+        townHall.Spawn(unitSO, OnSpawingUnitFinished);
     }
 
+    private void OnSpawingUnitFinished(_BaseUnit unit, TownHall townHall)
+    {
+        Vector2 wayPointOffset = new Vector2(-5, -5);
+        Vector2 movePosition = (Vector2)townHall.GetLoadTransform().position + wayPointOffset;
+
+        Vector2 boxCastSize = new Vector2(2, 2);
+        Vector2 bottomLeft = movePosition - (boxCastSize / 2);
+        Vector2 topRight = movePosition + (boxCastSize / 2);
+
+        Collider2D[] collider2DArray = Physics2D.OverlapAreaAll(bottomLeft, topRight, GameAssets.Instance.AIUnitLayMask);
+
+        List<ISelectable> selectableList = new List<ISelectable>
+        {
+            unit as ISelectable,
+        };
+
+        foreach (Collider2D collider2D in collider2DArray)
+        {
+            if (collider2D.TryGetComponent(out ISelectable selectable)) selectableList.Add(selectable);
+        }
+
+        controller.Select(selectableList);
+
+        controller.StartCoroutine(MoveUnitsNextFrame(movePosition));
+    }
 
     private IEnumerator MoveUnitsNextFrame(Vector2 position)
     {

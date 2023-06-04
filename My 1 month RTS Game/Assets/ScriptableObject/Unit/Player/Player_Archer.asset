@@ -15,3 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 2192667747468976402, guid: 484dcfa5de13f71419a1d316097847e7, type: 3}
   name: Archer
   cost: 150
+  timeToSpawn: 30

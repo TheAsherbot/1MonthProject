@@ -15,3 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 8148738760297053331, guid: 3ccba5244b2905941b5b4550e4f12d87, type: 3}
   name: Sowrds Man
   cost: 150
+  timeToSpawn: 25

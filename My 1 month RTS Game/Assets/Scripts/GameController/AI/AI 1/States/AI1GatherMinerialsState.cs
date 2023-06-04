@@ -32,11 +32,16 @@ public class AI1GatherMinerialsState : AI1_BaseState
     public override AI1_BaseState HandleState()
     {
         // Getting valid actions
-        List<int> validChoices = new List<int> { 0, 1 };
+        List<int> validChoices = new List<int> { 0 };
+
+        if (teamManager.GetMinerials() >= GameAssets.Instance.AIArcherUnitSO.cost)
+        {
+            validChoices.Add(1);
+        }
 
         if (teamManager.GetMinerials() >= GameAssets.Instance.AICivilianUnitSO.cost)
         {
-            validChoices.Add((int)PotetalActions.SpawnCivilianAndStartMining);
+            validChoices.Add(2);
         }
 
         // Chosing an action
@@ -70,6 +75,7 @@ public class AI1GatherMinerialsState : AI1_BaseState
         return this;
     }
 
+
     private void SpawnCivilianAndStartMining()
     {
         // Choising Random Town Hall
@@ -84,17 +90,30 @@ public class AI1GatherMinerialsState : AI1_BaseState
         int townHallIndex = Random.Range(0, townHallList.Count);
         TownHall townHall = townHallList[townHallIndex];
 
-        // Spowning The Unit
-        if (townHall.Spawn(GameAssets.Instance.AICivilianUnitSO, out _BaseUnit unit))
-        {
-            controller.Select(new List<ISelectable> { (ISelectable)unit } );
-            GridObject minerial = GetClosestMinerialToTownHall(townHall);
-
-            controller.StartCoroutine(MoveUnitsNextFrame(GridManager.Instance.grid.GetWorldPosition(minerial.X, minerial.Y)));
-        }
+        // Spawning The Unit
+        townHall.Spawn(GameAssets.Instance.AICivilianUnitSO, OnSpawingUnitFinished);
     }
 
-    private GridObject GetClosestMinerialToTownHall(TownHall townHall, int radius = 10)
+    private void OnSpawingUnitFinished(_BaseUnit unit, TownHall townHall) 
+    {
+        controller.Select(new List<ISelectable> { (ISelectable)unit });
+        GridObject minerial = GetClosestMinerialToTownHall(townHall);
+
+        controller.StartCoroutine(MoveUnitsNextFrame(GridManager.Instance.grid.GetWorldPosition(minerial.X, minerial.Y)));
+    }
+
+    private IEnumerator MoveUnitsNextFrame(Vector2 position)
+    {
+        yield return null;
+
+        controller.MoveSelected(position);
+    }
+
+
+
+
+
+    public static GridObject GetClosestMinerialToTownHall(TownHall townHall, int radius = 10)
     {
         Grid grid = GridManager.Instance.grid;
         Vector2 startPosition = grid.SnapPositionToGrid(townHall.GetLoadTransform().position);
@@ -166,12 +185,6 @@ public class AI1GatherMinerialsState : AI1_BaseState
         }
     }
 
-    private IEnumerator MoveUnitsNextFrame(Vector2 position)
-    {
-        yield return null;
-
-        controller.MoveSelected(position);
-    }
 
 
 

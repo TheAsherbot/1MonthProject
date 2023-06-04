@@ -355,9 +355,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedVisual: {fileID: 1519365706626696399}
   <HotBarSlotSOList>k__BackingField:
-  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
-  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
-  - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}
+  - {fileID: 11400000, guid: 9e3c7611d66df9d41a6746ca42b89151, type: 2}
+  - {fileID: 11400000, guid: 1dff09a909c153a4f80bcdf074293c72, type: 2}
+  - {fileID: 11400000, guid: baa5c2bfecbc52a44b923efe70a0115a, type: 2}
   maxHealth: 20
   maxNumberOfUpgrades: 3
   useExternailDamageCode: 0
@@ -421,7 +421,7 @@ MonoBehaviour:
   startEndModifier:
     addPoints: 0
     exactStartPoint: 3
-    exactEndPoint: 3
+    exactEndPoint: 0
     useRaycasting: 0
     mask:
       serializedVersion: 2

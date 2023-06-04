@@ -62,6 +62,8 @@ public class GameManager : MonoBehaviour
 
     public void OnMainMenuButtomClicked()
     {
+        Time.timeScale = 1;
+
         SceneLoader.Instance.LoadScene(SceneLoader.Scenes.MainMenu);
     }
 

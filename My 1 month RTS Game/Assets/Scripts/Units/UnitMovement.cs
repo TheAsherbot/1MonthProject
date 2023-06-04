@@ -35,6 +35,7 @@ public class UnitMovement : MonoBehaviour
     [SerializeField] private float timeToMove = 0.3f;
     [SerializeField] private AnimationCurve movement_Curve;
 
+    private bool calculateNewPath;
     private bool stopedMoving;
     private bool isMoving;
     private float movement_ElapsedTime;
@@ -83,6 +84,7 @@ public class UnitMovement : MonoBehaviour
 
         if (isMoving == true)
         {
+            calculateNewPath = true;
             return;
         }
         else
@@ -95,12 +97,7 @@ public class UnitMovement : MonoBehaviour
     {
         Vector2 endPosition = movePoint;
 
-        FindPath();
-
-        void FindPath()
-        {
-            seeker.StartPath(transform.position, endPosition, OnPathCalculated);
-        }
+        seeker.StartPath(transform.position, endPosition, OnPathCalculated);
     }
 
     private void OnPathCalculated(Path path)
@@ -154,6 +151,12 @@ public class UnitMovement : MonoBehaviour
         {
             PathReached();
             return;
+        }
+
+        if (calculateNewPath)
+        {
+            calculateNewPath = false;
+            FindPath();
         }
 
         path.vectorPath.RemoveAt(0);

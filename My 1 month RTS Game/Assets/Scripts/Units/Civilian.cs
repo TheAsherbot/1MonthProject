@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Sirenix.Serialization;
 
 using TheAshBot;
+using TheAshBot.HealthBarSystem;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;

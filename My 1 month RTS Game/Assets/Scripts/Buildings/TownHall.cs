@@ -1,9 +1,22 @@
+using System;
 using System.Collections.Generic;
+
+using TheAshBot.HealthBarSystem;
 
 using UnityEngine;
 
 public class TownHall : _BaseBuilding, ISelectable, IDamageable
 {
+
+
+    #region Events
+
+    public event EventHandler OnStartSpawningUnit;
+    public event EventHandler OnFinishedSpawningUnit;
+
+    public delegate void FinishedSpawningUnits(_BaseUnit unit);
+
+    #endregion
 
 
     #region Variables
@@ -16,18 +29,23 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
         set;
     }
     [field : SerializeField] 
+    
+
+    [field: Header("Spawning Units")]
     public List<HotBarSlotSO> HotBarSlotSOList
     {
         get;
         set;
     }
-
     [SerializeField] private List<UnitSO> spawnableUnits;
     [SerializeField] private Transform unloadTransform;
     [SerializeField] private Transform loadTransform;
-    [Space(5)]
-    
-    
+
+    private bool isSpawningUnit;
+
+    private float timeSienceStartedToSpawnUnit;
+    private UnitSO spawnedUnit;
+
     private TeamManager teamManager;
 
 
@@ -94,6 +112,13 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
         teamManager.AddMinerials(amount);
     }
 
+    public float GetSpawningPercentageNormalized()
+    {
+        if (spawnedUnit == null) return 0;
+
+        return timeSienceStartedToSpawnUnit / spawnedUnit.timeToSpawn;
+    }
+
     #endregion
 
 
@@ -109,8 +134,10 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
 
     #region Input
 
-    private void Spawn(UnitSO unitSO)
+    private async void Spawn(UnitSO unitSO)
     {
+        if (isSpawningUnit) return;
+
         Vector2 raycastPosition = (Vector2)transform.position + new Vector2(3.5f, 1.5f);
         RaycastHit2D raycastHit = Physics2D.Raycast(raycastPosition, Vector3.forward, 100f);
 
@@ -121,6 +148,15 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
 
         if (teamManager.TryUseMinerials(unitSO.cost))
         {
+            this.spawnedUnit = unitSO;
+            OnStartSpawningUnit?.Invoke(this, EventArgs.Empty);
+
+            isSpawningUnit = true;
+            await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(unitSO.timeToSpawn * 1000));
+            isSpawningUnit = false;
+
+            OnFinishedSpawningUnit?.Invoke(this, EventArgs.Empty);
+
             _BaseUnit spawnedUnit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
             spawnedUnit.name = unitSO.name;
             teamManager.UnitSpawned(spawnedUnit);
@@ -140,21 +176,28 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
             }
         }
     }
-    public bool Spawn(UnitSO unitSO, out _BaseUnit unit)
+
+    public async void Spawn(UnitSO unitSO, Action<_BaseUnit, TownHall> onSpawningFinished)
     {
-        unit = default;
+        if (isSpawningUnit) return;
 
         Vector2 raycastPosition = (Vector2)transform.position + new Vector2(3.5f, 1.5f);
         RaycastHit2D raycastHit = Physics2D.Raycast(raycastPosition, Vector3.forward, 100f);
 
         if (raycastHit.transform != null)
         {
-            return false; // Unit is alrady at the spawn point
+            return; // Unit is alrady at the spawn point
         }
-
+        
         if (teamManager.TryUseMinerials(unitSO.cost))
         {
-            unit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
+            spawnedUnit = unitSO;
+
+            isSpawningUnit = true;
+            await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(unitSO.timeToSpawn * 1000));
+            isSpawningUnit = false;
+
+            _BaseUnit unit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
             unit.name = unitSO.name;
             teamManager.UnitSpawned(unit);
 
@@ -173,9 +216,11 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
             {
                 ((Civilian)unit).SetTownHall(this);
             }
+
+            onSpawningFinished?.Invoke(unit, this);
         }
 
-        return true;
+        return;
     }
 
     #endregion

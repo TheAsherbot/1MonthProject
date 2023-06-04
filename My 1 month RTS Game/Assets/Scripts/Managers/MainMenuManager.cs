@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class MainMenuManager : MonoBehaviour
 {
+
+    [SerializeField] private AudioManager audioManager;
+
+
+    private void Start()
+    {
+        if (AudioManager.Instance == null)
+        {
+            Instantiate(audioManager);
+        }
+    }
+
     public void Play()
     {
         SceneLoader.Instance.LoadScene(SceneLoader.Scenes.Game);

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7f78d2405379af43a70cd65a94be3de, type: 3}
   m_Name: UpgradeRange
   m_EditorClassIdentifier: 
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: eb53e08b1cdc3b74b948b1a958af590b, type: 3}
   nameOfAction: 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using TheAshBot;
+using TheAshBot.HealthBarSystem;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
@@ -56,6 +57,9 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
 
 
 
+    private bool isOnPlayerTeam;
+
+
     
     [Header("Health")]
     [SerializeField] private int maxHealth;
@@ -100,11 +104,13 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
         {
             // Is On Player team
             teamManager = TeamManager.PlayerInstance;
+            isOnPlayerTeam = true;
         }
         else
         {
             // is not on player team (So is on AI team)
             teamManager = TeamManager.AIInstance;
+            isOnPlayerTeam = false;
         }
     }
 
@@ -202,6 +208,13 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
 
     private void GoingToAttackState()
     {
+        if (enemy == null)
+        {
+            state = States.Idle;
+            return;
+        }
+
+
         if (GridManager.Instance.grid.SnapPositionToGrid(enemy.transform.position) != GridManager.Instance.grid.SnapPositionToGrid(last_EnemyPosition))
         {
             last_EnemyPosition = GridManager.Instance.grid.SnapPositionToGrid(enemy.transform.position);
@@ -287,14 +300,20 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
     {
         IsSelected = true;
 
-        selectedVisual.SetActive(true);
+        if (isOnPlayerTeam)
+        {
+            selectedVisual.SetActive(true);
+        }
     }
     
     public void Unselect()
     {
         IsSelected = false;
 
-        selectedVisual.SetActive(false);
+        if (isOnPlayerTeam)
+        {
+            selectedVisual.SetActive(false);
+        }
     }
 
     public void OnSlot1ButtonClicked()

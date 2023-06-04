@@ -22,6 +22,7 @@ public class AI1DefendingState : AI1_BaseState
 
     public AI1DefendingState(GameRTSController controller, TeamManager teamManager, TeamManager enemyTeamManager) : base(controller, teamManager, enemyTeamManager)
     {
+        Debug.Log("AI1DefendingState");
         this.controller = controller;
         this.teamManager = teamManager;
         this.enemyTeamManager = enemyTeamManager;
@@ -31,6 +32,7 @@ public class AI1DefendingState : AI1_BaseState
 
     public override AI1_BaseState HandleState()
     {
+        Debug.Log("AI1DefendingState: HandleState");
         // Getting valid actions
         List<int> validChoices = new List<int> { 0, 1 };
 
@@ -76,14 +78,18 @@ public class AI1DefendingState : AI1_BaseState
         }
         PotetalActions action = (PotetalActions)actionNumber;
 
+        Debug.Log("AI1DefendingState: action == " + action);
 
         switch (action)
         {
             case PotetalActions.Idle:
+                Debug.Log("AI1DefendingState: Idle");
                 return this;
             case PotetalActions.SwitchStateToGatherMinerials:
+                Debug.Log("AI1DefendingState: SwitchStateToGatherMinerials");
                 return new AI1GatherMinerialsState(controller, teamManager, enemyTeamManager);
             case PotetalActions.Attack:
+                Debug.Log("AI1DefendingState: Attack");
                 Attack(enemyAttackingUnitsInRange);
                 return this;
         }
@@ -93,6 +99,7 @@ public class AI1DefendingState : AI1_BaseState
 
     private void Attack(List<AttackingUnit> enemyAttackingUnitsInRange)
     {
+        Debug.Log("AI1DefendingState: Attack Function");
         List<ISelectable> attackingUnitsInRangeAsISelectable = new List<ISelectable>();
 
         foreach (AttackingUnit unit in teamManager.GetListOfAllAttackingUnitUnits())
@@ -101,6 +108,8 @@ public class AI1DefendingState : AI1_BaseState
         }
 
         controller.Select(attackingUnitsInRangeAsISelectable);
+
+        Debug.Log("AI1DefendingState: Attacking Units");
 
         controller.MoveSelected(enemyAttackingUnitsInRange[0].transform.position);
     }

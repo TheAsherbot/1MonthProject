@@ -48,12 +48,20 @@ public class PlayerInput : MonoBehaviour
         inputActions = new GameInputActions();
     }
 
-    private void Start()
+    private void OnEnable()
     {
         inputActions.Game.Enable();
         inputActions.Game.Select.started += Select_started;
         inputActions.Game.Select.canceled += Select_canceled;
         inputActions.Game.Action1.canceled += Action1_canceled;
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Game.Disable();
+        inputActions.Game.Select.started -= Select_started;
+        inputActions.Game.Select.canceled -= Select_canceled;
+        inputActions.Game.Action1.canceled -= Action1_canceled;
     }
 
     private void Update()
@@ -87,6 +95,8 @@ public class PlayerInput : MonoBehaviour
 
     private void Select_canceled(InputAction.CallbackContext obj)
     {
+        if (!Mouse2D.IsMouseOverUIWithIgnores<UI>()) return;
+
         if (!IsGamePlaying) return;
 
         selectedAreaTransform.gameObject.SetActive(false);

@@ -28,8 +28,14 @@ public class Arrow : MonoBehaviour
         elapsedTime += Time.deltaTime;
         float percentageComplete = elapsedTime / timeToHit;
 
+        if (target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         transform.position = Vector3.Lerp(startPosition, target.position, percentageComplete);
-        if (elapsedTime >= timeToHit)
+        if (elapsedTime > timeToHit + 1)
         {
             Destroy(gameObject);
         }

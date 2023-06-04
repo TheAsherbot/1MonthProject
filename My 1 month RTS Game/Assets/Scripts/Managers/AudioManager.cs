@@ -36,7 +36,7 @@ public class AudioManager : MonoBehaviour
     private AudioClip currentAudioClip;
 
 
-    private void Start()
+    private void Awake()
     {
         if (Instance == null)
         {
@@ -49,7 +49,10 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         audioSource = GetComponent<AudioSource>();
+    }
 
+    private void Start()
+    {
         GertAndPlayAudioCLip();
 
         OnAudioClipFinished += AudioManager_OnAudioClipFinished;

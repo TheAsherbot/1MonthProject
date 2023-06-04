@@ -67,11 +67,8 @@ public class GameRTSController : MonoBehaviour
             }
             else if (team == Teams.AITeam)
             {
-                if (selectableAsComponent.TryGetComponent(out IsOnAITeam isOnAITeam))
-                {
-                    newISelecableList.Add(selectable);
-                    if (selectableAsComponent.TryGetComponent(out _BaseUnit unit)) hasUnits = true;
-                }
+                newISelecableList.Add(selectable);
+                if (selectableAsComponent.TryGetComponent(out _BaseUnit unit)) hasUnits = true;
             }
         }
 
