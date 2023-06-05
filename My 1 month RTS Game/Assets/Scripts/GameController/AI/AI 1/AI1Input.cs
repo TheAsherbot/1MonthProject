@@ -41,7 +41,7 @@ public class AI1Input : MonoBehaviour
         {
             elaspedTime = 0;
             state = state.HandleState();
-            this.Log(state.ToString());
+            // this.Log(state.ToString());
         }
     }
 

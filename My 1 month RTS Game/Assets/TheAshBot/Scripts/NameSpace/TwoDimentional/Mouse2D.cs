@@ -293,12 +293,14 @@ namespace TheAshBot.TwoDimentional
 
         #endregion
 
+        #region IsMouseOverUI
+
         /// <summary>
         /// This checks to see if the mouse is over UI with a script
         /// </summary>
-        /// <typeparam name="T">This is the script that it checks for</typeparam>
+        /// <typeparam name="T">This is the script that is bring ignored</typeparam>
         /// <returns>true if the mouse is over the UI with the script</returns>
-        public static bool IsMouseOverUIWithIgnores<T>()
+        public static bool IsMouseOverUIWithIgnores<T>() where T : Component
         {
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
             pointerEventData.position = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
@@ -310,12 +312,23 @@ namespace TheAshBot.TwoDimentional
                 if (raycastResultList[raycastNumber].gameObject.GetComponent<T>() != null)
                 {
                     raycastResultList.RemoveAt(raycastNumber);
-                    return true;
+                    raycastNumber--;
                 }
             }
 
-            return false;
+            return raycastResultList.Count > 0;
         }
+
+        /// <summary>
+        /// This checks to see if the mouse is over UI
+        /// </summary>
+        /// <returns>true if the mouse is over the UI</returns>
+        public static bool IsMouseOverUI()
+        {
+            return EventSystem.current.IsPointerOverGameObject();
+        }
+
+        #endregion
 
     }
 }

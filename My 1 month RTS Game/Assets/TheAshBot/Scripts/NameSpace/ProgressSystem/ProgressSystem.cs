@@ -82,12 +82,6 @@ namespace TheAshBot.ProgressBarSystem
         {
             this.progress = progress;
 
-            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
-            {
-                value = progress,
-                amount = 0,
-            });
-
             // At start progress
             if (isCountingUp ? this.progress <= 0 : this.progress >= maxProgress)
             {
@@ -99,19 +93,21 @@ namespace TheAshBot.ProgressBarSystem
             {
                 this.progress = isCountingUp ? maxProgress : 0;
                 OnProgressFinished?.Invoke(this, EventArgs.Empty);
+                return;
             }
+
+            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
+            {
+                value = progress,
+                amount = 0,
+            });
+
         }
 
         public void AddProgress(int progress)
         {
             this.progress += progress;
 
-            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
-            {
-                value = progress,
-                amount = progress,
-            });
-
             // At start progress
             if (isCountingUp ? this.progress <= 0 : this.progress >= maxProgress)
             {
@@ -123,18 +119,20 @@ namespace TheAshBot.ProgressBarSystem
             {
                 this.progress = isCountingUp ? maxProgress : 0;
                 OnProgressFinished?.Invoke(this, EventArgs.Empty);
+                return;
             }
-        }
 
-        public void SetProgressToMaxProgress()
-        {
-            progress = maxProgress;
             OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
             {
                 value = progress,
                 amount = 0,
             });
 
+        }
+
+        public void SetProgressToMaxProgress()
+        {
+            progress = maxProgress;
 
             // At start progress
             if (isCountingUp ? progress <= 0 : progress >= maxProgress)
@@ -147,7 +145,14 @@ namespace TheAshBot.ProgressBarSystem
             {
                 progress = isCountingUp ? maxProgress : 0;
                 OnProgressFinished?.Invoke(this, EventArgs.Empty);
+                return;
             }
+
+            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
+            {
+                value = progress,
+                amount = 0,
+            });
 
         }
 
@@ -156,12 +161,12 @@ namespace TheAshBot.ProgressBarSystem
 
         #region Is Counting Up
 
-        private bool GetIsCountingUp()
+        public bool GetIsCountingUp()
         {
             return isCountingUp;
         }
 
-        private void SetIsCountingUp(bool isCountingUp)
+        public void SetIsCountingUp(bool isCountingUp)
         {
             this.isCountingUp = isCountingUp;
         }

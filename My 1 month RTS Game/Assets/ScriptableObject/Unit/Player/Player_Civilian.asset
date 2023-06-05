@@ -15,4 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 8321962855711176022, guid: 1eaa5ef571058b44382f8f7548849eae, type: 3}
   name: Civilian
   cost: 50
-  timeToSpawn: 2
+  timeToSpawn: 15

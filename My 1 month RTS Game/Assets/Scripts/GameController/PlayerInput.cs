@@ -85,7 +85,7 @@ public class PlayerInput : MonoBehaviour
 
     private void Select_started(InputAction.CallbackContext obj)
     {
-        if (Mouse2D.IsMouseOverUIWithIgnores<UI>()) return;
+        if (Mouse2D.IsMouseOverUIWithIgnores<ClickThroughableUI>()) return;
 
         if (!IsGamePlaying) return;
 
@@ -97,6 +97,8 @@ public class PlayerInput : MonoBehaviour
 
     private void Select_canceled(InputAction.CallbackContext obj)
     {
+        if (Mouse2D.IsMouseOverUIWithIgnores<ClickThroughableUI>()) return;
+
         if (!IsGamePlaying) return;
 
         selectedAreaTransform.gameObject.SetActive(false);
