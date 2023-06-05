@@ -62,6 +62,7 @@ public class TownHallSpawningProgressVisuals : MonoBehaviour
 
         spawmUnitTimer = 0;
         updateProgressTimer = 0;
+
         isSpawingUnit = true;
         progressSystem = MakeProgeressBar();
         progressSystem.SetProgress(0);

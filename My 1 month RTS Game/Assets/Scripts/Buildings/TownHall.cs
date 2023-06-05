@@ -185,9 +185,13 @@ public class TownHall : _BaseBuilding, ISelectable, IDamageable
         
         if (teamManager.TryUseMinerials(unitSO.cost))
         {
+            OnStartSpawningUnit?.Invoke(this, new OnStartSpawningUnitEventArgs { unitSO = unitSO });
+
             isSpawningUnit = true;
             await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(unitSO.timeToSpawn * 1000));
             isSpawningUnit = false;
+
+            OnFinishedSpawningUnit?.Invoke(this, EventArgs.Empty);
 
             _BaseUnit unit = Instantiate(unitSO.prefab, unloadTransform.position, Quaternion.identity);
             unit.name = unitSO.name;
