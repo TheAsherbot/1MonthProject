@@ -60,6 +60,8 @@ public class TownHallSpawningProgressVisuals : MonoBehaviour
     {
         unitBeingSpawned = e.unitSO;
 
+        spawmUnitTimer = 0;
+        updateProgressTimer = 0;
         isSpawingUnit = true;
         progressSystem = MakeProgeressBar();
         progressSystem.SetProgress(0);
@@ -71,11 +73,6 @@ public class TownHallSpawningProgressVisuals : MonoBehaviour
         progressSystem.SetProgressToMaxProgress();
     }
 
-    private void OnProgressBarFinished(ProgressBar progressBar) 
-    {
-        Destroy(progressBar.gameObject);
-    }
-
     #endregion
 
 
@@ -83,7 +80,7 @@ public class TownHallSpawningProgressVisuals : MonoBehaviour
     {
         Vector3 offset = new Vector3(1.6f, 3f);
         Vector3 size = new Vector3(3, 0.3f);
-        return ProgressBar.Create(maxProgress, transform, offset, size, barColor, Color.gray, new ProgressBar.Border { color = Color.black, thickness = 0.075f }, OnProgressBarFinished, true, false, 13);
+        return ProgressBar.Create(maxProgress, transform, offset, size, barColor, Color.gray, new ProgressBar.Border { color = Color.black, thickness = 0.075f }, true, false, 13);
     }
 
 

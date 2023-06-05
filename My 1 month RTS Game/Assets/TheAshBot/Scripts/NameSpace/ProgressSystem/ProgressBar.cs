@@ -21,7 +21,7 @@ namespace TheAshBot.ProgressBarSystem
         #region Create
 
         public static ProgressSystem Create(int maxProgress, Transform fallow, Vector3 offset, Vector3 size, Color barColor, Color backgroundColor,
-            Border border = null, Action<ProgressBar> finished = null, bool isCountingUp = true, bool isVertical = false, int layer = 0)
+            Border border = null, bool isCountingUp = true, bool isVertical = false, int layer = 0)
         {
             // Main Health Bar
             GameObject healthBarGameObject = new GameObject("ProgressBar");
@@ -75,14 +75,14 @@ namespace TheAshBot.ProgressBarSystem
 
             ProgressBar progressBar = healthBarGameObject.AddComponent<ProgressBar>();
             ProgressSystem healthSystem = new ProgressSystem(maxProgress, isCountingUp);
-            progressBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, healthBarGameObject, finished);
+            progressBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, healthBarGameObject);
             return healthSystem;
         }
 
         public static ProgressSystem Create(int maxProgress, Vector3 position, Vector3 size, Color barColor, Color backgroundColor,
-            Border border = null, Action<ProgressBar> finished = null, bool isCountingUp = true, bool isVertical = false, int layer = 0)
+            Border border = null, bool isCountingUp = true, bool isVertical = false, int layer = 0)
         {
-            return Create(maxProgress, null, position, size, barColor, backgroundColor, border, finished, isCountingUp, isVertical, layer);
+            return Create(maxProgress, null, position, size, barColor, backgroundColor, border, isCountingUp, isVertical, layer);
         }
 
         #endregion
@@ -96,7 +96,6 @@ namespace TheAshBot.ProgressBarSystem
         private GameObject healthBarGameObject;
 
         private ProgressSystem progressSystem;
-        private Action<ProgressBar> finished;
 
         #endregion
 
@@ -111,7 +110,7 @@ namespace TheAshBot.ProgressBarSystem
         #endregion
 
 
-        private void SetUp(ProgressSystem progressSystem, Vector3 offset, Transform fallow, Transform bar, GameObject healthBarGameObject, Action<ProgressBar> finished)
+        private void SetUp(ProgressSystem progressSystem, Vector3 offset, Transform fallow, Transform bar, GameObject healthBarGameObject)
         {
             this.offset = offset;
             this.fallow = fallow;
@@ -119,10 +118,15 @@ namespace TheAshBot.ProgressBarSystem
             this.healthBarGameObject = healthBarGameObject;
 
             this.progressSystem = progressSystem;
-            this.finished = finished;
 
             progressSystem.OnProgressChanged += ProgressSystem_OnProgressChanged;
             progressSystem.OnProgressFinished += ProgressSystem_OnProgressFinished;
+        }
+
+        private void OnDestroy()
+        {
+            progressSystem.OnProgressChanged -= ProgressSystem_OnProgressChanged;
+            progressSystem.OnProgressFinished -= ProgressSystem_OnProgressFinished;
         }
 
 
@@ -135,9 +139,7 @@ namespace TheAshBot.ProgressBarSystem
 
         private void ProgressSystem_OnProgressFinished(object sender, EventArgs e)
         {
-            this.Log("ProgressSystem_OnProgressFinished");
-            finished?.Invoke(this);
-            Destroy(healthBarGameObject);
+            DestroyImmediate(gameObject);
         }
 
         #endregion
