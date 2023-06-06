@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Civilian
   m_EditorClassIdentifier: 
   image: {fileID: -1487954457, guid: e1b24dd5aed8b9549ad4b8929b2600ed, type: 3}
-  nameOfAction: Spawn_Civilian
+  toolTip: <b>Spawns A Civilian</b>

@@ -107,7 +107,6 @@ public class UIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("OnPointerEnter");
         OnMouseEnterUI?.Invoke();
 
         SetColorTo_MouseOverUIColor();
@@ -138,6 +137,18 @@ public class UIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
 
     #region Public Helper Functions
+
+    public void SetSprite(Sprite sprite)
+    {
+        if (renderType == RenderType.Image)
+        {
+            buttonImage.sprite = sprite;
+        }
+        else if (renderType == RenderType.SpriteRenderer)
+        {
+            buttonSpriteRenderer.sprite = sprite;
+        }
+    }
 
     public void SetAllEventsToNull()
     {

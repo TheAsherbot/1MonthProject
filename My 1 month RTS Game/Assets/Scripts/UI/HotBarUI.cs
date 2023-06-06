@@ -75,13 +75,14 @@ public class HotBarUI : MonoBehaviour
             // uses the hotbar
             SetHotbarVisual(true);
         }
+        
         selected = eventArgs.allSelected[0];
 
         try
         {
-            slot1.buttonImage.sprite = selected.HotBarSlotSOList[0].image;
-            slot2.buttonImage.sprite = selected.HotBarSlotSOList[1].image;
-            slot3.buttonImage.sprite = selected.HotBarSlotSOList[2].image;
+            slot1.SetSprite(selected.HotBarSlotSOList[0].image);
+            slot2.SetSprite(selected.HotBarSlotSOList[1].image);
+            slot3.SetSprite(selected.HotBarSlotSOList[2].image);
         }
         catch (System.IndexOutOfRangeException exception)
         {
@@ -98,7 +99,6 @@ public class HotBarUI : MonoBehaviour
 
         slot1.OnMouseEnterUI += () =>
         {
-            //Debug.Log("selected.HotBarSlotSOList[0].toolTip");
             TooltopScreenSpaceUI.ShowTooltip(selected.HotBarSlotSOList[0].toolTip);
         };
         slot2.OnMouseEnterUI += () => TooltopScreenSpaceUI.ShowTooltip(selected.HotBarSlotSOList[1].toolTip);
@@ -107,6 +107,7 @@ public class HotBarUI : MonoBehaviour
         slot1.OnMouseExitUI += () => TooltopScreenSpaceUI.HideTooltip();
         slot2.OnMouseExitUI += () => TooltopScreenSpaceUI.HideTooltip();
         slot3.OnMouseExitUI += () => TooltopScreenSpaceUI.HideTooltip();
+
     }
 
     private void Slot1_OnMouseEndClickUI()

@@ -80,14 +80,15 @@ public class TooltopScreenSpaceUI : MonoBehaviour
             anchoredPosition.y = 0;
         }
 
+        Vector2 offset = new Vector2(1, 1);
 
-        rectTransform.anchoredPosition = anchoredPosition;
+        rectTransform.anchoredPosition = anchoredPosition + offset;
     }
 
 
     private void SetText(string tooltipText)
     {
-        textMeshPro.SetText(tooltipText);
+        textMeshPro.text =tooltipText;
         textMeshPro.ForceMeshUpdate();
 
         Vector2 textSize = textMeshPro.GetRenderedValues(false);
