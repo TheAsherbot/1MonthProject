@@ -3,41 +3,50 @@ using System.Collections.Generic;
 using TheAshBot.TwoDimentional;
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class BuildingManager : MonoBehaviour
+public class BuildingManager : MonoBehaviour, ISelectable
 {
+
+
+    public bool IsSelected
+    {
+        get;
+        set;
+    }
+    public List<HotBarSlotSO> HotBarSlotSOList
+    {
+        get;
+        set;
+    }
 
 
     [SerializeField] private List<BuildingSO> buildingSOList;
 
 
-    private BuildingSO selectedBuilding;
     private Grid grid;
+    private BuildingSO selectedBuilding;
+    private GameInputActions inputActions;
 
+
+
+    #region Unity Functions
+
+    private void Awake()
+    {
+        inputActions = new GameInputActions();
+        inputActions.Game.Enable();
+    }
 
     private void Start()
     {
         grid = GridManager.Instance.grid;
     }
 
-    private void Update()
-    {
-        TestInput();
-    }
+    #endregion
 
 
-    private void TestInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            selectedBuilding = buildingSOList[0];
-        }
-
-        if (Input.GetMouseButtonDown(2))
-        {
-            PlaceBuilding();
-        }
-    }
+    #region PrivateFunctions
 
     private void PlaceBuilding()
     {
@@ -46,10 +55,27 @@ public class BuildingManager : MonoBehaviour
         {
             if (grid.TryMakeBuilding(mouseWorldPosition, selectedBuilding.buildingLeyerListFromBottomToTop))
             {
-                _BaseBuilding newBuilding = Instantiate(buildingSOList[0].prefab, grid.SnapPositionToGrid(mouseWorldPosition), Quaternion.identity);
+                _BaseBuilding newBuilding = Instantiate(selectedBuilding.prefab, grid.SnapPositionToGrid(mouseWorldPosition), Quaternion.identity);
                 newBuilding.gameObject.name = selectedBuilding.name;
             }
         }
     }
 
+    #endregion
+
+
+    public void OnSlot1ButtonClicked()
+    {
+        selectedBuilding = buildingSOList[0];
+    }
+
+    public void OnSlot2ButtonClicked()
+    {
+        selectedBuilding = buildingSOList[1];
+    }
+
+    public void OnSlot3ButtonClicked()
+    {
+        selectedBuilding = buildingSOList[2];
+    }
 }

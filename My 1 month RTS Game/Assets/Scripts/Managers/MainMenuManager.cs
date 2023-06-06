@@ -18,7 +18,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void Play()
     {
-        SceneLoader.Instance.LoadScene(SceneLoader.Scenes.Game);
+        SceneLoader.LoadScene(SceneLoader.Scenes.Game);
     }
 
     public void Exit()

@@ -51,6 +51,12 @@ public class GameRTSController : MonoBehaviour
     public void Select(List<ISelectable> selectedList)
     {
         RemoveAllFromSelectedList();
+
+        if (selectedList.Count == 0)
+        {
+
+        }
+
         List<ISelectable> newISelecableList = new List<ISelectable>();
         bool hasUnits = false;
         foreach (ISelectable selectable in selectedList)
@@ -163,6 +169,8 @@ public class GameRTSController : MonoBehaviour
             selectable.Unselect();
         }
         selectedList.Clear();
+
+
     }
 
     #endregion

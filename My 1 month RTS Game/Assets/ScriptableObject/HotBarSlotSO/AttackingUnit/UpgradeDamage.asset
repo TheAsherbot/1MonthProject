@@ -13,4 +13,7 @@ MonoBehaviour:
   m_Name: UpgradeDamage
   m_EditorClassIdentifier: 
   image: {fileID: 21300000, guid: b0a3332d7e2e53043b8184cda2c05efb, type: 3}
-  nameOfAction: 
+  toolTip: '<b>Upgrade Damage</b>
+
+
+'

@@ -16,9 +16,9 @@ public class HotBarUI : MonoBehaviour
     [SerializeField] private Sprite HotBarSprite;
     [SerializeField] private Sprite HotBarWithRocksSprite;
     [Space(6)]
-    [SerializeField] private Button slot1;
-    [SerializeField] private Button slot2;
-    [SerializeField] private Button slot3;
+    [SerializeField] private UIButton slot1;
+    [SerializeField] private UIButton slot2;
+    [SerializeField] private UIButton slot3;
 
 
     private ISelectable selected;
@@ -79,22 +79,39 @@ public class HotBarUI : MonoBehaviour
 
         try
         {
-            slot1.image.sprite = selected.HotBarSlotSOList[0].image;
-            slot2.image.sprite = selected.HotBarSlotSOList[1].image;
-            slot3.image.sprite = selected.HotBarSlotSOList[2].image;
+            slot1.buttonImage.sprite = selected.HotBarSlotSOList[0].image;
+            slot2.buttonImage.sprite = selected.HotBarSlotSOList[1].image;
+            slot3.buttonImage.sprite = selected.HotBarSlotSOList[2].image;
         }
         catch (System.IndexOutOfRangeException exception)
         {
             Debug.LogError(exception);
         }
 
-        slot1.onClick.RemoveAllListeners();
-        slot2.onClick.RemoveAllListeners();
-        slot3.onClick.RemoveAllListeners();
+        slot1.SetAllEventsToNull();
+        slot2.SetAllEventsToNull();
+        slot3.SetAllEventsToNull();
 
-        slot1.onClick.AddListener(eventArgs.allSelected[0].OnSlot1ButtonClicked);
-        slot2.onClick.AddListener(eventArgs.allSelected[0].OnSlot2ButtonClicked);
-        slot3.onClick.AddListener(eventArgs.allSelected[0].OnSlot3ButtonClicked);
+        slot1.OnMouseEndClickUI += selected.OnSlot1ButtonClicked;
+        slot2.OnMouseEndClickUI += selected.OnSlot2ButtonClicked;
+        slot3.OnMouseEndClickUI += selected.OnSlot3ButtonClicked;
+
+        slot1.OnMouseEnterUI += () =>
+        {
+            //Debug.Log("selected.HotBarSlotSOList[0].toolTip");
+            TooltopScreenSpaceUI.ShowTooltip(selected.HotBarSlotSOList[0].toolTip);
+        };
+        slot2.OnMouseEnterUI += () => TooltopScreenSpaceUI.ShowTooltip(selected.HotBarSlotSOList[1].toolTip);
+        slot3.OnMouseEnterUI += () => TooltopScreenSpaceUI.ShowTooltip(selected.HotBarSlotSOList[2].toolTip);
+
+        slot1.OnMouseExitUI += () => TooltopScreenSpaceUI.HideTooltip();
+        slot2.OnMouseExitUI += () => TooltopScreenSpaceUI.HideTooltip();
+        slot3.OnMouseExitUI += () => TooltopScreenSpaceUI.HideTooltip();
+    }
+
+    private void Slot1_OnMouseEndClickUI()
+    {
+        throw new System.NotImplementedException();
     }
 
     private void SetHotbarVisual(bool usesHotBar)

@@ -1,4 +1,4 @@
-using System;
+using Sirenix.OdinInspector;
 
 using UnityEngine;
 
@@ -6,9 +6,11 @@ using UnityEngine;
 public class HotBarSlotSO : ScriptableObject
 {
 
-
+    [PreviewField(alignment: ObjectFieldAlignment.Center)]
     public Sprite image;
-    public string nameOfAction;
+    [Title("Tooltip"), HideLabel]
+    [MultiLineProperty(lines: 10)]
+    public string toolTip;
 
 
 }

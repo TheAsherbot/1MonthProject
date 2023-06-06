@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
 
-        SceneLoader.Instance.LoadScene(SceneLoader.Scenes.MainMenu);
+        SceneLoader.LoadScene(SceneLoader.Scenes.MainMenu);
     }
 
     public void OnQuitButtonClicked()

@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class TooltopScreenSpaceUI : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class TooltopScreenSpaceUI : MonoBehaviour
 
 
 
+    private bool useGetTooltipFunc;
     private Func<string> getTooltipTextFunc;
 
 
@@ -44,12 +46,15 @@ public class TooltopScreenSpaceUI : MonoBehaviour
 
         rectTransform = GetComponent<RectTransform>();
 
-        HideTooltip();
+        Hide();
     }
 
     private void LateUpdate()
     {
-        SetText(getTooltipTextFunc());
+        if (useGetTooltipFunc)
+        {
+            SetText(getTooltipTextFunc());
+        }
 
         Vector2 anchoredPosition = Mouse.current.position.ReadValue() / canvasRectTransfrom.localScale.x; // x, y, or z will work here becouse all of them will be the same.
 
@@ -91,24 +96,28 @@ public class TooltopScreenSpaceUI : MonoBehaviour
         backgroundRectTransfrom.sizeDelta = textSize + padding;
     }
 
-    private void ShowTooltip(string tooltipText)
+    private void Show(string tooltipText)
     {
+        useGetTooltipFunc = false;
         gameObject.SetActive(true);
         SetText(tooltipText);
     }
-    private void ShowTooltip(out Action<string> OnTooltipChanged)
+    private void Show(out Action<string> OnTooltipChanged)
     {
-        OnTooltipChanged = ShowTooltip;
+        useGetTooltipFunc = false;
+        OnTooltipChanged = Show;
     }
-    private void ShowTooltip(Func<string> getTooltipTextFunc)
+    private void Show(Func<string> getTooltipTextFunc)
     {
+        useGetTooltipFunc = true;
         this.getTooltipTextFunc = getTooltipTextFunc;
         gameObject.SetActive(true);
         SetText(getTooltipTextFunc());
     }
 
-    private void HideTooltip()
+    private void Hide()
     {
+        useGetTooltipFunc = false;
         gameObject.SetActive(false);
     }
 
@@ -116,22 +125,22 @@ public class TooltopScreenSpaceUI : MonoBehaviour
 
 
 
-    public static void ShowTooltip_Static(string tooltipText)
+    public static void ShowTooltip(string tooltipText)
     {
-        Instance.ShowTooltip(tooltipText);
+        Instance.Show(tooltipText);
     }
-    public static void ShowTooltip_Static(out Action<string> OnTooltipChanged)
+    public static void ShowTooltip(out Action<string> OnTooltipChanged)
     {
-        Instance.ShowTooltip(out OnTooltipChanged);
+        Instance.Show(out OnTooltipChanged);
     }
-    public static void ShowTooltip_Static(Func<string> getTooltipTextFunc)
+    public static void ShowTooltip(Func<string> getTooltipTextFunc)
     {
-        Instance.ShowTooltip(getTooltipTextFunc);
+        Instance.Show(getTooltipTextFunc);
     }
 
-    public static void HideTooltip_Static()
+    public static void HideTooltip()
     {
-        Instance.HideTooltip();
+        Instance.Hide();
     }
 
 

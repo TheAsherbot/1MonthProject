@@ -1,1 +1,1 @@
-Randomly starts to walk then I can not controll him.
+After attacking I can not controll my units

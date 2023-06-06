@@ -56,7 +56,7 @@ public class AudioManager : MonoBehaviour
         GertAndPlayAudioCLip();
 
         OnAudioClipFinished += AudioManager_OnAudioClipFinished;
-        SceneLoader.Instance.OnSceneLoaded += SceneLoader_OnSceneLoaded;
+        SceneLoader.OnSceneLoaded += SceneLoader_OnSceneLoaded1; ;
     }
 
     private void Update()
@@ -69,7 +69,8 @@ public class AudioManager : MonoBehaviour
         GertAndPlayAudioCLip();
     }
 
-    private void SceneLoader_OnSceneLoaded(object sender, SceneLoader.OnSceneLoadedEventArgs eventArgs)
+
+    private void SceneLoader_OnSceneLoaded1(SceneLoader.Scenes scene)
     {
         GertAndPlayAudioCLip();
     }
@@ -84,15 +85,15 @@ public class AudioManager : MonoBehaviour
 
     private AudioClip GetAudioClipForCurrentScene()
     {
-        if (SceneLoader.Instance.scene == SceneLoader.Scenes.MainMenu)
+        if (SceneLoader.Scene == SceneLoader.Scenes.MainMenu)
         {
             return mainMenuAudioClipList[UnityEngine.Random.Range(0, mainMenuAudioClipList.Count)];
         }
-        else if (SceneLoader.Instance.scene == SceneLoader.Scenes.Loading)
+        else if (SceneLoader.Scene == SceneLoader.Scenes.Loading)
         {
             return loadingAudioClipList[UnityEngine.Random.Range(0, loadingAudioClipList.Count)];
         }
-        else if (SceneLoader.Instance.scene == SceneLoader.Scenes.Game)
+        else if (SceneLoader.Scene == SceneLoader.Scenes.Game)
         {
             int index = UnityEngine.Random.Range(0, inGameAudioClipList.Count);
             return inGameAudioClipList[index];
