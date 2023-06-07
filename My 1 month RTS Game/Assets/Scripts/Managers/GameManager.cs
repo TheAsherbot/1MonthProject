@@ -1,3 +1,5 @@
+using System;
+
 using TheAshBot;
 
 using TMPro;
@@ -31,6 +33,11 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject gameOverUI;
     [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private TextMeshProUGUI timerText;
+
+
+    private TimeSpan timeSpan;
+    private float gameLength;
 
 
 
@@ -45,6 +52,14 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+    }
+
+    private void Update()
+    {
+        gameLength += Time.deltaTime;
+
+        timeSpan = TimeSpan.FromSeconds(gameLength);
+        timerText.text = timeSpan.ToString("hh':'mm'.'ss");
     }
 
 

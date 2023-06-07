@@ -52,9 +52,16 @@ public class AI1AttackingState : AI1_BaseState
                 TownHall curentTownHall = townHallList[Random.Range(0, townHallList.Count)];
 
                 List<ISelectable> attackingUnitsAsIselectableList = new List<ISelectable>();
+                Collider2D enemy;
                 foreach (AttackingUnit unit in teamManager.GetListOfAllAttackingUnits())
                 {
                     attackingUnitsAsIselectableList.Add(unit);
+                    int raduis = 10;
+                    Collider2D[] colliderArray = Physics2D.OverlapCircleAll(unit.transform.position, raduis, GameAssets.Instance.PlayerUnitLayMask);
+                    if (colliderArray.Length != 0)
+                    {
+                        enemy = colliderArray[0];
+                    }
                 }
 
                 controller.Select(attackingUnitsAsIselectableList);

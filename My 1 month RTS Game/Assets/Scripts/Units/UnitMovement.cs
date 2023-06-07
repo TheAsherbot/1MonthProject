@@ -114,7 +114,6 @@ public class UnitMovement : MonoBehaviour
         if (path.vectorPath.Count >= 2)
         {
             lastMoveDirection = path.vectorPath[1] - path.vectorPath[0];
-            Debug.Log("lastMoveDirection: " + lastMoveDirection);
             OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
             {
                 direction = lastMoveDirection,
@@ -263,8 +262,12 @@ public class UnitMovement : MonoBehaviour
 
     private void Move()
     {
+        if (!isMoving) return;
+
         if (IsPathNull())
         {
+            StartPath();
+            this.Log("Path is null");
             return;
         }
 

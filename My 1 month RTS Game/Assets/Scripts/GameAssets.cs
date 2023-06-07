@@ -43,6 +43,12 @@ public class GameAssets : MonoBehaviour
         get;
         private set;
     }
+    [field: SerializeField]
+    public LayerMask PlayerUnitLayMask
+    {
+        get;
+        private set;
+    }
 
     [field: SerializeField]
     public Sprite SinglePixelSprite
