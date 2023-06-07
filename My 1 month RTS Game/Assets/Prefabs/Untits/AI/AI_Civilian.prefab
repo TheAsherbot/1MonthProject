@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f54047fdc549144ca4082b8acfaac0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  i: 0
+  visual: {fileID: 5736083375593854092}
   isOnPlayerTeam: 0
   selectedVisual: {fileID: 1136546163359832502}
   <HotBarSlotSOList>k__BackingField:

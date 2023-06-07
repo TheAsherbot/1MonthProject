@@ -80,7 +80,7 @@ public class TooltopScreenSpaceUI : MonoBehaviour
             anchoredPosition.y = 0;
         }
 
-        Vector2 offset = new Vector2(1, 1);
+        Vector2 offset = new Vector2(8, 8);
 
         rectTransform.anchoredPosition = anchoredPosition + offset;
     }
@@ -99,6 +99,8 @@ public class TooltopScreenSpaceUI : MonoBehaviour
 
     private void Show(string tooltipText)
     {
+        if (tooltipText == null || tooltipText == string.Empty || tooltipText == "") return;
+
         useGetTooltipFunc = false;
         gameObject.SetActive(true);
         SetText(tooltipText);

@@ -235,6 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d2a14ad8f502084dac01341d0cc2ae5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  visual: {fileID: 2192667746541306552}
   selectedVisual: {fileID: 2029696917398680483}
   <HotBarSlotSOList>k__BackingField:
   - {fileID: 11400000, guid: 73e2d1fd06ce9d54ba1bab134b4d73f1, type: 2}

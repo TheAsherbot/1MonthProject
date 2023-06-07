@@ -113,16 +113,20 @@ public class UnitMovement : MonoBehaviour
 
         if (path.vectorPath.Count >= 2)
         {
-            if ((Vector2)(path.vectorPath[1] - path.vectorPath[0]) != lastMoveDirection)
+            lastMoveDirection = path.vectorPath[1] - path.vectorPath[0];
+            Debug.Log("lastMoveDirection: " + lastMoveDirection);
+            OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
             {
-                lastMoveDirection = path.vectorPath[1] - path.vectorPath[0];
-                InvokeOnDirectionChanged();
-            }
+                direction = lastMoveDirection,
+            });
         }
         else
         {
             lastMoveDirection = Vector2.zero;
-            InvokeOnDirectionChanged();
+            OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
+            {
+                direction = lastMoveDirection,
+            });
         }
 
         isMoving = true;
@@ -161,6 +165,23 @@ public class UnitMovement : MonoBehaviour
         }
 
         path.vectorPath.RemoveAt(0);
+
+        if (path.vectorPath.Count >= 2)
+        {
+            lastMoveDirection = path.vectorPath[1] - path.vectorPath[0];
+            OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
+            {
+                direction = lastMoveDirection,
+            });
+        }
+        else
+        {
+            lastMoveDirection = Vector2.zero;
+            OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
+            {
+                direction = Vector2.zero,
+            });
+        }
 
         GridManager.Instance.grid.GetGridObject(movement_EndPosition).SetOccupationState(new List<GridObject.OccupationState> { GridObject.OccupationState.Empty });
         
@@ -216,6 +237,11 @@ public class UnitMovement : MonoBehaviour
         movement_StartPosition = transform.position;
         isMoving = false;
 
+        OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
+        {
+            direction = Vector2.zero,
+        });
+
         unit.Trigger_OnReachedDestination();
     }
 
@@ -224,6 +250,11 @@ public class UnitMovement : MonoBehaviour
         path.vectorPath.Clear();
         movement_EndPosition = transform.position;
         movement_StartPosition = transform.position;
+
+        OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
+        {
+            direction = Vector2.zero,
+        });
 
         stopedMoving = false;
     }
@@ -256,14 +287,6 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
-    private void InvokeOnDirectionChanged()
-    {
-        OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
-        {
-            direction = lastMoveDirection,
-        });
-    }
-
 
     #region Events
 
@@ -272,8 +295,10 @@ public class UnitMovement : MonoBehaviour
         stopedMoving = true;
         isMoving = false;
         
-        lastMoveDirection = Vector2.zero;
-        InvokeOnDirectionChanged();
+        OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs
+        {
+            direction = Vector2.zero,
+        });
     }
 
     private void Unit_OnMove(object sender, _BaseUnit.OnMoveEventArgs e)

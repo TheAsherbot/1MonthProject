@@ -12,7 +12,7 @@ public class TeamManager : MonoBehaviour
         get;
         private set;
     }
-    
+
     public static TeamManager AIInstance
     {
         get;
@@ -36,10 +36,16 @@ public class TeamManager : MonoBehaviour
 
     [Space(5)]
 
-    private int maxNumberOfUnits;
     [SerializeField] private List<_BaseBuilding> teamBuildingList;
     [SerializeField] private List<_BaseUnit> teamUnitList;
+    [SerializeField] private List<Civilian> teamCivilianUnitList;
     [SerializeField] private List<AttackingUnit> teamAttckingUnitList;
+
+
+    [Header("Feeding")]
+    [SerializeField] private int costToFeed = 10;
+    [SerializeField] private float feedTimerMax = 60;
+    private float feedTimer = 0;
 
 
     private void Awake()
@@ -65,6 +71,38 @@ public class TeamManager : MonoBehaviour
         });
     }
 
+    private void Update()
+    {
+        feedTimer += Time.deltaTime;
+
+        if (feedTimer > feedTimerMax)
+        {
+            feedTimer = 0;
+
+            foreach (Civilian civilian in teamCivilianUnitList)
+            {
+                if (minerials >= costToFeed)
+                {
+                    AddMinerials(-costToFeed);
+                }
+                else
+                {
+                    civilian.Starve();
+                }
+            }
+            foreach (AttackingUnit attackingUnit in teamAttckingUnitList)
+            {
+                if (minerials >= costToFeed)
+                {
+                    minerials -= costToFeed;
+                }
+                else
+                {
+                    attackingUnit.Starve();
+                }
+            }
+        }
+    }
 
     #region Minerials
 
@@ -104,6 +142,11 @@ public class TeamManager : MonoBehaviour
     public void UnitSpawned(_BaseUnit unit)
     {
         teamUnitList.Add(unit);
+
+        if (unit is Civilian civilian)
+        {
+            teamCivilianUnitList.Add(civilian);
+        }
         if (unit is AttackingUnit attackingUnit)
         {
             teamAttckingUnitList.Add(attackingUnit);
@@ -112,6 +155,16 @@ public class TeamManager : MonoBehaviour
     public void UnitKilled(_BaseUnit unit)
     {
         teamUnitList.Remove(unit);
+
+        if (teamUnitList.Count == 0 && minerials < 50)
+        {
+            GameManager.Instance.GameOver(team);
+        }
+
+        if (unit is Civilian civilian)
+        {
+            teamCivilianUnitList.Remove(civilian);
+        }
         if (unit is AttackingUnit attackingUnit)
         {
             teamAttckingUnitList.Remove(attackingUnit);
@@ -121,7 +174,11 @@ public class TeamManager : MonoBehaviour
     {
         return teamUnitList;
     }
-    public List<AttackingUnit> GetListOfAllAttackingUnitUnits()
+    public List<Civilian> GetListOfAllCivilianUnits()
+    {
+        return teamCivilianUnitList;
+    }
+    public List<AttackingUnit> GetListOfAllAttackingUnits()
     {
         return teamAttckingUnitList;
     }

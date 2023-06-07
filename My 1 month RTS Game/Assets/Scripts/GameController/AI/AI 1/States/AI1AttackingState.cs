@@ -52,7 +52,7 @@ public class AI1AttackingState : AI1_BaseState
                 TownHall curentTownHall = townHallList[Random.Range(0, townHallList.Count)];
 
                 List<ISelectable> attackingUnitsAsIselectableList = new List<ISelectable>();
-                foreach (AttackingUnit unit in teamManager.GetListOfAllAttackingUnitUnits())
+                foreach (AttackingUnit unit in teamManager.GetListOfAllAttackingUnits())
                 {
                     attackingUnitsAsIselectableList.Add(unit);
                 }

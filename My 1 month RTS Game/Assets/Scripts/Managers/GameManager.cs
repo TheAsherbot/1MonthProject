@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour
 
     public void GameOver(Teams lossingTeam)
     {
+        if (gameOverUI.activeInHierarchy == true) return;
+
         Time.timeScale = 0;
 
         gameOverUI.SetActive(true);

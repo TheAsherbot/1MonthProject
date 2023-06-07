@@ -49,7 +49,7 @@ public class AI1DefendingState : AI1_BaseState
         float agroRange = 25 * GridManager.Instance.grid.GetCellSize();
 
         List<AttackingUnit> enemyAttackingUnitsInRange = new List<AttackingUnit>();
-        foreach (AttackingUnit AttackingUnit in enemyTeamManager.GetListOfAllAttackingUnitUnits())
+        foreach (AttackingUnit AttackingUnit in enemyTeamManager.GetListOfAllAttackingUnits())
         {
             foreach (TownHall townHall in townHallList)
             {
@@ -102,7 +102,7 @@ public class AI1DefendingState : AI1_BaseState
         Debug.Log("AI1DefendingState: Attack Function");
         List<ISelectable> attackingUnitsInRangeAsISelectable = new List<ISelectable>();
 
-        foreach (AttackingUnit unit in teamManager.GetListOfAllAttackingUnitUnits())
+        foreach (AttackingUnit unit in teamManager.GetListOfAllAttackingUnits())
         {
             attackingUnitsInRangeAsISelectable.Add(unit);
         }

@@ -26,10 +26,6 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
 
     #region Variables
 
-    public int i;
-    [OdinSerialize] public Test test;
-    [Serializable] public delegate void Test(int i);
-
     [Header("Generial")]
     [SerializeField] private bool isOnPlayerTeam;
     [SerializeField] private GameObject selectedVisual;
@@ -86,6 +82,15 @@ public class Civilian : _BaseUnit, ISelectable, IDamageable, IMoveable
     private void Update()
     {
         TestState();
+    }
+
+    private void OnDestroy()
+    {
+        if (healthSystem.GetHealth() >= 0)
+        {
+            TeamManager.PlayerInstance.UnitKilled(this);
+            healthSystem.SetHealth(-1);
+        }
     }
 
     #endregion

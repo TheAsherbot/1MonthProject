@@ -68,6 +68,20 @@ namespace TheAshBot.HealthBarSystem
         public void SetHealth(int health)
         {
             this.health = health;
+
+            if (this.health > maxHealth)
+            {
+                this.health = maxHealth;
+                return;
+            }
+
+            if (this.health <= 0)
+            {
+                this.health = 0;
+                OnHealthDepleted?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
             OnHealthChanged?.Invoke(this, new OnHealthChangedEventArgs
             {
                 value = health,
@@ -83,6 +97,12 @@ namespace TheAshBot.HealthBarSystem
         public void Damage(int damageAmount)
         {
             health -= damageAmount;
+
+            if (health > maxHealth)
+            {
+                health = maxHealth;
+                return;
+            }
 
             if (health <= 0)
             {
@@ -105,6 +125,13 @@ namespace TheAshBot.HealthBarSystem
             if (health > maxHealth)
             {
                 health = maxHealth;
+                return;
+            }
+
+            if (health <= 0)
+            {
+                health = 0;
+                OnHealthDepleted?.Invoke(this, EventArgs.Empty);
                 return;
             }
 

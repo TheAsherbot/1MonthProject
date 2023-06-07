@@ -65,7 +65,7 @@ public class AI1BuildArmyState : AI1_BaseState
         float agroRange = 25 * GridManager.Instance.grid.GetCellSize();
 
         List<AttackingUnit> enemyAttackingUnitsInRange = new List<AttackingUnit>();
-        foreach (AttackingUnit AttackingUnit in enemyTeamManager.GetListOfAllAttackingUnitUnits())
+        foreach (AttackingUnit AttackingUnit in enemyTeamManager.GetListOfAllAttackingUnits())
         {
             foreach (TownHall townHall in townHallList)
             {
@@ -141,7 +141,7 @@ public class AI1BuildArmyState : AI1_BaseState
 
     private bool CanSwitchStateToDefendingState()
     {
-        if (teamManager.GetListOfAllAttackingUnitUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_ATTACKING_STATE) 
+        if (teamManager.GetListOfAllAttackingUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_ATTACKING_STATE) 
             return false;
 
 
@@ -158,7 +158,7 @@ public class AI1BuildArmyState : AI1_BaseState
         // Getting all enemys in agro range.
         float distanceBetweenTownHallAndUnitsToAgro = 20f;
 
-        foreach (AttackingUnit AttackingUnit in TeamManager.PlayerInstance.GetListOfAllAttackingUnitUnits())
+        foreach (AttackingUnit AttackingUnit in TeamManager.PlayerInstance.GetListOfAllAttackingUnits())
         {
             foreach (TownHall townHall in townHallList)
             {
@@ -174,7 +174,7 @@ public class AI1BuildArmyState : AI1_BaseState
 
     private bool CanSwitchToAttackingState()
     {
-        if (teamManager.GetListOfAllAttackingUnitUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_ATTACKING_STATE)
+        if (teamManager.GetListOfAllAttackingUnits().Count < MINIMUM_NUMBER_OF_UNITS_TO_SWITCH_TO_ATTACKING_STATE)
             return false;
 
         return true;

@@ -119,6 +119,15 @@ public class AttackingUnit : _BaseUnit, ISelectable, IDamageable, IMoveable
         TestState();
     }
 
+    private void OnDestroy()
+    {
+        if (healthSystem.GetHealth() >= 0)
+        {
+            teamManager.UnitKilled(this);
+            healthSystem.SetHealth(-1);
+        }
+    }
+
     #endregion
 
 

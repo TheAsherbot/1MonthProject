@@ -68,7 +68,7 @@ namespace TheAshBot.HealthBarSystem
 
             HealthBar healthBar = healthBarGameObject.AddComponent<HealthBar>();
             HealthSystem healthSystem = new HealthSystem(maxHealth);
-            healthBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, healthBarGameObject, contentGameObject, hideWhenFull);
+            healthBar.SetUp(healthSystem, offset, fallow, barGameObject.transform, healthBarGameObject, contentGameObject, hideWhenFull, fallow != null);
             return healthSystem;
         }
 
@@ -83,6 +83,7 @@ namespace TheAshBot.HealthBarSystem
 
 
         private bool hideWhenFull;
+        private bool useFallowTransfrom;
         private Vector3 offset;
         private Transform bar;
         private Transform fallow;
@@ -94,12 +95,15 @@ namespace TheAshBot.HealthBarSystem
 
         private void LateUpdate()
         {
+            if (useFallowTransfrom && fallow == null) return;
             transform.position = fallow.position + offset;
         }
 
-        private void SetUp(HealthSystem healthSystem, Vector3 offset, Transform fallow, Transform bar, GameObject healthBarGameObject, GameObject contentGameObject, bool hideWhenFull)
+        private void SetUp(HealthSystem healthSystem, Vector3 offset, Transform fallow, Transform bar, 
+            GameObject healthBarGameObject, GameObject contentGameObject, bool hideWhenFull, bool useFallowTransfrom)
         {
             this.hideWhenFull = hideWhenFull;
+            this.useFallowTransfrom = useFallowTransfrom;
             this.offset = offset;
             this.fallow = fallow;
             this.bar = bar;

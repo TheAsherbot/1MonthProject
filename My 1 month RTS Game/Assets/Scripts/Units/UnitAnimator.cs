@@ -30,23 +30,23 @@ public class UnitAnimator : MonoBehaviour
 
     private void UnitMovement_OnDirectionChanged(object sender, UnitMovement.OnDirectionChangedEventArgs e)
     {
-        if (e.direction == Vector2.zero)
+        if (Mathf.Abs(Vector2.Distance(e.direction, Vector2.zero)) < 0.25f)
         {
             animator.SetTrigger(IDLE_NAME);
         }
-        else if (e.direction == Vector2.up)
+        else if (Mathf.Abs(Vector2.Distance(e.direction, Vector2.up)) < 0.25f)
         {
             animator.SetTrigger(MOVEUP_NAME);
         }
-        else if (e.direction == Vector2.left)
+        else if (Mathf.Abs(Vector2.Distance(e.direction, Vector2.left)) < 0.25f)
         {
             animator.SetTrigger(MOVELEFT_NAME);
         }
-        else if (e.direction == Vector2.down)
+        else if (Mathf.Abs(Vector2.Distance(e.direction, Vector2.down)) < 0.25f)
         {
             animator.SetTrigger(MOVEDOWN_NAME);
         }
-        else if (e.direction == Vector2.right)
+        else if (Mathf.Abs(Vector2.Distance(e.direction, Vector2.right)) < 0.25f)
         {
             animator.SetTrigger(MOVERIGHT_NAME);
         }
